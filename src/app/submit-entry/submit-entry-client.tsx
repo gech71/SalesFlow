@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Icons } from '@/components/icons';
-import type { BranchPlan, PlanEntry, Branch, PlanEntryStatus, PlanEntryType } from '@prisma/client';
+import { type BranchPlan, type PlanEntry, type Branch, type PlanEntryStatus, PlanEntryType } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';

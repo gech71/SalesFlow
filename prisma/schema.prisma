@@ -1,23 +1,26 @@
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider      = "prisma-client-js"
+  // This is the crucial line that will fix the environment issue.
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
 model District {
-  id       String      @id @default(cuid())
+  id       String   @id
   name     String
   branches Branch[]
   leads    SalesLead[]
 }
 
 model Branch {
-  id         String       @id @default(cuid())
+  id         String       @id
   name       String
   district   District     @relation(fields: [districtId], references: [id])
   districtId String
@@ -27,7 +30,7 @@ model Branch {
 }
 
 model Officer {
-  id       String      @id @default(cuid())
+  id       String      @id
   name     String
   branch   Branch      @relation(fields: [branchId], references: [id])
   branchId String
@@ -35,7 +38,7 @@ model Officer {
 }
 
 model SalesLead {
-  id              String       @id @default(cuid())
+  id              String       @id
   title           String
   description     String
   status          LeadStatus   @default(New)
@@ -47,47 +50,47 @@ model SalesLead {
   officerId       String?
   lat             Float
   lng             Float
-  expectedSavings Decimal
+  expectedSavings Float
   createdAt       DateTime     @default(now())
   deadline        DateTime
   updates         LeadUpdate[]
 }
 
 model LeadUpdate {
-  id                    String   @id @default(cuid())
-  salesLead             SalesLead @relation(fields: [salesLeadId], references: [id])
-  salesLeadId           String
-  text                  String
-  timestamp             DateTime @default(now())
-  author                String
-  generatedSavings      Decimal?
-  attachmentJson        String?
-  reportingLocationJson String?
+  id                      Int       @id @default(autoincrement())
+  text                    String
+  timestamp               DateTime  @default(now())
+  author                  String
+  generatedSavings        Float?
+  attachmentJson          String?
+  reportingLocationJson   String?
+  salesLead               SalesLead @relation(fields: [salesLeadId], references: [id], onDelete: Cascade)
+  salesLeadId             String
 }
 
 model BranchPlan {
-  id            String      @id @default(cuid())
+  id            String      @id
   branch        Branch      @relation(fields: [branchId], references: [id])
   branchId      String
   quarter       String
-  savingsTarget Decimal
+  savingsTarget Float
   entries       PlanEntry[]
 
   @@unique([branchId, quarter])
 }
 
 model PlanEntry {
-  id              String          @id @default(cuid())
-  branchPlan      BranchPlan      @relation(fields: [branchPlanId], references: [id])
-  branchPlanId    String
-  date            DateTime        @default(now())
+  id              String          @id
+  date            DateTime
   type            PlanEntryType
-  amount          Decimal
+  amount          Float
   description     String
-  status          PlanEntryStatus @default(Pending)
+  status          PlanEntryStatus
   submittedBy     String
   reviewedBy      String?
   rejectionReason String?
+  branchPlan      BranchPlan      @relation(fields: [branchPlanId], references: [id], onDelete: Cascade)
+  branchPlanId    String
 }
 
 enum LeadStatus {
