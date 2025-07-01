@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -57,9 +56,9 @@ export default function DashboardClient({ leads, plans, districts, branches }: D
     });
 
     const totalLeads = filteredLeads.length;
-    const totalExpectedSavings = filteredLeads.reduce((acc, lead) => acc + lead.expectedSavings, 0);
+    const totalExpectedSavings = filteredLeads.reduce((acc, lead) => acc + Number(lead.expectedSavings), 0);
     const totalGeneratedSavings = filteredLeads.reduce((acc, lead) => {
-        const leadSavings = lead.updates.reduce((s, u) => s + (u.generatedSavings || 0), 0);
+        const leadSavings = lead.updates.reduce((s, u) => s + Number(u.generatedSavings || 0), 0);
         return acc + leadSavings;
     }, 0);
     const overallAchievement = totalExpectedSavings > 0 ? (totalGeneratedSavings / totalExpectedSavings) * 100 : 0;
@@ -75,8 +74,8 @@ export default function DashboardClient({ leads, plans, districts, branches }: D
       .filter(d => selectedDistrict === 'all' || d.id === selectedDistrict)
       .map(district => {
         const districtLeads = filteredLeads.filter(l => l.districtId === district.id);
-        const expected = districtLeads.reduce((acc, lead) => acc + lead.expectedSavings, 0);
-        const generated = districtLeads.reduce((acc, lead) => acc + lead.updates.reduce((s, u) => s + (u.generatedSavings || 0), 0), 0);
+        const expected = districtLeads.reduce((acc, lead) => acc + Number(lead.expectedSavings), 0);
+        const generated = districtLeads.reduce((acc, lead) => acc + lead.updates.reduce((s, u) => s + Number(u.generatedSavings || 0), 0), 0);
         const achievement = expected > 0 ? Math.min(100, (generated / expected) * 100) : 0;
         return {
             id: district.id,
@@ -95,8 +94,8 @@ export default function DashboardClient({ leads, plans, districts, branches }: D
       })
       .map(branch => {
         const branchLeads = filteredLeads.filter(l => l.branchId === branch.id);
-        const expected = branchLeads.reduce((acc, lead) => acc + lead.expectedSavings, 0);
-        const generated = branchLeads.reduce((acc, lead) => acc + lead.updates.reduce((s, u) => s + (u.generatedSavings || 0), 0), 0);
+        const expected = branchLeads.reduce((acc, lead) => acc + Number(lead.expectedSavings), 0);
+        const generated = branchLeads.reduce((acc, lead) => acc + lead.updates.reduce((s, u) => s + Number(u.generatedSavings || 0), 0), 0);
         const achievement = expected > 0 ? Math.min(100, (generated / expected) * 100) : 0;
         const districtName = districts.find(d => d.id === branch.districtId)?.name || 'N/A';
         return {
@@ -112,15 +111,15 @@ export default function DashboardClient({ leads, plans, districts, branches }: D
       const branchPlanPerformance = filteredPlans.map(plan => {
           const branchName = branches.find(b => b.id === plan.branchId)?.name || 'N/A';
           const approvedEntries = plan.entries.filter(e => e.status === 'Approved');
-          const collections = approvedEntries.filter(e => e.type === 'collection').reduce((acc, e) => acc + e.amount, 0);
-          const withdrawals = approvedEntries.filter(e => e.type === 'withdrawal').reduce((acc, e) => acc + e.amount, 0);
+          const collections = approvedEntries.filter(e => e.type === 'collection').reduce((acc, e) => acc + Number(e.amount), 0);
+          const withdrawals = approvedEntries.filter(e => e.type === 'withdrawal').reduce((acc, e) => acc + Number(e.amount), 0);
           const netSavings = collections - withdrawals;
-          const achievement = plan.savingsTarget > 0 ? Math.min(100, (netSavings / plan.savingsTarget) * 100) : 0;
+          const achievement = Number(plan.savingsTarget) > 0 ? Math.min(100, (netSavings / Number(plan.savingsTarget)) * 100) : 0;
           return {
               id: plan.id,
               branchName,
               quarter: plan.quarter,
-              target: plan.savingsTarget,
+              target: Number(plan.savingsTarget),
               netSavings,
               achievement
           }
