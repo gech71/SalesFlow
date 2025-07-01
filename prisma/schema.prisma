@@ -5,59 +5,58 @@ datasource db {
 }
 
 generator client {
-  provider      = "prisma-client-js"
-  // Use a more compatible binary target for Linux environments to avoid library issues.
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 model District {
-  id       String   @id @default(cuid())
-  name     String
-  branches Branch[]
-  leads    SalesLead[]
+  id        String       @id
+  name      String
+  branches  Branch[]
+  leads     SalesLead[]
 }
 
 model Branch {
-  id         String   @id @default(cuid())
-  name       String
+  id        String       @id
+  name      String
   districtId String
-  district   District @relation(fields: [districtId], references: [id])
-  officers   Officer[]
-  leads      SalesLead[]
-  plans      BranchPlan[]
+  district  District     @relation(fields: [districtId], references: [id])
+  officers  Officer[]
+  leads     SalesLead[]
+  plans     BranchPlan[]
 }
 
 model Officer {
-  id       String      @id @default(cuid())
-  name     String
-  branchId String
-  branch   Branch      @relation(fields: [branchId], references: [id])
-  leads    SalesLead[]
+  id        String       @id
+  name      String
+  branchId  String
+  branch    Branch       @relation(fields: [branchId], references: [id])
+  leads     SalesLead[]
 }
 
 model SalesLead {
   id              String      @id @default(cuid())
   title           String
   description     String
-  status          LeadStatus  @default(New)
+  status          LeadStatus
   districtId      String
-  district        District    @relation(fields: [districtId], references: [id])
   branchId        String?
-  branch          Branch?     @relation(fields: [branchId], references: [id])
   officerId       String?
-  officer         Officer?    @relation(fields: [officerId], references: [id])
   lat             Float
   lng             Float
   expectedSavings Decimal
   createdAt       DateTime    @default(now())
   deadline        DateTime
   updates         LeadUpdate[]
+  district        District    @relation(fields: [districtId], references: [id])
+  branch          Branch?     @relation(fields: [branchId], references: [id])
+  officer         Officer?    @relation(fields: [officerId], references: [id])
 }
 
 model LeadUpdate {
-  id                    String   @id @default(cuid())
+  id                    String    @id @default(cuid())
   text                  String
-  timestamp             DateTime @default(now())
+  timestamp             DateTime  @default(now())
   author                String
   generatedSavings      Decimal?
   attachmentJson        Json?
@@ -67,14 +66,12 @@ model LeadUpdate {
 }
 
 model BranchPlan {
-  id            String      @id @default(cuid())
+  id            String      @id
   branchId      String
-  branch        Branch      @relation(fields: [branchId], references: [id])
   quarter       String
   savingsTarget Decimal
   entries       PlanEntry[]
-
-  @@unique([branchId, quarter])
+  branch        Branch      @relation(fields: [branchId], references: [id])
 }
 
 model PlanEntry {
@@ -83,7 +80,7 @@ model PlanEntry {
   type            PlanEntryType
   amount          Decimal
   description     String
-  status          PlanEntryStatus @default(Pending)
+  status          PlanEntryStatus
   submittedBy     String
   reviewedBy      String?
   rejectionReason String?
