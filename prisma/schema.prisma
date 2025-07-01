@@ -5,97 +5,99 @@ datasource db {
 }
 
 generator client {
-  provider        = "prisma-client-js"
-  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 model District {
-  id        String       @id
-  name      String
-  branches  Branch[]
-  leads     SalesLead[]
+  id       String      @id @default(cuid())
+  name     String
+  branches Branch[]
+  leads    SalesLead[]
 }
 
 model Branch {
-  id        String       @id
-  name      String
+  id         String       @id @default(cuid())
+  name       String
+  district   District     @relation(fields: [districtId], references: [id])
   districtId String
-  district  District     @relation(fields: [districtId], references: [id])
-  officers  Officer[]
-  leads     SalesLead[]
-  plans     BranchPlan[]
+  officers   Officer[]
+  leads      SalesLead[]
+  plans      BranchPlan[]
 }
 
 model Officer {
-  id        String       @id
-  name      String
-  branchId  String
-  branch    Branch       @relation(fields: [branchId], references: [id])
-  leads     SalesLead[]
+  id       String      @id @default(cuid())
+  name     String
+  branch   Branch      @relation(fields: [branchId], references: [id])
+  branchId String
+  leads    SalesLead[]
 }
 
 model SalesLead {
-  id              String      @id @default(cuid())
+  id              String       @id @default(cuid())
   title           String
   description     String
-  status          LeadStatus
+  status          LeadStatus   @default(New)
+  district        District     @relation(fields: [districtId], references: [id])
   districtId      String
+  branch          Branch?      @relation(fields: [branchId], references: [id])
   branchId        String?
+  officer         Officer?     @relation(fields: [officerId], references: [id])
   officerId       String?
   lat             Float
   lng             Float
   expectedSavings Decimal
-  createdAt       DateTime    @default(now())
+  createdAt       DateTime     @default(now())
   deadline        DateTime
   updates         LeadUpdate[]
-  district        District    @relation(fields: [districtId], references: [id])
-  branch          Branch?     @relation(fields: [branchId], references: [id])
-  officer         Officer?    @relation(fields: [officerId], references: [id])
 }
 
 model LeadUpdate {
-  id                    String    @id @default(cuid())
+  id                    String   @id @default(cuid())
+  salesLead             SalesLead @relation(fields: [salesLeadId], references: [id])
+  salesLeadId           String
   text                  String
-  timestamp             DateTime  @default(now())
+  timestamp             DateTime @default(now())
   author                String
   generatedSavings      Decimal?
-  attachmentJson        Json?
-  reportingLocationJson Json?
-  salesLeadId           String
-  salesLead             SalesLead @relation(fields: [salesLeadId], references: [id])
+  attachmentJson        String?
+  reportingLocationJson String?
 }
 
 model BranchPlan {
-  id            String      @id
+  id            String      @id @default(cuid())
+  branch        Branch      @relation(fields: [branchId], references: [id])
   branchId      String
   quarter       String
   savingsTarget Decimal
   entries       PlanEntry[]
-  branch        Branch      @relation(fields: [branchId], references: [id])
+
+  @@unique([branchId, quarter])
 }
 
 model PlanEntry {
   id              String          @id @default(cuid())
+  branchPlan      BranchPlan      @relation(fields: [branchPlanId], references: [id])
+  branchPlanId    String
   date            DateTime        @default(now())
   type            PlanEntryType
   amount          Decimal
   description     String
-  status          PlanEntryStatus
+  status          PlanEntryStatus @default(Pending)
   submittedBy     String
   reviewedBy      String?
   rejectionReason String?
-  branchPlanId    String
-  branchPlan      BranchPlan      @relation(fields: [branchPlanId], references: [id])
 }
 
 enum LeadStatus {
   New
   Assigned
   InProgress
+  Reopened
   PendingClosure
   PendingDistrictApproval
   Closed
-  Reopened
 }
 
 enum PlanEntryType {
