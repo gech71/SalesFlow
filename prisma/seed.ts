@@ -1,5 +1,5 @@
 
-import { PrismaClient, LeadStatus, PlanEntryStatus, PlanEntryType } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -28,7 +28,7 @@ const initialLeadsData = [
     id: 'lead-1',
     title: 'New Client Inquiry - TechCorp',
     description: 'TechCorp is interested in our new software suite. Follow up required.',
-    status: 'InProgress' as LeadStatus,
+    status: 'InProgress',
     districtId: 'dist-1',
     branchId: 'branch-1',
     officerId: 'officer-1',
@@ -46,7 +46,7 @@ const initialLeadsData = [
     id: 'lead-2',
     title: 'Partnership Opportunity - Innovate LLC',
     description: 'Potential partnership to integrate our platforms.',
-    status: 'Assigned' as LeadStatus,
+    status: 'Assigned',
     districtId: 'dist-1',
     branchId: 'branch-2',
     officerId: null,
@@ -61,7 +61,7 @@ const initialLeadsData = [
     id: 'lead-3',
     title: 'Renewal - Global Solutions',
     description: 'Contract renewal due next month. Need to discuss new terms.',
-    status: 'New' as LeadStatus,
+    status: 'New',
     districtId: 'dist-2',
     branchId: null,
     officerId: null,
@@ -82,9 +82,9 @@ const initialBranchPlansData = [
     quarter: 'Q3 2024',
     savingsTarget: 250000,
     entries: [
-      { id: 'entry-1', date: new Date(new Date().setDate(new Date().getDate() - 15)), type: 'collection' as PlanEntryType, amount: 75000, description: 'Initial deposit from campaign launch', status: 'Approved' as PlanEntryStatus, submittedBy: 'Branch Manager', reviewedBy: 'District Director' },
-      { id: 'entry-2', date: new Date(new Date().setDate(new Date().getDate() - 5)), type: 'collection' as PlanEntryType, amount: 50000, description: 'Collected from TechCorp outreach', status: 'Pending' as PlanEntryStatus, submittedBy: 'Branch Manager', reviewedBy: null, rejectionReason: null },
-      { id: 'entry-3', date: new Date(new Date().setDate(new Date().getDate() - 2)), type: 'withdrawal' as PlanEntryType, amount: 10000, description: 'Marketing event expenses', status: 'Pending' as PlanEntryStatus, submittedBy: 'Branch Manager', reviewedBy: null, rejectionReason: null },
+      { id: 'entry-1', date: new Date(new Date().setDate(new Date().getDate() - 15)), type: 'collection', amount: 75000, description: 'Initial deposit from campaign launch', status: 'Approved', submittedBy: 'Branch Manager', reviewedBy: 'District Director' },
+      { id: 'entry-2', date: new Date(new Date().setDate(new Date().getDate() - 5)), type: 'collection', amount: 50000, description: 'Collected from TechCorp outreach', status: 'Pending', submittedBy: 'Branch Manager', reviewedBy: null, rejectionReason: null },
+      { id: 'entry-3', date: new Date(new Date().setDate(new Date().getDate() - 2)), type: 'withdrawal', amount: 10000, description: 'Marketing event expenses', status: 'Pending', submittedBy: 'Branch Manager', reviewedBy: null, rejectionReason: null },
     ]
   },
   {
@@ -93,7 +93,7 @@ const initialBranchPlansData = [
     quarter: 'Q3 2024',
     savingsTarget: 300000,
     entries: [
-      { id: 'entry-4', date: new Date(new Date().setDate(new Date().getDate() - 10)), type: 'collection' as PlanEntryType, amount: 120000, description: 'Major client deposit', status: 'Approved' as PlanEntryStatus, submittedBy: 'Branch Manager', reviewedBy: 'District Director', rejectionReason: null },
+      { id: 'entry-4', date: new Date(new Date().setDate(new Date().getDate() - 10)), type: 'collection', amount: 120000, description: 'Major client deposit', status: 'Approved', submittedBy: 'Branch Manager', reviewedBy: 'District Director', rejectionReason: null },
     ]
   },
   {

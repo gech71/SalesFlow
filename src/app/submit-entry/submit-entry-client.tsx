@@ -13,14 +13,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Icons } from '@/components/icons';
-import { type BranchPlan, type PlanEntry, type Branch, type PlanEntryStatus, PlanEntryType } from '@prisma/client';
+import { type BranchPlan, type PlanEntry, type Branch } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
-import { createPlanEntry } from '@/app/actions';
+import { createPlanEntry, planEntryTypes, planEntryStatuses, type PlanEntryType, type PlanEntryStatus } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 
 type ClientBranchPlan = BranchPlan & {
@@ -29,7 +29,7 @@ type ClientBranchPlan = BranchPlan & {
 }
 
 const newPlanEntrySchema = z.object({
-  type: z.nativeEnum(PlanEntryType),
+  type: z.enum(planEntryTypes),
   amount: z.coerce.number().positive("Amount must be a positive number."),
   description: z.string().min(5, "Description must be at least 5 characters."),
 });
@@ -236,7 +236,7 @@ export default function SubmitEntryClient({ plans, branches, quarters }: { plans
                                                     <TableCell className="md:hidden">{format(new Date(entry.date), "P")}</TableCell>
                                                     <TableCell><Badge variant={entry.type === 'collection' ? 'outline' : 'secondary'}>{entry.type}</Badge></TableCell>
                                                     <TableCell className="font-medium">{formatCurrency(entry.amount)}</TableCell>
-                                                    <TableCell><Badge variant={getStatusBadgeVariant(entry.status)}>{entry.status}</Badge></TableCell>
+                                                    <TableCell><Badge variant={getStatusBadgeVariant(entry.status as PlanEntryStatus)}>{entry.status}</Badge></TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>

@@ -3,24 +3,27 @@
 
 generator client {
   provider      = "prisma-client-js"
-  // This is the crucial line that will fix the environment issue.
+  // This is a crucial line that tells Prisma to generate a query engine compatible with various Linux environments,
+  // which is common in containers and cloud setups.
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider   = "sqlite"
+  url        = "file:./dev.db"
+  // This line changes the engine loading mechanism to be more compatible with different environments.
+  engineType = "library"
 }
 
 model District {
-  id       String   @id
+  id       String      @id @default(cuid())
   name     String
   branches Branch[]
   leads    SalesLead[]
 }
 
 model Branch {
-  id         String       @id
+  id         String       @id @default(cuid())
   name       String
   district   District     @relation(fields: [districtId], references: [id])
   districtId String
@@ -30,7 +33,7 @@ model Branch {
 }
 
 model Officer {
-  id       String      @id
+  id       String      @id @default(cuid())
   name     String
   branch   Branch      @relation(fields: [branchId], references: [id])
   branchId String
@@ -38,10 +41,10 @@ model Officer {
 }
 
 model SalesLead {
-  id              String       @id
+  id              String       @id @default(cuid())
   title           String
   description     String
-  status          LeadStatus   @default(New)
+  status          String
   district        District     @relation(fields: [districtId], references: [id])
   districtId      String
   branch          Branch?      @relation(fields: [branchId], references: [id])
@@ -57,15 +60,15 @@ model SalesLead {
 }
 
 model LeadUpdate {
-  id                      Int       @id @default(autoincrement())
-  text                    String
-  timestamp               DateTime  @default(now())
-  author                  String
-  generatedSavings        Float?
-  attachmentJson          String?
-  reportingLocationJson   String?
-  salesLead               SalesLead @relation(fields: [salesLeadId], references: [id], onDelete: Cascade)
-  salesLeadId             String
+  id                    String    @id @default(cuid())
+  text                  String
+  author                String
+  timestamp             DateTime  @default(now())
+  generatedSavings      Float?
+  attachmentJson        String?
+  reportingLocationJson String?
+  salesLead             SalesLead @relation(fields: [salesLeadId], references: [id])
+  salesLeadId           String
 }
 
 model BranchPlan {
@@ -80,36 +83,15 @@ model BranchPlan {
 }
 
 model PlanEntry {
-  id              String          @id
-  date            DateTime
-  type            PlanEntryType
+  id              String   @id @default(cuid())
+  branchPlan      BranchPlan @relation(fields: [branchPlanId], references: [id])
+  branchPlanId    String
+  date            DateTime @default(now())
+  type            String   // 'collection' or 'withdrawal'
   amount          Float
   description     String
-  status          PlanEntryStatus
+  status          String   // 'Pending', 'Approved', 'Rejected'
   submittedBy     String
   reviewedBy      String?
   rejectionReason String?
-  branchPlan      BranchPlan      @relation(fields: [branchPlanId], references: [id], onDelete: Cascade)
-  branchPlanId    String
-}
-
-enum LeadStatus {
-  New
-  Assigned
-  InProgress
-  Reopened
-  PendingClosure
-  PendingDistrictApproval
-  Closed
-}
-
-enum PlanEntryType {
-  collection
-  withdrawal
-}
-
-enum PlanEntryStatus {
-  Pending
-  Approved
-  Rejected
 }
