@@ -1,44 +1,44 @@
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+generator client {
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "debian-openssl-3.0.x"]
 }
 
-generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
 }
 
 model District {
-  id       String    @id @default(cuid())
-  name     String
-  branches Branch[]
-  leads    SalesLead[]
+  id          String      @id @default(cuid())
+  name        String      @unique
+  branches    Branch[]
+  salesLeads  SalesLead[]
 }
 
 model Branch {
-  id         String       @id @default(cuid())
-  name       String
-  district   District     @relation(fields: [districtId], references: [id])
-  districtId String
-  officers   Officer[]
-  leads      SalesLead[]
-  plans      BranchPlan[]
+  id          String      @id @default(cuid())
+  name        String
+  district    District    @relation(fields: [districtId], references: [id])
+  districtId  String
+  officers    Officer[]
+  salesLeads  SalesLead[]
+  plans       BranchPlan[]
 }
 
 model Officer {
-  id       String      @id @default(cuid())
-  name     String
-  branch   Branch      @relation(fields: [branchId], references: [id])
-  branchId String
-  leads    SalesLead[]
+  id          String      @id @default(cuid())
+  name        String
+  branch      Branch      @relation(fields: [branchId], references: [id])
+  branchId    String
+  salesLeads  SalesLead[]
 }
 
 model SalesLead {
   id              String      @id @default(cuid())
   title           String
   description     String
-  status          LeadStatus
+  status          LeadStatus  @default(New)
   district        District    @relation(fields: [districtId], references: [id])
   districtId      String
   branch          Branch?     @relation(fields: [branchId], references: [id])
@@ -47,40 +47,42 @@ model SalesLead {
   officerId       String?
   lat             Float
   lng             Float
-  expectedSavings Float
+  expectedSavings Decimal     @db.Decimal(12, 2)
   createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
   deadline        DateTime
   updates         LeadUpdate[]
 }
 
 model LeadUpdate {
-  id                String   @id @default(cuid())
-  text              String
-  timestamp         DateTime @default(now())
-  author            String
-  generatedSavings  Float?
-  attachment        Json?
-  reportingLocation Json?
-  salesLead         SalesLead @relation(fields: [salesLeadId], references: [id])
-  salesLeadId       String
+  id              String   @id @default(cuid())
+  lead            SalesLead @relation(fields: [leadId], references: [id])
+  leadId          String
+  timestamp       DateTime @default(now())
+  text            String
+  author          String
+  generatedSavings Decimal? @db.Decimal(12, 2)
+  attachmentUrl   String?
+  reportingLat    Float?
+  reportingLng    Float?
 }
 
 model BranchPlan {
-  id             String      @id
-  branch         Branch      @relation(fields: [branchId], references: [id])
-  branchId       String
-  quarter        String
-  savingsTarget  Float
-  entries        PlanEntry[]
+  id            String      @id
+  branch        Branch      @relation(fields: [branchId], references: [id])
+  branchId      String
+  quarter       String
+  savingsTarget Decimal     @db.Decimal(14, 2)
+  entries       PlanEntry[]
 }
 
 model PlanEntry {
-  id              String          @id @default(cuid())
-  plan            BranchPlan      @relation(fields: [branchPlanId], references: [id])
+  id              String        @id @default(cuid())
+  branchPlan      BranchPlan    @relation(fields: [branchPlanId], references: [id])
   branchPlanId    String
   date            DateTime
   type            PlanEntryType
-  amount          Float
+  amount          Decimal       @db.Decimal(12, 2)
   description     String
   status          PlanEntryStatus
   submittedBy     String

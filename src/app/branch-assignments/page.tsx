@@ -17,7 +17,13 @@ export default async function BranchAssignmentsPage() {
                     officers: true
                 }
             },
-            officer: true
+            officer: true,
+            updates: {
+                orderBy: {
+                    timestamp: 'desc'
+                },
+                take: 1
+            }
         },
         orderBy: {
             createdAt: 'desc'

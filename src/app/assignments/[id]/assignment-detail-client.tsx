@@ -35,12 +35,11 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { Progress } from '@/components/ui/progress';
-import { addLeadUpdate, leadStatuses } from '@/app/actions';
+import { addLeadUpdate } from '@/app/actions';
 
 // The client-side type needs to match what the server component constructs
 type ClientSalesLead = SalesLead & {
-    location: { lat: number; lng: number };
-    updates: (LeadUpdate & { attachment: any, reportingLocation: any })[];
+    updates: LeadUpdate[];
     officer: Officer | null;
 };
 
@@ -62,7 +61,7 @@ export default function AssignmentDetailClient({ lead }: { lead: ClientSalesLead
     resolver: zodResolver(updateSchema),
     defaultValues: {
         updateText: '',
-        status: lead.status as LeadStatus,
+        status: lead.status,
         generatedSavings: 0,
     }
   });
@@ -101,25 +100,24 @@ export default function AssignmentDetailClient({ lead }: { lead: ClientSalesLead
   const onUpdateSubmit = async (data: z.infer<typeof updateSchema>) => {
     setIsSubmitting(true);
 
-    let reportingLocation: { lat: number; lng: number } | undefined;
+    let reportingLat: number | undefined;
+    let reportingLng: number | undefined;
     
     const getLocation = () => new Promise<GeolocationPosition>((resolve, reject) => {
         if (!navigator.geolocation) {
-        return reject(new Error("Geolocation is not supported by your browser."));
+          return reject(new Error("Geolocation is not supported by your browser."));
         }
         navigator.geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
         });
     });
 
     try {
         const position = await getLocation();
-        reportingLocation = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-        };
+        reportingLat = position.coords.latitude;
+        reportingLng = position.coords.longitude;
     } catch (error) {
         let message = "Could not get your location. Please enable permissions.";
         if (error instanceof GeolocationPositionError) {
@@ -134,14 +132,10 @@ export default function AssignmentDetailClient({ lead }: { lead: ClientSalesLead
         });
     }
     
-    let attachmentData;
+    let attachmentUrl;
     if (attachmentFile) {
         try {
-            const dataUrl = await fileToDataUrl(attachmentFile);
-            attachmentData = {
-                name: attachmentFile.name,
-                dataUrl: dataUrl
-            }
+            attachmentUrl = await fileToDataUrl(attachmentFile);
         } catch (error) {
             toast({ title: "File Error", description: "Could not read the attached file.", variant: "destructive" });
             setIsSubmitting(false);
@@ -156,8 +150,9 @@ export default function AssignmentDetailClient({ lead }: { lead: ClientSalesLead
             status: data.status,
             generatedSavings: data.generatedSavings,
             author: lead.officer?.name || 'System',
-            attachment: attachmentData,
-            reportingLocation,
+            attachmentUrl,
+            reportingLat,
+            reportingLng,
         });
 
         toast({
@@ -269,7 +264,7 @@ export default function AssignmentDetailClient({ lead }: { lead: ClientSalesLead
                         </div>
                         <div>
                             <p className="font-medium">Status</p>
-                            <Badge variant={getStatusBadgeVariant(lead.status as LeadStatus)}>{lead.status}</Badge>
+                            <Badge variant={getStatusBadgeVariant(lead.status)}>{lead.status}</Badge>
                         </div>
                         <div className="col-span-2 md:col-span-1">
                             <p className="font-medium">Savings Progress ({achievementPercentage.toFixed(0)}%)</p>
@@ -287,37 +282,33 @@ export default function AssignmentDetailClient({ lead }: { lead: ClientSalesLead
                         <ScrollArea className="h-48 w-full rounded-md border p-4">
                         {lead.updates.length > 0 ? (
                                 <div className="space-y-4">
-                                    {lead.updates.map((update, index) => {
-                                        const attachment = update.attachment as any;
-                                        const reportingLocation = update.reportingLocation as any;
-
-                                        return (
+                                    {lead.updates.map((update, index) => (
                                         <div key={index} className="text-sm">
-                                            <p className="font-medium">{update.author} <span className="text-muted-foreground text-xs">on {update.timestamp ? format(new Date(update.timestamp), "PPp") : ''}</span></p>
+                                            <p className="font-medium">{update.author} <span className="text-muted-foreground text-xs">on {format(new Date(update.timestamp), "PPp")}</span></p>
                                             <p className="text-muted-foreground">{update.text}</p>
                                             {update.generatedSavings && (
                                                 <p className="text-sm text-primary font-medium mt-1">
                                                     + {formatCurrency(update.generatedSavings)}
                                                 </p>
                                             )}
-                                            {attachment && (
+                                            {update.attachmentUrl && (
                                                 <a 
-                                                    href={attachment.dataUrl} 
-                                                    download={attachment.name}
+                                                    href={update.attachmentUrl} 
+                                                    download
                                                     className="flex items-center gap-2 mt-2 text-sm text-primary hover:underline"
                                                 >
                                                     <Icons.file className="h-4 w-4" />
-                                                    <span>{attachment.name}</span>
+                                                    <span>View Attachment</span>
                                                 </a>
                                             )}
-                                            {reportingLocation && lead.location && (() => {
-                                                const distance = getDistanceInKm(lead.location.lat, lead.location.lng, reportingLocation.lat, reportingLocation.lng);
+                                            {update.reportingLat && update.reportingLng && lead.lat && lead.lng && (() => {
+                                                const distance = getDistanceInKm(lead.lat, lead.lng, update.reportingLat!, update.reportingLng!);
                                                 const isOnSite = distance < distanceThreshold;
                                                 return (
                                                     <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                                                         <Icons.locateFixed className="h-4 w-4" />
                                                         <a 
-                                                            href={`https://www.google.com/maps/search/?api=1&query=${reportingLocation.lat},${reportingLocation.lng}`}
+                                                            href={`https://www.google.com/maps/search/?api=1&query=${update.reportingLat},${update.reportingLng}`}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="hover:underline"
@@ -331,7 +322,7 @@ export default function AssignmentDetailClient({ lead }: { lead: ClientSalesLead
                                                 )
                                             })()}
                                         </div>
-                                    )})}
+                                    ))}
                                 </div>
                         ) : (
                             <p className="text-sm text-muted-foreground">No updates yet.</p>

@@ -1,7 +1,6 @@
 
 'use client';
 
-import { useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,13 +25,11 @@ import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { Progress } from '@/components/ui/progress';
 
-// The client-side type needs to match what the server component constructs
 type ClientSalesLead = SalesLead & {
-    location: { lat: number; lng: number };
     updates: LeadUpdate[];
-    districtName?: string;
-    branchName?: string;
-    officerName?: string;
+    district: District | null;
+    branch: Branch | null;
+    officer: Officer | null;
 };
 
 export default function OfficerDashboardClient({ leads }: { leads: ClientSalesLead[] }) {
@@ -50,8 +47,8 @@ export default function OfficerDashboardClient({ leads }: { leads: ClientSalesLe
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+  const formatCurrency = (amount: number | any) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
   }
 
   return (
@@ -132,15 +129,15 @@ export default function OfficerDashboardClient({ leads }: { leads: ClientSalesLe
                             <TableRow key={lead.id}>
                                 <TableCell className="font-medium">{lead.title}</TableCell>
                                 <TableCell><Badge variant={getStatusBadgeVariant(lead.status)}>{lead.status}</Badge></TableCell>
-                                <TableCell className="hidden md:table-cell">{lead.officerName || 'N/A'}, {lead.branchName || 'N/A'}, {lead.districtName || 'N/A'}</TableCell>
+                                <TableCell className="hidden md:table-cell">{lead.officer?.name || 'N/A'}, {lead.branch?.name || 'N/A'}, {lead.district?.name || 'N/A'}</TableCell>
                                 <TableCell>
-                                    <div className="font-medium">{formatCurrency(Number(lead.expectedSavings))} <span className="text-xs text-muted-foreground">Target</span></div>
+                                    <div className="font-medium">{formatCurrency(lead.expectedSavings)} <span className="text-xs text-muted-foreground">Target</span></div>
                                     <Progress value={achievementPercentage} className="mt-1 h-2" />
                                     <div className="text-xs text-muted-foreground">{achievementPercentage.toFixed(0)}% achieved</div>
                                 </TableCell>
                                 <TableCell className="hidden lg:table-cell">
                                     <a 
-                                        href={`https://www.google.com/maps/search/?api=1&query=${lead.location.lat},${lead.location.lng}`}
+                                        href={`https://www.google.com/maps/search/?api=1&query=${lead.lat},${lead.lng}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex items-center gap-1 text-primary hover:underline"

@@ -14,13 +14,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Icons } from '@/components/icons';
-import type { BranchPlan, PlanEntry, Branch } from '@prisma/client';
+import type { BranchPlan, PlanEntry, Branch, PlanEntryStatus } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
-import { reviewPlanEntry, PlanEntryStatus } from '@/app/actions';
+import { reviewPlanEntry } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 
 type ClientBranchPlan = BranchPlan & {

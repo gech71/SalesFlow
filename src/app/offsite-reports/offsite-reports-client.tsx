@@ -21,12 +21,11 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Icons } from '@/components/icons';
-import type { SalesLead, LeadUpdate, Officer } from '@prisma/client';
+import { type SalesLead, type LeadUpdate, type Officer } from '@prisma/client';
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 
 type ClientSalesLead = SalesLead & {
-    location: { lat: number; lng: number };
     updates: LeadUpdate[];
     officer: Officer | null;
 };
@@ -66,13 +65,12 @@ export default function OffsiteReportsClient({ leads }: { leads: ClientSalesLead
     const reports: OffsiteReport[] = [];
     leads.forEach(lead => {
       lead.updates.forEach(update => {
-        const reportingLocation = update.reportingLocation as any;
-        if (reportingLocation && typeof reportingLocation === 'object' && 'lat' in reportingLocation && 'lng' in reportingLocation) {
+        if (update.reportingLat && update.reportingLng) {
             const distance = getDistanceInKm(
-                lead.location.lat,
-                lead.location.lng,
-                reportingLocation.lat,
-                reportingLocation.lng
+                lead.lat,
+                lead.lng,
+                update.reportingLat,
+                update.reportingLng
             );
             if (distance > distanceThreshold) {
                 reports.push({ lead, update, distance });

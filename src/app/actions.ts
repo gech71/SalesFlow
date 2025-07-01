@@ -6,10 +6,6 @@ import prisma from '@/lib/prisma';
 import { z } from 'zod';
 import { LeadStatus, PlanEntryStatus, PlanEntryType } from '@prisma/client';
 
-export const leadStatuses = Object.values(LeadStatus);
-export const planEntryTypes = Object.values(PlanEntryType);
-export const planEntryStatuses = Object.values(PlanEntryStatus);
-
 // Schema for creating a new lead
 const newLeadSchema = z.object({
   title: z.string().min(3),
@@ -39,26 +35,28 @@ const updateSchema = z.object({
   updateText: z.string().min(5),
   status: z.nativeEnum(LeadStatus),
   generatedSavings: z.coerce.number().min(0).optional(),
-  attachment: z.any().optional(),
-  reportingLocation: z.object({ lat: z.number(), lng: z.number() }).optional(),
+  attachmentUrl: z.string().url().optional(),
+  reportingLat: z.number().optional(),
+  reportingLng: z.number().optional(),
   author: z.string(),
 });
 
 export async function addLeadUpdate(data: z.infer<typeof updateSchema>) {
   const validatedData = updateSchema.parse(data);
-  const { leadId, ...updateData } = validatedData;
+  const { leadId, status, updateText, author, generatedSavings, attachmentUrl, reportingLat, reportingLng } = validatedData;
 
   await prisma.salesLead.update({
     where: { id: leadId },
     data: {
-      status: updateData.status,
+      status: status,
       updates: {
         create: {
-          text: updateData.updateText,
-          author: updateData.author,
-          generatedSavings: updateData.generatedSavings,
-          reportingLocation: updateData.reportingLocation,
-          attachment: updateData.attachment,
+          text: updateText,
+          author: author,
+          generatedSavings: generatedSavings,
+          attachmentUrl: attachmentUrl,
+          reportingLat: reportingLat,
+          reportingLng: reportingLng,
         },
       },
     },

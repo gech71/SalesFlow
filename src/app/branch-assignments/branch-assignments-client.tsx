@@ -39,7 +39,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Icons } from '@/components/icons';
-import type { SalesLead, Branch, Officer } from '@prisma/client';
+import type { SalesLead, Branch, Officer, LeadUpdate } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
@@ -49,6 +49,7 @@ import { useRouter } from 'next/navigation';
 type ClientSalesLead = SalesLead & {
     branch: (Branch & { officers: Officer[] }) | null;
     officer: Officer | null;
+    updates: LeadUpdate[];
 };
 
 type ClientBranch = Branch & {
@@ -228,7 +229,7 @@ export default function BranchAssignmentsClient({ leads, branches }: { leads: Cl
                         </TableHeader>
                         <TableBody>
                         {pendingApprovalLeads.map((lead) => {
-                            const lastUpdate = lead.updates?.[lead.updates.length-1];
+                            const lastUpdate = lead.updates?.[0];
                             return (
                                 <TableRow key={lead.id}>
                                     <TableCell className="font-medium">{lead.title}</TableCell>

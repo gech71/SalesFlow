@@ -4,11 +4,11 @@ import prisma from '@/lib/prisma';
 import OffsiteReportsClient from './offsite-reports-client';
 
 export default async function OffsiteReportsPage() {
-    const leads = await prisma.salesLead.findMany({
+    const leadsWithOffsiteUpdates = await prisma.salesLead.findMany({
         where: {
             updates: {
                 some: {
-                    reportingLocation: {
+                    reportingLat: {
                         not: null
                     }
                 }
@@ -18,8 +18,8 @@ export default async function OffsiteReportsPage() {
             officer: true,
             updates: {
                 where: {
-                    reportingLocation: {
-                        not: null
+                    reportingLat: {
+                       not: null,
                     }
                 },
                 orderBy: {
@@ -28,14 +28,8 @@ export default async function OffsiteReportsPage() {
             }
         }
     });
-    
-    // Construct the location object
-    const leadsWithLocation = leads.map(lead => ({
-        ...lead,
-        location: { lat: lead.lat, lng: lead.lng }
-    }));
 
     return (
-        <OffsiteReportsClient leads={serialize(leadsWithLocation)} />
+        <OffsiteReportsClient leads={serialize(leadsWithOffsiteUpdates)} />
     );
 }

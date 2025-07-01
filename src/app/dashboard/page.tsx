@@ -15,14 +15,9 @@ export default async function DashboardPage() {
         include: { officers: true }
     });
 
-    const transformedLeads = leadsData.map(lead => ({
-        ...lead,
-        location: { lat: lead.lat, lng: lead.lng },
-    }));
-
     return (
         <DashboardClient
-            leads={serialize(transformedLeads)}
+            leads={serialize(leadsData)}
             plans={serialize(plansData)}
             districts={serialize(districtsData)}
             branches={serialize(branchesData)}
