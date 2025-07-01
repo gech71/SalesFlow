@@ -43,9 +43,19 @@ type ClientSalesLead = SalesLead & {
     officer: Officer | null;
 };
 
+const SalesLeadStatusEnum = z.enum([
+  'New',
+  'Assigned',
+  'InProgress',
+  'Reopened',
+  'PendingClosure',
+  'PendingDistrictApproval',
+  'Closed',
+]);
+
 const updateSchema = z.object({
     updateText: z.string().min(5, { message: "Update must be at least 5 characters." }),
-    status: z.string(),
+    status: SalesLeadStatusEnum,
     generatedSavings: z.coerce.number().min(0, "Savings must be a positive number.").optional(),
 })
 
@@ -161,7 +171,7 @@ export default function AssignmentDetailClient({ lead, distanceThreshold }: { le
     }
   }
 
-  const officerAllowedStatuses: string[] = ['InProgress', 'PendingClosure'];
+  const officerAllowedStatuses: (keyof typeof SalesLeadStatusEnum.Values)[] = ['InProgress', 'PendingClosure'];
 
   const getStatusBadgeVariant = (status: SalesLead['status']): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {

@@ -29,7 +29,7 @@ type ClientBranchPlan = BranchPlan & {
 }
 
 const newPlanEntrySchema = z.object({
-  type: z.string(),
+  type: z.enum(['collection', 'withdrawal']),
   amount: z.coerce.number().positive("Amount must be a positive number."),
   description: z.string().min(5, "Description must be at least 5 characters."),
 });

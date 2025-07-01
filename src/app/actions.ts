@@ -5,6 +5,18 @@ import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
 
+const SalesLeadStatusEnum = z.enum([
+  'New',
+  'Assigned',
+  'InProgress',
+  'Reopened',
+  'PendingClosure',
+  'PendingDistrictApproval',
+  'Closed',
+]);
+
+const PlanEntryTypeEnum = z.enum(['collection', 'withdrawal']);
+
 // Schema for creating a new lead
 const newLeadSchema = z.object({
   title: z.string().min(3),
@@ -32,7 +44,7 @@ export async function createLead(formData: z.infer<typeof newLeadSchema>) {
 const updateSchema = z.object({
   leadId: z.string(),
   updateText: z.string().min(5),
-  status: z.string(),
+  status: SalesLeadStatusEnum,
   generatedSavings: z.coerce.number().min(0).optional(),
   attachmentUrl: z.string().url().optional(),
   reportingLat: z.number().optional(),
@@ -208,15 +220,17 @@ export async function createPlanEntry(branchPlanId: string, data: z.infer<typeof
 
 // Action to review a branch plan entry
 export async function reviewPlanEntry(entryId: string, status: string, rejectionReason?: string) {
-  if (status === 'Rejected' && !rejectionReason) {
+  const reviewStatus = z.enum(['Approved', 'Rejected']).parse(status);
+
+  if (reviewStatus === 'Rejected' && !rejectionReason) {
     throw new Error('Rejection reason is required when rejecting an entry.');
   }
 
   await prisma.planEntry.update({
     where: { id: entryId },
     data: {
-      status,
-      rejectionReason: status === 'Rejected' ? rejectionReason : null,
+      status: reviewStatus,
+      rejectionReason: reviewStatus === 'Rejected' ? rejectionReason : null,
       reviewedBy: 'District Director',
     },
   });
