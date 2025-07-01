@@ -20,7 +20,7 @@ import { Icons } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
-  phoneNumber: z.string().min(10, { message: 'Please enter a valid phone number.' }),
+  phoneNumber: z.string().regex(/^(\+251|0)?[79]\d{8}$/, { message: "Please enter a valid Ethiopian phone number, e.g., 0912345678 or +251912345678." }),
   password: z.string().min(1, { message: 'Password is required.' }),
 });
 
@@ -75,7 +75,7 @@ export default function LoginPage() {
               <Input
                 id="phoneNumber"
                 type="tel"
-                placeholder="+1 (555) 555-5555"
+                placeholder="0912345678"
                 {...register('phoneNumber')}
               />
               {errors.phoneNumber && <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>}
