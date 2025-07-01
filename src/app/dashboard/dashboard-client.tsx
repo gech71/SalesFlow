@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -19,17 +20,17 @@ import {
 } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 import { Icons } from '@/components/icons';
-import type { SalesLead, BranchPlan, District, Branch } from '@/lib/types';
+import type { SalesLead, BranchPlan, District, Branch } from '@prisma/client';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface DashboardClientProps {
-  leads: SalesLead[];
-  plans: BranchPlan[];
+  leads: any[]; // Using any to avoid complex type casting from serialized data
+  plans: any[];
   districts: District[];
-  branches: Branch[];
+  branches: (Branch & {officers: any[]})[];
 }
 
 export default function DashboardClient({ leads, plans, districts, branches }: DashboardClientProps) {
@@ -58,7 +59,7 @@ export default function DashboardClient({ leads, plans, districts, branches }: D
     const totalLeads = filteredLeads.length;
     const totalExpectedSavings = filteredLeads.reduce((acc, lead) => acc + Number(lead.expectedSavings), 0);
     const totalGeneratedSavings = filteredLeads.reduce((acc, lead) => {
-        const leadSavings = lead.updates.reduce((s, u) => s + Number(u.generatedSavings || 0), 0);
+        const leadSavings = lead.updates.reduce((s: any, u: any) => s + Number(u.generatedSavings || 0), 0);
         return acc + leadSavings;
     }, 0);
     const overallAchievement = totalExpectedSavings > 0 ? (totalGeneratedSavings / totalExpectedSavings) * 100 : 0;
@@ -75,7 +76,7 @@ export default function DashboardClient({ leads, plans, districts, branches }: D
       .map(district => {
         const districtLeads = filteredLeads.filter(l => l.districtId === district.id);
         const expected = districtLeads.reduce((acc, lead) => acc + Number(lead.expectedSavings), 0);
-        const generated = districtLeads.reduce((acc, lead) => acc + lead.updates.reduce((s, u) => s + Number(u.generatedSavings || 0), 0), 0);
+        const generated = districtLeads.reduce((acc, lead) => acc + lead.updates.reduce((s: any, u: any) => s + Number(u.generatedSavings || 0), 0), 0);
         const achievement = expected > 0 ? Math.min(100, (generated / expected) * 100) : 0;
         return {
             id: district.id,
@@ -95,7 +96,7 @@ export default function DashboardClient({ leads, plans, districts, branches }: D
       .map(branch => {
         const branchLeads = filteredLeads.filter(l => l.branchId === branch.id);
         const expected = branchLeads.reduce((acc, lead) => acc + Number(lead.expectedSavings), 0);
-        const generated = branchLeads.reduce((acc, lead) => acc + lead.updates.reduce((s, u) => s + Number(u.generatedSavings || 0), 0), 0);
+        const generated = branchLeads.reduce((acc, lead) => acc + lead.updates.reduce((s: any, u: any) => s + Number(u.generatedSavings || 0), 0), 0);
         const achievement = expected > 0 ? Math.min(100, (generated / expected) * 100) : 0;
         const districtName = districts.find(d => d.id === branch.districtId)?.name || 'N/A';
         return {
@@ -110,9 +111,9 @@ export default function DashboardClient({ leads, plans, districts, branches }: D
 
       const branchPlanPerformance = filteredPlans.map(plan => {
           const branchName = branches.find(b => b.id === plan.branchId)?.name || 'N/A';
-          const approvedEntries = plan.entries.filter(e => e.status === 'Approved');
-          const collections = approvedEntries.filter(e => e.type === 'collection').reduce((acc, e) => acc + Number(e.amount), 0);
-          const withdrawals = approvedEntries.filter(e => e.type === 'withdrawal').reduce((acc, e) => acc + Number(e.amount), 0);
+          const approvedEntries = plan.entries.filter((e: any) => e.status === 'Approved');
+          const collections = approvedEntries.filter((e: any) => e.type === 'collection').reduce((acc: any, e: any) => acc + Number(e.amount), 0);
+          const withdrawals = approvedEntries.filter((e: any) => e.type === 'withdrawal').reduce((acc: any, e: any) => acc + Number(e.amount), 0);
           const netSavings = collections - withdrawals;
           const achievement = Number(plan.savingsTarget) > 0 ? Math.min(100, (netSavings / Number(plan.savingsTarget)) * 100) : 0;
           return {

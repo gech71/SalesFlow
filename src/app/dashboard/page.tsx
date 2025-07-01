@@ -1,10 +1,9 @@
+
 import prisma from '@/lib/prisma';
 import DashboardClient from './dashboard-client';
-import type { SalesLead, BranchPlan, District, Branch } from '@/lib/types';
+import type { SalesLead, BranchPlan, District, Branch } from '@prisma/client';
+import { serialize } from '@/lib/utils';
 
-// Using JSON stringify/parse is a robust way to serialize data for the client,
-// handling Dates, Decimals, etc.
-const serialize = <T>(data: T): T => JSON.parse(JSON.stringify(data));
 
 export default async function DashboardPage() {
     const leadsData = await prisma.salesLead.findMany({
