@@ -185,7 +185,7 @@ export async function returnLeadForReworkDistrict(leadId: string, note: string) 
 
 // Schema for a new plan entry
 const newPlanEntrySchema = z.object({
-  type: z.string(),
+  type: z.enum(['collection', 'withdrawal']),
   amount: z.coerce.number().positive(),
   description: z.string().min(5),
 });
@@ -223,4 +223,24 @@ export async function reviewPlanEntry(entryId: string, status: string, rejection
   revalidatePath('/branch-plans');
   revalidatePath('/submit-entry');
   revalidatePath('/dashboard');
+}
+
+// Schema for updating a setting
+const settingSchema = z.object({
+  key: z.string(),
+  value: z.string(),
+});
+
+// Action to update a setting
+export async function updateSetting(data: z.infer<typeof settingSchema>) {
+  const validatedData = settingSchema.parse(data);
+  const { key, value } = validatedData;
+  await prisma.setting.upsert({
+    where: { key },
+    update: { value },
+    create: { key, value },
+  });
+  revalidatePath('/settings');
+  revalidatePath('/offsite-reports');
+  revalidatePath('/assignments', 'layout'); // Revalidate all assignment detail pages
 }

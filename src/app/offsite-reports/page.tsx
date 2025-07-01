@@ -29,7 +29,12 @@ export default async function OffsiteReportsPage() {
         }
     });
 
+    const thresholdSetting = await prisma.setting.findUnique({
+        where: { key: 'offsiteDistanceThreshold' }
+    });
+    const threshold = thresholdSetting ? parseFloat(thresholdSetting.value) : 1.0;
+
     return (
-        <OffsiteReportsClient leads={serialize(leadsWithOffsiteUpdates)} />
+        <OffsiteReportsClient leads={serialize(leadsWithOffsiteUpdates)} distanceThreshold={threshold} />
     );
 }

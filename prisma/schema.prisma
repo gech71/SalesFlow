@@ -1,39 +1,34 @@
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 generator client {
   provider = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
-enum LeadStatus {
-  New
-  Assigned
-  InProgress
-  PendingClosure
-  PendingDistrictApproval
-  Closed
-  Reopened
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
 }
 
 model District {
-  id          String      @id @default(cuid())
-  name        String
-  branches    Branch[]
-  salesLeads  SalesLead[]
+  id         String      @id @default(cuid())
+  name       String
+  branches   Branch[]
+  salesLeads SalesLead[]
 }
 
 model Branch {
-  id          String      @id @default(cuid())
+  id          String       @id @default(cuid())
   name        String
-  district    District    @relation(fields: [districtId], references: [id])
+  district    District     @relation(fields: [districtId], references: [id])
   districtId  String
   officers    Officer[]
   salesLeads  SalesLead[]
-  plans       BranchPlan[]
+  branchPlans BranchPlan[]
 }
 
 model Officer {
@@ -45,46 +40,35 @@ model Officer {
 }
 
 model SalesLead {
-  id              String      @id @default(cuid())
+  id              String       @id @default(cuid())
   title           String
   description     String
-  status          LeadStatus
-  district        District    @relation(fields: [districtId], references: [id])
-  districtId      String
-  branch          Branch?     @relation(fields: [branchId], references: [id])
-  branchId        String?
-  officer         Officer?    @relation(fields: [officerId], references: [id])
-  officerId       String?
+  status          String
+  createdAt       DateTime     @default(now())
+  deadline        DateTime
+  expectedSavings Float
   lat             Float
   lng             Float
-  createdAt       DateTime    @default(now())
-  deadline        DateTime
-  expectedSavings Decimal
+  district        District     @relation(fields: [districtId], references: [id])
+  districtId      String
+  branch          Branch?      @relation(fields: [branchId], references: [id])
+  branchId        String?
+  officer         Officer?     @relation(fields: [officerId], references: [id])
+  officerId       String?
   updates         LeadUpdate[]
 }
 
 model LeadUpdate {
-  id                String    @id @default(cuid())
-  salesLead         SalesLead @relation(fields: [salesLeadId], references: [id])
-  salesLeadId       String
-  timestamp         DateTime  @default(now())
-  text              String
-  author            String
-  generatedSavings  Decimal?
-  attachmentUrl     String?
-  reportingLat      Float?
-  reportingLng      Float?
-}
-
-enum PlanEntryType {
-  collection
-  withdrawal
-}
-
-enum PlanEntryStatus {
-  Pending
-  Approved
-  Rejected
+  id               String    @id @default(cuid())
+  salesLead        SalesLead @relation(fields: [salesLeadId], references: [id])
+  salesLeadId      String
+  timestamp        DateTime  @default(now())
+  text             String
+  author           String
+  generatedSavings Float?
+  attachmentUrl    String?
+  reportingLat     Float?
+  reportingLng     Float?
 }
 
 model BranchPlan {
@@ -92,20 +76,20 @@ model BranchPlan {
   branch        Branch      @relation(fields: [branchId], references: [id])
   branchId      String
   quarter       String
-  savingsTarget Decimal
+  savingsTarget Float
   entries       PlanEntry[]
 }
 
 model PlanEntry {
-  id              String          @id @default(cuid())
-  branchPlan      BranchPlan      @relation(fields: [branchPlanId], references: [id])
+  id              String     @id @default(cuid())
+  branchPlan      BranchPlan @relation(fields: [branchPlanId], references: [id])
   branchPlanId    String
   date            DateTime
-  type            PlanEntryType
-  amount          Decimal
+  type            String
+  amount          Float
   description     String
-  status          PlanEntryStatus
-  rejectionReason String?
+  status          String
   submittedBy     String
   reviewedBy      String?
+  rejectionReason String?
 }

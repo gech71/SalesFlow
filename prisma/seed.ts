@@ -14,7 +14,14 @@ async function main() {
     await prisma.officer.deleteMany();
     await prisma.branch.deleteMany();
     await prisma.district.deleteMany();
+    await prisma.setting.deleteMany();
     console.log('Cleared previous data.');
+    
+    // Seed Settings
+    await prisma.setting.create({
+        data: { key: 'offsiteDistanceThreshold', value: '1' }
+    });
+    console.log(`Seeded 1 setting`);
 
     // Seed Districts
     const dist1 = await prisma.district.create({ data: { name: 'Metro Area' } });

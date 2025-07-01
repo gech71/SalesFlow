@@ -23,7 +23,12 @@ export default async function AssignmentDetailPage({ params }: { params: { id: s
         notFound();
     }
     
+    const thresholdSetting = await prisma.setting.findUnique({
+        where: { key: 'offsiteDistanceThreshold' }
+    });
+    const threshold = thresholdSetting ? parseFloat(thresholdSetting.value) : 1.0;
+    
     return (
-        <AssignmentDetailClient lead={serialize(lead)} />
+        <AssignmentDetailClient lead={serialize(lead)} distanceThreshold={threshold} />
     );
 }

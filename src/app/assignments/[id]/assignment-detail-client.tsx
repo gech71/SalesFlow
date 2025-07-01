@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -49,13 +49,12 @@ const updateSchema = z.object({
     generatedSavings: z.coerce.number().min(0, "Savings must be a positive number.").optional(),
 })
 
-export default function AssignmentDetailClient({ lead }: { lead: ClientSalesLead }) {
+export default function AssignmentDetailClient({ lead, distanceThreshold }: { lead: ClientSalesLead, distanceThreshold: number }) {
   const router = useRouter();
   const { toast } = useToast();
 
   const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [distanceThreshold, setDistanceThreshold] = useState(1);
   
   const { register: registerUpdate, handleSubmit: handleSubmitUpdate, control: controlUpdate, reset: resetUpdate, formState: { errors: updateErrors } } = useForm<z.infer<typeof updateSchema>>({
     resolver: zodResolver(updateSchema),
@@ -65,16 +64,6 @@ export default function AssignmentDetailClient({ lead }: { lead: ClientSalesLead
         generatedSavings: 0,
     }
   });
-
-  useEffect(() => {
-    const storedThreshold = localStorage.getItem('offsiteDistanceThreshold');
-    if (storedThreshold) {
-        const parsedThreshold = parseFloat(storedThreshold);
-        if (!isNaN(parsedThreshold)) {
-            setDistanceThreshold(parsedThreshold);
-        }
-    }
-  }, []);
 
   const fileToDataUrl = (file: File): Promise<string> => {
       return new Promise((resolve, reject) => {
