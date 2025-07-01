@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Icons } from '@/components/icons';
-import type { BranchPlan, PlanEntry, Branch, PlanEntryStatus } from '@prisma/client';
+import type { BranchPlan, PlanEntry, Branch } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
@@ -59,7 +59,7 @@ export default function BranchPlansClient({ plans, branches, quarters }: { plans
     return { totalCollections, totalWithdrawals, netSavings, achievement };
   }, [currentPlan]);
 
-  const handleReview = async (entryId: string, status: 'Approved' | 'Rejected', reason?: string) => {
+  const handleReview = async (entryId: string, status: string, reason?: string) => {
     try {
         await reviewPlanEntry(entryId, status, reason);
         toast({ title: `Entry ${status}`, description: `The entry has been ${status.toLowerCase()}.` });
@@ -83,7 +83,7 @@ export default function BranchPlansClient({ plans, branches, quarters }: { plans
   }
   
   const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
-  const getStatusBadgeVariant = (status: PlanEntryStatus): "default" | "secondary" | "destructive" | "outline" => {
+  const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
       switch (status) {
           case 'Approved': return 'default';
           case 'Pending': return 'outline';
@@ -202,7 +202,7 @@ export default function BranchPlansClient({ plans, branches, quarters }: { plans
                                             <TableCell className="md:hidden">{format(new Date(entry.date), "P")}</TableCell>
                                             <TableCell><Badge variant={entry.type === 'collection' ? 'outline' : 'secondary'}>{entry.type}</Badge></TableCell>
                                             <TableCell className="font-medium">{formatCurrency(entry.amount)}</TableCell>
-                                            <TableCell><Badge variant={getStatusBadgeVariant(entry.status as PlanEntryStatus)}>{entry.status}</Badge></TableCell>
+                                            <TableCell><Badge variant={getStatusBadgeVariant(entry.status)}>{entry.status}</Badge></TableCell>
                                             <TableCell className="text-right">
                                                 {entry.status === 'Pending' && (
                                                     <div className="flex gap-2 justify-end">
@@ -224,8 +224,8 @@ export default function BranchPlansClient({ plans, branches, quarters }: { plans
         </div>
       </SidebarInset>
       <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
-        <form onSubmit={handleSubmitReject(onConfirmRejection)}>
-          <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md">
+          <form onSubmit={handleSubmitReject(onConfirmRejection)}>
             <DialogHeader>
               <DialogTitle>Reject Entry</DialogTitle>
               <DialogDescription>
@@ -241,8 +241,8 @@ export default function BranchPlansClient({ plans, branches, quarters }: { plans
               <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
               <Button type="submit">Confirm Rejection</Button>
             </DialogFooter>
-          </DialogContent>
-        </form>
+          </form>
+        </DialogContent>
       </Dialog>
     </SidebarProvider>
   );

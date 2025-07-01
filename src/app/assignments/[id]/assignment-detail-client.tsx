@@ -30,7 +30,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Icons } from '@/components/icons';
-import { type SalesLead, type LeadUpdate, type Officer, LeadStatus } from '@prisma/client';
+import { type SalesLead, type LeadUpdate, type Officer } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
@@ -45,7 +45,7 @@ type ClientSalesLead = SalesLead & {
 
 const updateSchema = z.object({
     updateText: z.string().min(5, { message: "Update must be at least 5 characters." }),
-    status: z.nativeEnum(LeadStatus),
+    status: z.string(),
     generatedSavings: z.coerce.number().min(0, "Savings must be a positive number.").optional(),
 })
 
@@ -172,7 +172,7 @@ export default function AssignmentDetailClient({ lead }: { lead: ClientSalesLead
     }
   }
 
-  const officerAllowedStatuses: LeadStatus[] = ['InProgress', 'PendingClosure'];
+  const officerAllowedStatuses: string[] = ['InProgress', 'PendingClosure'];
 
   const getStatusBadgeVariant = (status: SalesLead['status']): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {

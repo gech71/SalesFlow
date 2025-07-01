@@ -4,7 +4,6 @@
 import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
-import { LeadStatus, PlanEntryStatus, PlanEntryType } from '@prisma/client';
 
 // Schema for creating a new lead
 const newLeadSchema = z.object({
@@ -22,7 +21,7 @@ export async function createLead(formData: z.infer<typeof newLeadSchema>) {
   await prisma.salesLead.create({
     data: {
       ...validatedData,
-      status: LeadStatus.New,
+      status: 'New',
     },
   });
   revalidatePath('/district-assignments');
@@ -33,7 +32,7 @@ export async function createLead(formData: z.infer<typeof newLeadSchema>) {
 const updateSchema = z.object({
   leadId: z.string(),
   updateText: z.string().min(5),
-  status: z.nativeEnum(LeadStatus),
+  status: z.string(),
   generatedSavings: z.coerce.number().min(0).optional(),
   attachmentUrl: z.string().url().optional(),
   reportingLat: z.number().optional(),
@@ -76,7 +75,7 @@ export async function assignOfficer(leadId: string, officerId: string, note: str
     where: { id: leadId },
     data: {
       officerId,
-      status: LeadStatus.InProgress,
+      status: 'InProgress',
       updates: {
         create: [
           { text: `Assigned to officer ${officer.name}.`, author: 'Branch Manager' },
@@ -95,7 +94,7 @@ export async function approveLeadBranch(leadId: string) {
   await prisma.salesLead.update({
     where: { id: leadId },
     data: {
-      status: LeadStatus.PendingDistrictApproval,
+      status: 'PendingDistrictApproval',
       updates: {
         create: {
           text: 'Approved by Branch Manager. Forwarded for final approval.',
@@ -113,7 +112,7 @@ export async function returnLeadForReworkBranch(leadId: string, note: string) {
   await prisma.salesLead.update({
     where: { id: leadId },
     data: {
-      status: LeadStatus.Reopened,
+      status: 'Reopened',
       updates: {
         create: {
           text: `Returned for rework: ${note}`,
@@ -135,7 +134,7 @@ export async function assignBranch(leadId: string, branchId: string) {
     where: { id: leadId },
     data: {
       branchId,
-      status: LeadStatus.Assigned,
+      status: 'Assigned',
       updates: {
         create: {
           text: `Assigned to ${branch.name}.`,
@@ -153,7 +152,7 @@ export async function approveLeadDistrict(leadId: string) {
   await prisma.salesLead.update({
     where: { id: leadId },
     data: {
-      status: LeadStatus.Closed,
+      status: 'Closed',
       updates: {
         create: {
           text: 'Lead approved and closed by District Manager.',
@@ -171,7 +170,7 @@ export async function returnLeadForReworkDistrict(leadId: string, note: string) 
   await prisma.salesLead.update({
     where: { id: leadId },
     data: {
-      status: LeadStatus.Reopened,
+      status: 'Reopened',
       updates: {
         create: {
           text: `Returned for rework: ${note}`,
@@ -186,7 +185,7 @@ export async function returnLeadForReworkDistrict(leadId: string, note: string) 
 
 // Schema for a new plan entry
 const newPlanEntrySchema = z.object({
-  type: z.nativeEnum(PlanEntryType),
+  type: z.string(),
   amount: z.coerce.number().positive(),
   description: z.string().min(5),
 });
@@ -199,7 +198,7 @@ export async function createPlanEntry(branchPlanId: string, data: z.infer<typeof
       branchPlanId,
       ...validatedData,
       date: new Date(),
-      status: PlanEntryStatus.Pending,
+      status: 'Pending',
       submittedBy: 'Branch Manager',
     },
   });
@@ -208,8 +207,8 @@ export async function createPlanEntry(branchPlanId: string, data: z.infer<typeof
 }
 
 // Action to review a branch plan entry
-export async function reviewPlanEntry(entryId: string, status: PlanEntryStatus, rejectionReason?: string) {
-  if (status === PlanEntryStatus.Rejected && !rejectionReason) {
+export async function reviewPlanEntry(entryId: string, status: string, rejectionReason?: string) {
+  if (status === 'Rejected' && !rejectionReason) {
     throw new Error('Rejection reason is required when rejecting an entry.');
   }
 
@@ -217,7 +216,7 @@ export async function reviewPlanEntry(entryId: string, status: PlanEntryStatus, 
     where: { id: entryId },
     data: {
       status,
-      rejectionReason: status === PlanEntryStatus.Rejected ? rejectionReason : null,
+      rejectionReason: status === 'Rejected' ? rejectionReason : null,
       reviewedBy: 'District Director',
     },
   });

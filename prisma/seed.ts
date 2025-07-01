@@ -1,5 +1,5 @@
 
-import { PrismaClient, LeadStatus, PlanEntryType, PlanEntryStatus } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -41,7 +41,7 @@ async function main() {
         data: {
             title: 'New Client Inquiry - TechCorp',
             description: 'TechCorp is interested in our new software suite. Follow up required.',
-            status: LeadStatus.InProgress,
+            status: 'InProgress',
             districtId: dist1.id,
             branchId: branch1.id,
             officerId: officer1.id,
@@ -49,38 +49,42 @@ async function main() {
             lng: -118.2437,
             expectedSavings: 50000,
             deadline: new Date(new Date().setDate(new Date().getDate() + 7)),
-            updates: {
-                create: [
-                    { text: 'Assigned to John Doe', author: 'Branch Manager' },
-                    { text: 'Initial meeting held. Client is very interested.', author: 'John Doe', generatedSavings: 25000 }
-                ]
-            }
         },
+    });
+
+    await prisma.leadUpdate.createMany({
+        data: [
+            { salesLeadId: lead1.id, text: 'Assigned to John Doe', author: 'Branch Manager' },
+            { salesLeadId: lead1.id, text: 'Initial meeting held. Client is very interested.', author: 'John Doe', generatedSavings: 25000 }
+        ]
     });
 
     const lead2 = await prisma.salesLead.create({
         data: {
             title: 'Partnership Opportunity - Innovate LLC',
             description: 'Potential partnership to integrate our platforms.',
-            status: LeadStatus.Assigned,
+            status: 'Assigned',
             districtId: dist1.id,
             branchId: branch2.id,
+            officerId: officer3.id,
             lat: 40.7128,
             lng: -74.0060,
             expectedSavings: 120000,
             createdAt: new Date(new Date().setDate(new Date().getDate() - 2)),
             deadline: new Date(new Date().setDate(new Date().getDate() + 14)),
-            updates: {
-                create: { text: 'Initial contact made.', author: 'District Manager' }
-            }
         },
     });
+
+     await prisma.leadUpdate.create({
+        data: { salesLeadId: lead2.id, text: 'Initial contact made.', author: 'District Manager' }
+    });
+
 
     const lead3 = await prisma.salesLead.create({
         data: {
             title: 'Renewal - Global Solutions',
             description: 'Contract renewal due next month. Need to discuss new terms.',
-            status: LeadStatus.New,
+            status: 'New',
             districtId: dist2.id,
             lat: 51.5074,
             lng: -0.1278,
@@ -97,14 +101,15 @@ async function main() {
             branchId: branch1.id,
             quarter: 'Q3 2024',
             savingsTarget: 250000,
-            entries: {
-                create: [
-                    { date: new Date(new Date().setDate(new Date().getDate() - 15)), type: PlanEntryType.collection, amount: 75000, description: 'Initial deposit from campaign launch', status: PlanEntryStatus.Approved, submittedBy: 'Branch Manager', reviewedBy: 'District Director' },
-                    { date: new Date(new Date().setDate(new Date().getDate() - 5)), type: PlanEntryType.collection, amount: 50000, description: 'Collected from TechCorp outreach', status: PlanEntryStatus.Pending, submittedBy: 'Branch Manager' },
-                    { date: new Date(new Date().setDate(new Date().getDate() - 2)), type: PlanEntryType.withdrawal, amount: 10000, description: 'Marketing event expenses', status: PlanEntryStatus.Pending, submittedBy: 'Branch Manager' },
-                ]
-            }
         }
+    });
+
+    await prisma.planEntry.createMany({
+        data: [
+            { branchPlanId: plan1.id, date: new Date(new Date().setDate(new Date().getDate() - 15)), type: 'collection', amount: 75000, description: 'Initial deposit from campaign launch', status: 'Approved', submittedBy: 'Branch Manager', reviewedBy: 'District Director' },
+            { branchPlanId: plan1.id, date: new Date(new Date().setDate(new Date().getDate() - 5)), type: 'collection', amount: 50000, description: 'Collected from TechCorp outreach', status: 'Pending', submittedBy: 'Branch Manager' },
+            { branchPlanId: plan1.id, date: new Date(new Date().setDate(new Date().getDate() - 2)), type: 'withdrawal', amount: 10000, description: 'Marketing event expenses', status: 'Pending', submittedBy: 'Branch Manager' },
+        ]
     });
 
     const plan2 = await prisma.branchPlan.create({
@@ -112,13 +117,14 @@ async function main() {
             branchId: branch2.id,
             quarter: 'Q3 2024',
             savingsTarget: 300000,
-            entries: {
-                create: { date: new Date(new Date().setDate(new Date().getDate() - 10)), type: PlanEntryType.collection, amount: 120000, description: 'Major client deposit', status: PlanEntryStatus.Approved, submittedBy: 'Branch Manager', reviewedBy: 'District Director' }
-            }
         }
     });
+
+     await prisma.planEntry.create({
+      data: { branchPlanId: plan2.id, date: new Date(new Date().setDate(new Date().getDate() - 10)), type: 'collection', amount: 120000, description: 'Major client deposit', status: 'Approved', submittedBy: 'Branch Manager', reviewedBy: 'District Director' }
+    });
     
-    const plan3 = await prisma.branchPlan.create({
+    await prisma.branchPlan.create({
         data: {
             branchId: branch3.id,
             quarter: 'Q3 2024',
