@@ -2,7 +2,6 @@
 import { serialize } from '@/lib/utils';
 import prisma from '@/lib/prisma';
 import SubmitEntryClient from './submit-entry-client';
-import { quarters } from '../branch-plans/data';
 
 export default async function SubmitPlanEntryPage() {
     const plans = await prisma.branchPlan.findMany({
@@ -21,6 +20,18 @@ export default async function SubmitPlanEntryPage() {
 
     const branches = await prisma.branch.findMany();
 
+    const allQuarters = await prisma.branchPlan.findMany({
+        select: {
+            quarter: true,
+        },
+        distinct: ['quarter'],
+        orderBy: {
+            quarter: 'desc',
+        }
+    });
+    const quarters = allQuarters.map(q => q.quarter);
+
+
     return (
         <SubmitEntryClient
             plans={serialize(plans)}
@@ -29,3 +40,4 @@ export default async function SubmitPlanEntryPage() {
         />
     );
 }
+

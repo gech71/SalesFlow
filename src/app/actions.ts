@@ -185,7 +185,7 @@ export async function returnLeadForReworkDistrict(leadId: string, note: string) 
 
 // Schema for a new plan entry
 const newPlanEntrySchema = z.object({
-  type: z.string(),
+  type: z.enum(['collection', 'withdrawal']),
   amount: z.coerce.number().positive(),
   description: z.string().min(5),
 });

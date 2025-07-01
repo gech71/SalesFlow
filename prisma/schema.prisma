@@ -5,31 +5,21 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
-}
-
-enum LeadStatus {
-  New
-  Assigned
-  InProgress
-  PendingClosure
-  PendingDistrictApproval
-  Closed
-  Reopened
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 model District {
-  id          String      @id @default(cuid())
+  id          String @id @default(cuid())
   name        String
   branches    Branch[]
   salesLeads  SalesLead[]
 }
 
 model Branch {
-  id          String      @id @default(cuid())
+  id          String @id @default(cuid())
   name        String
-  district    District    @relation(fields: [districtId], references: [id])
+  district    District @relation(fields: [districtId], references: [id])
   districtId  String
   officers    Officer[]
   salesLeads  SalesLead[]
@@ -37,75 +27,68 @@ model Branch {
 }
 
 model Officer {
-  id         String      @id @default(cuid())
-  name       String
-  branch     Branch      @relation(fields: [branchId], references: [id])
-  branchId   String
-  salesLeads SalesLead[]
+  id          String @id @default(cuid())
+  name        String
+  branch      Branch @relation(fields: [branchId], references: [id])
+  branchId    String
+  salesLeads  SalesLead[]
 }
 
 model SalesLead {
-  id              String      @id @default(cuid())
+  id              String @id @default(cuid())
   title           String
   description     String
-  status          LeadStatus
-  district        District    @relation(fields: [districtId], references: [id])
-  districtId      String
-  branch          Branch?     @relation(fields: [branchId], references: [id])
-  branchId        String?
-  officer         Officer?    @relation(fields: [officerId], references: [id])
-  officerId       String?
+  status          String // e.g., "New", "Assigned", "InProgress", "PendingClosure", "Closed", "Reopened"
+  createdAt       DateTime @default(now())
+  deadline        DateTime?
+  expectedSavings Float
   lat             Float
   lng             Float
-  createdAt       DateTime    @default(now())
-  deadline        DateTime
-  expectedSavings Decimal
+  
+  districtId      String
+  district        District @relation(fields: [districtId], references: [id])
+  
+  branchId        String?
+  branch          Branch? @relation(fields: [branchId], references: [id])
+
+  officerId       String?
+  officer         Officer? @relation(fields: [officerId], references: [id])
+
   updates         LeadUpdate[]
 }
 
 model LeadUpdate {
-  id                String    @id @default(cuid())
-  salesLead         SalesLead @relation(fields: [salesLeadId], references: [id])
-  salesLeadId       String
-  timestamp         DateTime  @default(now())
-  text              String
-  author            String
-  generatedSavings  Decimal?
-  attachmentUrl     String?
-  reportingLat      Float?
-  reportingLng      Float?
-}
-
-enum PlanEntryType {
-  collection
-  withdrawal
-}
-
-enum PlanEntryStatus {
-  Pending
-  Approved
-  Rejected
+  id              String @id @default(cuid())
+  salesLeadId     String
+  salesLead       SalesLead @relation(fields: [salesLeadId], references: [id])
+  timestamp       DateTime @default(now())
+  text            String
+  author          String // "District Manager", "Branch Manager", "Jane Doe", etc.
+  generatedSavings Float?
+  attachmentUrl   String?
+  reportingLat    Float?
+  reportingLng    Float?
 }
 
 model BranchPlan {
-  id            String      @id @default(cuid())
-  branch        Branch      @relation(fields: [branchId], references: [id])
-  branchId      String
-  quarter       String
-  savingsTarget Decimal
-  entries       PlanEntry[]
+    id              String @id @default(cuid())
+    branchId        String
+    branch          Branch @relation(fields: [branchId], references: [id])
+    quarter         String // "Q3 2024"
+    savingsTarget   Float
+    entries         PlanEntry[]
 }
 
 model PlanEntry {
-  id              String          @id @default(cuid())
-  branchPlan      BranchPlan      @relation(fields: [branchPlanId], references: [id])
-  branchPlanId    String
-  date            DateTime
-  type            PlanEntryType
-  amount          Decimal
-  description     String
-  status          PlanEntryStatus
-  rejectionReason String?
-  submittedBy     String
-  reviewedBy      String?
+    id              String @id @default(cuid())
+    branchPlanId    String
+    branchPlan      BranchPlan @relation(fields: [branchPlanId], references: [id])
+    date            DateTime
+    type            String // "collection" or "withdrawal"
+    amount          Float
+    description     String
+    status          String // "Pending", "Approved", "Rejected"
+    submittedBy     String
+    reviewedBy      String?
+    rejectionReason String?
 }
