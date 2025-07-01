@@ -22,7 +22,7 @@ export async function createLead(formData: z.infer<typeof newLeadSchema>) {
   await prisma.salesLead.create({
     data: {
       ...validatedData,
-      status: 'New',
+      status: LeadStatus.New,
     },
   });
   revalidatePath('/district-assignments');
@@ -76,7 +76,7 @@ export async function assignOfficer(leadId: string, officerId: string, note: str
     where: { id: leadId },
     data: {
       officerId,
-      status: 'InProgress',
+      status: LeadStatus.InProgress,
       updates: {
         create: [
           { text: `Assigned to officer ${officer.name}.`, author: 'Branch Manager' },
@@ -95,7 +95,7 @@ export async function approveLeadBranch(leadId: string) {
   await prisma.salesLead.update({
     where: { id: leadId },
     data: {
-      status: 'PendingDistrictApproval',
+      status: LeadStatus.PendingDistrictApproval,
       updates: {
         create: {
           text: 'Approved by Branch Manager. Forwarded for final approval.',
@@ -113,7 +113,7 @@ export async function returnLeadForReworkBranch(leadId: string, note: string) {
   await prisma.salesLead.update({
     where: { id: leadId },
     data: {
-      status: 'Reopened',
+      status: LeadStatus.Reopened,
       updates: {
         create: {
           text: `Returned for rework: ${note}`,
@@ -135,7 +135,7 @@ export async function assignBranch(leadId: string, branchId: string) {
     where: { id: leadId },
     data: {
       branchId,
-      status: 'Assigned',
+      status: LeadStatus.Assigned,
       updates: {
         create: {
           text: `Assigned to ${branch.name}.`,
@@ -153,7 +153,7 @@ export async function approveLeadDistrict(leadId: string) {
   await prisma.salesLead.update({
     where: { id: leadId },
     data: {
-      status: 'Closed',
+      status: LeadStatus.Closed,
       updates: {
         create: {
           text: 'Lead approved and closed by District Manager.',
@@ -171,7 +171,7 @@ export async function returnLeadForReworkDistrict(leadId: string, note: string) 
   await prisma.salesLead.update({
     where: { id: leadId },
     data: {
-      status: 'Reopened',
+      status: LeadStatus.Reopened,
       updates: {
         create: {
           text: `Returned for rework: ${note}`,
@@ -199,7 +199,7 @@ export async function createPlanEntry(branchPlanId: string, data: z.infer<typeof
       branchPlanId,
       ...validatedData,
       date: new Date(),
-      status: 'Pending',
+      status: PlanEntryStatus.Pending,
       submittedBy: 'Branch Manager',
     },
   });
@@ -209,7 +209,7 @@ export async function createPlanEntry(branchPlanId: string, data: z.infer<typeof
 
 // Action to review a branch plan entry
 export async function reviewPlanEntry(entryId: string, status: PlanEntryStatus, rejectionReason?: string) {
-  if (status === 'Rejected' && !rejectionReason) {
+  if (status === PlanEntryStatus.Rejected && !rejectionReason) {
     throw new Error('Rejection reason is required when rejecting an entry.');
   }
 
@@ -217,7 +217,7 @@ export async function reviewPlanEntry(entryId: string, status: PlanEntryStatus, 
     where: { id: entryId },
     data: {
       status,
-      rejectionReason: status === 'Rejected' ? rejectionReason : null,
+      rejectionReason: status === PlanEntryStatus.Rejected ? rejectionReason : null,
       reviewedBy: 'District Director',
     },
   });

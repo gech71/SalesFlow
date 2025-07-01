@@ -1,88 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  binaryTargets   = ["native", "debian-openssl-3.0.x"]
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model District {
-  id          String      @id @default(cuid())
-  name        String      @unique
-  branches    Branch[]
-  salesLeads  SalesLead[]
+  id         String      @id @default(cuid())
+  name       String
+  branches   Branch[]
+  salesLeads SalesLead[]
 }
 
 model Branch {
-  id          String      @id @default(cuid())
-  name        String
-  district    District    @relation(fields: [districtId], references: [id])
-  districtId  String
-  officers    Officer[]
-  salesLeads  SalesLead[]
-  plans       BranchPlan[]
+  id            String       @id @default(cuid())
+  name          String
+  district      District     @relation(fields: [districtId], references: [id])
+  districtId    String
+  officers      Officer[]
+  salesLeads    SalesLead[]
+  branchPlans   BranchPlan[]
 }
 
 model Officer {
-  id          String      @id @default(cuid())
-  name        String
-  branch      Branch      @relation(fields: [branchId], references: [id])
-  branchId    String
-  salesLeads  SalesLead[]
+  id         String      @id @default(cuid())
+  name       String
+  branch     Branch      @relation(fields: [branchId], references: [id])
+  branchId   String
+  salesLeads SalesLead[]
 }
 
 model SalesLead {
-  id              String      @id @default(cuid())
+  id              String       @id @default(cuid())
   title           String
   description     String
-  status          LeadStatus  @default(New)
-  district        District    @relation(fields: [districtId], references: [id])
+  status          LeadStatus   @default(New)
+  district        District     @relation(fields: [districtId], references: [id])
   districtId      String
-  branch          Branch?     @relation(fields: [branchId], references: [id])
+  branch          Branch?      @relation(fields: [branchId], references: [id])
   branchId        String?
-  officer         Officer?    @relation(fields: [officerId], references: [id])
+  officer         Officer?     @relation(fields: [officerId], references: [id])
   officerId       String?
   lat             Float
   lng             Float
-  expectedSavings Decimal     @db.Decimal(12, 2)
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  deadline        DateTime
+  expectedSavings Decimal      @default(0)
+  createdAt       DateTime     @default(now())
+  deadline        DateTime?
   updates         LeadUpdate[]
 }
 
 model LeadUpdate {
-  id              String   @id @default(cuid())
-  lead            SalesLead @relation(fields: [leadId], references: [id])
-  leadId          String
-  timestamp       DateTime @default(now())
-  text            String
-  author          String
-  generatedSavings Decimal? @db.Decimal(12, 2)
-  attachmentUrl   String?
-  reportingLat    Float?
-  reportingLng    Float?
+  id                String   @id @default(cuid())
+  salesLead         SalesLead @relation(fields: [leadId], references: [id])
+  leadId            String
+  timestamp         DateTime @default(now())
+  text              String
+  author            String
+  generatedSavings  Decimal?
+  attachmentUrl     String?
+  reportingLat      Float?
+  reportingLng      Float?
 }
 
 model BranchPlan {
-  id            String      @id
+  id            String      @id @default(cuid())
   branch        Branch      @relation(fields: [branchId], references: [id])
   branchId      String
   quarter       String
-  savingsTarget Decimal     @db.Decimal(14, 2)
+  savingsTarget Decimal
   entries       PlanEntry[]
 }
 
 model PlanEntry {
-  id              String        @id @default(cuid())
-  branchPlan      BranchPlan    @relation(fields: [branchPlanId], references: [id])
+  id              String          @id @default(cuid())
+  branchPlan      BranchPlan      @relation(fields: [branchPlanId], references: [id])
   branchPlanId    String
   date            DateTime
   type            PlanEntryType
-  amount          Decimal       @db.Decimal(12, 2)
+  amount          Decimal
   description     String
   status          PlanEntryStatus
   submittedBy     String

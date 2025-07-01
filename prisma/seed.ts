@@ -49,15 +49,13 @@ async function main() {
             lng: -118.2437,
             expectedSavings: 50000,
             deadline: new Date(new Date().setDate(new Date().getDate() + 7)),
+            updates: {
+                create: [
+                    { text: 'Assigned to John Doe', author: 'Branch Manager' },
+                    { text: 'Initial meeting held. Client is very interested.', author: 'John Doe', generatedSavings: 25000 }
+                ]
+            }
         },
-    });
-
-    // Seed LeadUpdates for lead1
-    await prisma.leadUpdate.createMany({
-        data: [
-            { leadId: lead1.id, text: 'Assigned to John Doe', author: 'Branch Manager' },
-            { leadId: lead1.id, text: 'Initial meeting held. Client is very interested.', author: 'John Doe', generatedSavings: 25000 }
-        ]
     });
 
     const lead2 = await prisma.salesLead.create({
@@ -72,11 +70,10 @@ async function main() {
             expectedSavings: 120000,
             createdAt: new Date(new Date().setDate(new Date().getDate() - 2)),
             deadline: new Date(new Date().setDate(new Date().getDate() + 14)),
+            updates: {
+                create: { text: 'Initial contact made.', author: 'District Manager' }
+            }
         },
-    });
-
-    await prisma.leadUpdate.create({
-        data: { leadId: lead2.id, text: 'Initial contact made.', author: 'District Manager' }
     });
 
     const lead3 = await prisma.salesLead.create({
@@ -97,38 +94,32 @@ async function main() {
     // Seed Branch Plans
     const plan1 = await prisma.branchPlan.create({
         data: {
-            id: `${branch1.id}-Q3-2024`,
             branchId: branch1.id,
             quarter: 'Q3 2024',
             savingsTarget: 250000,
+            entries: {
+                create: [
+                    { date: new Date(new Date().setDate(new Date().getDate() - 15)), type: PlanEntryType.collection, amount: 75000, description: 'Initial deposit from campaign launch', status: PlanEntryStatus.Approved, submittedBy: 'Branch Manager', reviewedBy: 'District Director' },
+                    { date: new Date(new Date().setDate(new Date().getDate() - 5)), type: PlanEntryType.collection, amount: 50000, description: 'Collected from TechCorp outreach', status: PlanEntryStatus.Pending, submittedBy: 'Branch Manager' },
+                    { date: new Date(new Date().setDate(new Date().getDate() - 2)), type: PlanEntryType.withdrawal, amount: 10000, description: 'Marketing event expenses', status: PlanEntryStatus.Pending, submittedBy: 'Branch Manager' },
+                ]
+            }
         }
-    });
-
-    // Seed PlanEntries for plan1
-    await prisma.planEntry.createMany({
-        data: [
-            { branchPlanId: plan1.id, date: new Date(new Date().setDate(new Date().getDate() - 15)), type: PlanEntryType.collection, amount: 75000, description: 'Initial deposit from campaign launch', status: PlanEntryStatus.Approved, submittedBy: 'Branch Manager', reviewedBy: 'District Director' },
-            { branchPlanId: plan1.id, date: new Date(new Date().setDate(new Date().getDate() - 5)), type: PlanEntryType.collection, amount: 50000, description: 'Collected from TechCorp outreach', status: PlanEntryStatus.Pending, submittedBy: 'Branch Manager' },
-            { branchPlanId: plan1.id, date: new Date(new Date().setDate(new Date().getDate() - 2)), type: PlanEntryType.withdrawal, amount: 10000, description: 'Marketing event expenses', status: PlanEntryStatus.Pending, submittedBy: 'Branch Manager' },
-        ]
     });
 
     const plan2 = await prisma.branchPlan.create({
         data: {
-            id: `${branch2.id}-Q3-2024`,
             branchId: branch2.id,
             quarter: 'Q3 2024',
             savingsTarget: 300000,
+            entries: {
+                create: { date: new Date(new Date().setDate(new Date().getDate() - 10)), type: PlanEntryType.collection, amount: 120000, description: 'Major client deposit', status: PlanEntryStatus.Approved, submittedBy: 'Branch Manager', reviewedBy: 'District Director' }
+            }
         }
     });
     
-    await prisma.planEntry.create({
-        data: { branchPlanId: plan2.id, date: new Date(new Date().setDate(new Date().getDate() - 10)), type: PlanEntryType.collection, amount: 120000, description: 'Major client deposit', status: PlanEntryStatus.Approved, submittedBy: 'Branch Manager', reviewedBy: 'District Director' }
-    });
-
     const plan3 = await prisma.branchPlan.create({
         data: {
-            id: `${branch3.id}-Q3-2024`,
             branchId: branch3.id,
             quarter: 'Q3 2024',
             savingsTarget: 180000
