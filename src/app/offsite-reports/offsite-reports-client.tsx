@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -36,18 +36,7 @@ type OffsiteReport = {
   distance: number;
 };
 
-export default function OffsiteReportsClient({ leads }: { leads: ClientSalesLead[] }) {
-  const [distanceThreshold, setDistanceThreshold] = useState(1);
-  
-  useEffect(() => {
-    const storedThreshold = localStorage.getItem('offsiteDistanceThreshold');
-    if (storedThreshold) {
-        const parsedThreshold = parseFloat(storedThreshold);
-        if (!isNaN(parsedThreshold)) {
-            setDistanceThreshold(parsedThreshold);
-        }
-    }
-  }, []);
+export default function OffsiteReportsClient({ leads, offsiteDistanceThreshold }: { leads: ClientSalesLead[], offsiteDistanceThreshold: number }) {
 
   const getDistanceInKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371; // Radius of the Earth in km
@@ -65,21 +54,21 @@ export default function OffsiteReportsClient({ leads }: { leads: ClientSalesLead
     const reports: OffsiteReport[] = [];
     leads.forEach(lead => {
       lead.updates.forEach(update => {
-        if (update.reportingLat && update.reportingLng) {
+        if (update.reportingLat && update.reportingLng && lead.lat && lead.lng) {
             const distance = getDistanceInKm(
                 lead.lat,
                 lead.lng,
                 update.reportingLat,
                 update.reportingLng
             );
-            if (distance > distanceThreshold) {
+            if (distance > offsiteDistanceThreshold) {
                 reports.push({ lead, update, distance });
             }
         }
       });
     });
     return reports.sort((a, b) => new Date(b.update.timestamp).getTime() - new Date(a.update.timestamp).getTime());
-  }, [leads, distanceThreshold]);
+  }, [leads, offsiteDistanceThreshold]);
 
   return (
     <SidebarProvider>
@@ -129,7 +118,7 @@ export default function OffsiteReportsClient({ leads }: { leads: ClientSalesLead
                 <CardHeader>
                     <CardTitle>Flagged Reports</CardTitle>
                     <CardDescription>
-                      This list shows all updates reported from a location further than the configured on-site distance threshold. You can change the threshold on the <Link href="/settings" className="text-primary underline">Settings page</Link>.
+                      This list shows all updates reported from a location further than the configured on-site distance threshold ({offsiteDistanceThreshold} km). You can change the threshold on the <Link href="/settings" className="text-primary underline">Settings page</Link>.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -145,7 +134,7 @@ export default function OffsiteReportsClient({ leads }: { leads: ClientSalesLead
                     </TableRow>
                     </TableHeader>
                     <TableBody>
-                    {offsiteReports.map(({ lead, update, distance }, index) => (
+                    {offsiteReports.map(({ lead, update, distance }) => (
                         <TableRow key={`${lead.id}-${update.id}`}>
                             <TableCell className="font-medium">{lead.title}</TableCell>
                             <TableCell>{lead.officer?.name || 'N/A'}</TableCell>

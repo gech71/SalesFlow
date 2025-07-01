@@ -1,17 +1,17 @@
 
-import prisma from '@/lib/prisma';
+import db from '@/lib/db';
 import DashboardClient from './dashboard-client';
 import { serialize } from '@/lib/utils';
 
 export default async function DashboardPage() {
-    const leadsData = await prisma.salesLead.findMany({
+    const leadsData = await db.salesLead.findMany({
         include: { updates: true },
     });
-    const plansData = await prisma.branchPlan.findMany({
+    const plansData = await db.branchPlan.findMany({
         include: { entries: true },
     });
-    const districtsData = await prisma.district.findMany();
-    const branchesData = await prisma.branch.findMany({
+    const districtsData = await db.district.findMany();
+    const branchesData = await db.branch.findMany({
         include: { officers: true }
     });
 

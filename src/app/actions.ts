@@ -2,7 +2,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import prisma from '@/lib/prisma';
+import db from '@/lib/db';
 import { z } from 'zod';
 
 // Schema for creating a new lead
@@ -18,10 +18,12 @@ const newLeadSchema = z.object({
 
 export async function createLead(formData: z.infer<typeof newLeadSchema>) {
   const validatedData = newLeadSchema.parse(formData);
-  await prisma.salesLead.create({
+  await db.salesLead.create({
     data: {
       ...validatedData,
       status: 'New',
+      branchId: null,
+      officerId: null,
     },
   });
   revalidatePath('/district-assignments');
@@ -44,7 +46,7 @@ export async function addLeadUpdate(data: z.infer<typeof updateSchema>) {
   const validatedData = updateSchema.parse(data);
   const { leadId, status, updateText, author, generatedSavings, attachmentUrl, reportingLat, reportingLng } = validatedData;
 
-  await prisma.salesLead.update({
+  await db.salesLead.update({
     where: { id: leadId },
     data: {
       status: status,
@@ -68,19 +70,23 @@ export async function addLeadUpdate(data: z.infer<typeof updateSchema>) {
 
 // Action for a Branch Manager to assign a lead to an officer
 export async function assignOfficer(leadId: string, officerId: string, note: string) {
-  const officer = await prisma.officer.findUnique({ where: { id: officerId }});
+  const officer = await db.officer.findUnique({ where: { id: officerId }});
   if (!officer) throw new Error("Officer not found");
 
-  await prisma.salesLead.update({
+  const updatesToCreate = [
+    { text: `Assigned to officer ${officer.name}.`, author: 'Branch Manager' },
+  ];
+  if (note) {
+    updatesToCreate.push({ text: `Note: ${note}`, author: 'Branch Manager' });
+  }
+
+  await db.salesLead.update({
     where: { id: leadId },
     data: {
       officerId,
       status: 'InProgress',
       updates: {
-        create: [
-          { text: `Assigned to officer ${officer.name}.`, author: 'Branch Manager' },
-          ...(note ? [{ text: `Note: ${note}`, author: 'Branch Manager' }] : []),
-        ]
+        create: updatesToCreate,
       },
     },
   });
@@ -91,7 +97,7 @@ export async function assignOfficer(leadId: string, officerId: string, note: str
 
 // Action for a Branch Manager to approve a lead and send it to the district
 export async function approveLeadBranch(leadId: string) {
-  await prisma.salesLead.update({
+  await db.salesLead.update({
     where: { id: leadId },
     data: {
       status: 'PendingDistrictApproval',
@@ -109,7 +115,7 @@ export async function approveLeadBranch(leadId: string) {
 
 // Action for a Branch Manager to return a lead to an officer for rework
 export async function returnLeadForReworkBranch(leadId: string, note: string) {
-  await prisma.salesLead.update({
+  await db.salesLead.update({
     where: { id: leadId },
     data: {
       status: 'Reopened',
@@ -127,10 +133,10 @@ export async function returnLeadForReworkBranch(leadId: string, note: string) {
 
 // Action for a District Manager to assign a lead to a branch
 export async function assignBranch(leadId: string, branchId: string) {
-  const branch = await prisma.branch.findUnique({ where: { id: branchId }});
+  const branch = await db.branch.findUnique({ where: { id: branchId }});
   if (!branch) throw new Error("Branch not found");
 
-  await prisma.salesLead.update({
+  await db.salesLead.update({
     where: { id: leadId },
     data: {
       branchId,
@@ -149,7 +155,7 @@ export async function assignBranch(leadId: string, branchId: string) {
 
 // Action for a District Manager to give final approval and close a lead
 export async function approveLeadDistrict(leadId: string) {
-  await prisma.salesLead.update({
+  await db.salesLead.update({
     where: { id: leadId },
     data: {
       status: 'Closed',
@@ -167,7 +173,7 @@ export async function approveLeadDistrict(leadId: string) {
 
 // Action for a District Manager to return a lead for rework (sends it back to officer)
 export async function returnLeadForReworkDistrict(leadId: string, note: string) {
-  await prisma.salesLead.update({
+  await db.salesLead.update({
     where: { id: leadId },
     data: {
       status: 'Reopened',
@@ -193,13 +199,15 @@ const newPlanEntrySchema = z.object({
 // Action to create a new branch plan entry
 export async function createPlanEntry(branchPlanId: string, data: z.infer<typeof newPlanEntrySchema>) {
   const validatedData = newPlanEntrySchema.parse(data);
-  await prisma.planEntry.create({
+  await db.planEntry.create({
     data: {
       branchPlanId,
       ...validatedData,
       date: new Date(),
       status: 'Pending',
       submittedBy: 'Branch Manager',
+      rejectionReason: null,
+      reviewedBy: null,
     },
   });
   revalidatePath('/submit-entry');
@@ -212,7 +220,7 @@ export async function reviewPlanEntry(entryId: string, status: string, rejection
     throw new Error('Rejection reason is required when rejecting an entry.');
   }
 
-  await prisma.planEntry.update({
+  await db.planEntry.update({
     where: { id: entryId },
     data: {
       status,
@@ -223,4 +231,23 @@ export async function reviewPlanEntry(entryId: string, status: string, rejection
   revalidatePath('/branch-plans');
   revalidatePath('/submit-entry');
   revalidatePath('/dashboard');
+}
+
+// Schema for updating a setting
+const updateSettingSchema = z.object({
+  key: z.string(),
+  value: z.string(),
+});
+
+// Action to update a setting
+export async function updateSetting(data: z.infer<typeof updateSettingSchema>) {
+    const validatedData = updateSettingSchema.parse(data);
+    await db.setting.upsert({
+        where: { key: validatedData.key },
+        update: { value: validatedData.value },
+        create: { key: validatedData.key, value: validatedData.value },
+    });
+    revalidatePath('/settings');
+    revalidatePath('/offsite-reports');
+    revalidatePath('/assignments/*');
 }

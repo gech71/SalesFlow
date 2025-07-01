@@ -34,7 +34,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react';
 import { createLead } from '@/app/actions';
-import { District } from '@prisma/client';
+import { District } from '@/lib/db';
 
 const leadSchema = z.object({
   title: z.string().min(3, { message: 'Title must be at least 3 characters long.' }),
@@ -46,10 +46,6 @@ const leadSchema = z.object({
   deadline: z.date({ required_error: 'A deadline date is required.' }),
 });
 
-// This page needs to be a client component because of the form hooks and location search state.
-// We can fetch the districts data in a server component and pass it down, but for simplicity
-// and since the district list is small and doesn't change often, we can fetch it client-side.
-// A better approach for larger apps would be a server component wrapper.
 export default function NewLeadPage() {
   const { toast } = useToast();
   const router = useRouter();

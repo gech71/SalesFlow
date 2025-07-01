@@ -1,35 +1,23 @@
 
 import { serialize } from '@/lib/utils';
-import prisma from '@/lib/prisma';
+import db from '@/lib/db';
 import OffsiteReportsClient from './offsite-reports-client';
+import { SalesLead } from '@/lib/db';
 
 export default async function OffsiteReportsPage() {
-    const leadsWithOffsiteUpdates = await prisma.salesLead.findMany({
-        where: {
-            updates: {
-                some: {
-                    reportingLat: {
-                        not: null
-                    }
-                }
-            }
-        },
-        include: {
-            officer: true,
-            updates: {
-                where: {
-                    reportingLat: {
-                       not: null,
-                    }
-                },
-                orderBy: {
-                    timestamp: 'desc'
-                }
-            }
-        }
+    const allLeads = await db.salesLead.findMany({ include: { officer: true, updates: true }}) as SalesLead[];
+    
+    const leadsWithOffsiteUpdates = allLeads.filter(lead => 
+        lead.updates.some(update => update.reportingLat !== null && update.reportingLat !== undefined)
+    );
+
+    const thresholdSetting = await db.setting.findUnique({
+        where: { key: 'offsiteDistanceThreshold' },
     });
+    const offsiteDistanceThreshold = thresholdSetting ? parseFloat(thresholdSetting.value) : 1.0;
+
 
     return (
-        <OffsiteReportsClient leads={serialize(leadsWithOffsiteUpdates)} />
+        <OffsiteReportsClient leads={serialize(leadsWithOffsiteUpdates)} offsiteDistanceThreshold={offsiteDistanceThreshold} />
     );
 }

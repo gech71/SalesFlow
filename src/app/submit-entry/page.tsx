@@ -1,10 +1,10 @@
 
 import { serialize } from '@/lib/utils';
-import prisma from '@/lib/prisma';
+import db from '@/lib/db';
 import SubmitEntryClient from './submit-entry-client';
 
 export default async function SubmitPlanEntryPage() {
-    const plans = await prisma.branchPlan.findMany({
+    const plans = await db.branchPlan.findMany({
         include: {
             branch: true,
             entries: {
@@ -18,9 +18,9 @@ export default async function SubmitPlanEntryPage() {
         }
     });
 
-    const branches = await prisma.branch.findMany();
+    const branches = await db.branch.findMany();
 
-    const allQuarters = await prisma.branchPlan.findMany({
+    const allQuarters = await db.branchPlan.findMany({
         select: {
             quarter: true,
         },
@@ -29,7 +29,7 @@ export default async function SubmitPlanEntryPage() {
             quarter: 'desc',
         }
     });
-    const quarters = allQuarters.map(q => q.quarter);
+    const quarters = allQuarters.map((q: any) => q.quarter);
 
 
     return (
@@ -40,4 +40,3 @@ export default async function SubmitPlanEntryPage() {
         />
     );
 }
-

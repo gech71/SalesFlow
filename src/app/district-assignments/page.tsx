@@ -1,10 +1,10 @@
 
 import { serialize } from '@/lib/utils';
-import prisma from '@/lib/prisma';
+import db from '@/lib/db';
 import DistrictAssignmentsClient from './district-assignments-client';
 
 export default async function DistrictAssignmentsPage() {
-    const leads = await prisma.salesLead.findMany({
+    const leads = await db.salesLead.findMany({
         where: {
             OR: [
                 { branchId: null },
@@ -21,7 +21,7 @@ export default async function DistrictAssignmentsPage() {
         }
     });
 
-    const districts = await prisma.district.findMany({
+    const districts = await db.district.findMany({
         include: {
             branches: true
         }

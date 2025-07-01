@@ -1,10 +1,10 @@
 
 import { serialize } from '@/lib/utils';
-import prisma from '@/lib/prisma';
+import db from '@/lib/db';
 import BranchAssignmentsClient from './branch-assignments-client';
 
 export default async function BranchAssignmentsPage() {
-    const leads = await prisma.salesLead.findMany({
+    const leads = await db.salesLead.findMany({
         where: {
             OR: [
                 { status: 'Assigned', officerId: null, branchId: { not: null } },
@@ -30,7 +30,7 @@ export default async function BranchAssignmentsPage() {
         }
     });
 
-    const branches = await prisma.branch.findMany({
+    const branches = await db.branch.findMany({
         include: {
             officers: true
         }
