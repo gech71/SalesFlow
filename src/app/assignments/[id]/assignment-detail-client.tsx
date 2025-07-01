@@ -35,7 +35,7 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
 import { Progress } from '@/components/ui/progress';
-import { addLeadUpdate } from '@/app/actions';
+import { addLeadUpdate, logoutAction } from '@/app/actions';
 
 // The client-side type needs to match what the server component constructs
 type ClientSalesLead = SalesLead & {
@@ -234,7 +234,12 @@ export default function AssignmentDetailClient({ lead, distanceThreshold }: { le
         <SidebarFooter>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <Link href="/"><SidebarMenuButton><Icons.logout className="mr-2" />Logout</SidebarMenuButton></Link>
+                    <form action={logoutAction} className="w-full">
+                        <SidebarMenuButton type="submit" className="w-full">
+                            <Icons.logout className="mr-2" />
+                            Logout
+                        </SidebarMenuButton>
+                    </form>
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarFooter>

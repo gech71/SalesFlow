@@ -42,7 +42,7 @@ import type { SalesLead, District, Branch, Officer } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
-import { assignBranch, approveLeadDistrict, returnLeadForReworkDistrict } from '@/app/actions';
+import { assignBranch, approveLeadDistrict, returnLeadForReworkDistrict, logoutAction } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 
 type ClientSalesLead = SalesLead & {
@@ -168,7 +168,12 @@ export default function DistrictAssignmentsClient({ leads, districts }: { leads:
         <SidebarFooter>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <Link href="/"><SidebarMenuButton><Icons.logout className="mr-2" />Logout</SidebarMenuButton></Link>
+                    <form action={logoutAction} className="w-full">
+                        <SidebarMenuButton type="submit" className="w-full">
+                            <Icons.logout className="mr-2" />
+                            Logout
+                        </SidebarMenuButton>
+                    </form>
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarFooter>

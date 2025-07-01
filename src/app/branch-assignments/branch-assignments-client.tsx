@@ -43,7 +43,7 @@ import type { SalesLead, Branch, Officer, LeadUpdate } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
-import { assignOfficer, approveLeadBranch, returnLeadForReworkBranch } from '@/app/actions';
+import { assignOfficer, approveLeadBranch, returnLeadForReworkBranch, logoutAction } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 
 type ClientSalesLead = SalesLead & {
@@ -171,7 +171,12 @@ export default function BranchAssignmentsClient({ leads, branches }: { leads: Cl
         <SidebarFooter>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <Link href="/"><SidebarMenuButton><Icons.logout className="mr-2" />Logout</SidebarMenuButton></Link>
+                    <form action={logoutAction} className="w-full">
+                        <SidebarMenuButton type="submit" className="w-full">
+                            <Icons.logout className="mr-2" />
+                            Logout
+                        </SidebarMenuButton>
+                    </form>
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarFooter>

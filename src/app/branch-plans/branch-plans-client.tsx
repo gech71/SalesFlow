@@ -20,7 +20,7 @@ import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
-import { reviewPlanEntry } from '@/app/actions';
+import { reviewPlanEntry, logoutAction } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 
 type ClientBranchPlan = BranchPlan & {
@@ -132,7 +132,12 @@ export default function BranchPlansClient({ plans, branches, quarters }: { plans
         <SidebarFooter>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <Link href="/"><SidebarMenuButton><Icons.logout className="mr-2" />Logout</SidebarMenuButton></Link>
+                    <form action={logoutAction} className="w-full">
+                        <SidebarMenuButton type="submit" className="w-full">
+                            <Icons.logout className="mr-2" />
+                            Logout
+                        </SidebarMenuButton>
+                    </form>
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarFooter>

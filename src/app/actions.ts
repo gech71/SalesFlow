@@ -4,6 +4,8 @@
 import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 const SalesLeadStatusEnum = z.enum([
   'New',
@@ -257,4 +259,78 @@ export async function updateSetting(data: z.infer<typeof settingSchema>) {
   revalidatePath('/settings');
   revalidatePath('/offsite-reports');
   revalidatePath('/assignments', 'layout'); // Revalidate all assignment detail pages
+}
+
+
+const loginSchema = z.object({
+  phoneNumber: z.string().regex(/^(\+251|0)?[79]\d{8}$/, { message: "Please enter a valid Ethiopian phone number." }),
+  password: z.string().min(1, { message: 'Password is required.' }),
+});
+
+export async function loginAction(data: z.infer<typeof loginSchema>) {
+    const validatedFields = loginSchema.safeParse(data);
+
+    if (!validatedFields.success) {
+        return { success: false, error: "Invalid phone number or password." };
+    }
+
+    const { phoneNumber, password } = validatedFields.data;
+
+    try {
+        const response = await fetch('http://localhost:5160/api/Auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phoneNumber, password }),
+        });
+
+        if (!response.ok) {
+            const errorResult = await response.json().catch(() => ({ errors: ['Invalid credentials or server error.'] }));
+            return { success: false, error: errorResult.errors?.[0] || 'Invalid credentials' };
+        }
+
+        const result = await response.json();
+
+        if (result.isSuccess && result.accessToken && result.refreshToken) {
+            cookies().set('accessToken', result.accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                path: '/',
+            });
+            cookies().set('refreshToken', result.refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                path: '/',
+            });
+            return { success: true };
+        } else {
+            return { success: false, error: result.errors?.[0] || 'Login failed.' };
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        return { success: false, error: 'An unexpected error occurred. Could not connect to the auth server.' };
+    }
+}
+
+
+export async function logoutAction() {
+    const accessToken = cookies().get('accessToken')?.value;
+    const refreshToken = cookies().get('refreshToken')?.value;
+
+    if (accessToken && refreshToken) {
+        try {
+            await fetch('http://localhost:5160/api/Auth/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: accessToken, refreshToken }),
+            });
+        } catch (error) {
+            console.error('Failed to logout from auth server:', error);
+        }
+    }
+
+    cookies().delete('accessToken');
+    cookies().delete('refreshToken');
+    redirect('/');
 }

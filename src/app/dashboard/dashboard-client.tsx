@@ -25,6 +25,7 @@ import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { logoutAction } from '@/app/actions';
 
 type ClientSalesLead = SalesLead & { updates: LeadUpdate[] };
 type ClientBranchPlan = BranchPlan & { entries: PlanEntry[] };
@@ -186,7 +187,12 @@ export default function DashboardClient({ leads, plans, districts, branches }: D
         <SidebarFooter>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <Link href="/"><SidebarMenuButton><Icons.logout className="mr-2" />Logout</SidebarMenuButton></Link>
+                    <form action={logoutAction} className="w-full">
+                        <SidebarMenuButton type="submit" className="w-full">
+                            <Icons.logout className="mr-2" />
+                            Logout
+                        </SidebarMenuButton>
+                    </form>
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarFooter>

@@ -20,7 +20,7 @@ import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, 
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
-import { createPlanEntry } from '@/app/actions';
+import { createPlanEntry, logoutAction } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 
 type ClientBranchPlan = BranchPlan & {
@@ -126,7 +126,12 @@ export default function SubmitEntryClient({ plans, branches, quarters }: { plans
         <SidebarFooter>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <Link href="/"><SidebarMenuButton><Icons.logout className="mr-2" />Logout</SidebarMenuButton></Link>
+                    <form action={logoutAction} className="w-full">
+                        <SidebarMenuButton type="submit" className="w-full">
+                            <Icons.logout className="mr-2" />
+                            Logout
+                        </SidebarMenuButton>
+                    </form>
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarFooter>

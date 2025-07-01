@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Icons } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
+import { loginAction } from './actions';
 
 const loginSchema = z.object({
   phoneNumber: z.string().regex(/^(\+251|0)?[79]\d{8}$/, { message: "Please enter a valid Ethiopian phone number, e.g., 0912345678 or +251912345678." }),
@@ -37,24 +38,25 @@ export default function LoginPage() {
     },
   });
 
-  // NOTE: This is a mock login function for prototyping purposes.
-  // In a real application, you would replace this with a call to your authentication service.
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     setIsSubmitting(true);
     
-    // Simulate an API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // For this prototype, we'll just show a success message and redirect.
-    // We are not performing real authentication.
-    toast({
-      title: 'Login Successful',
-      description: 'Welcome back! Redirecting you to the dashboard...',
-    });
+    const result = await loginAction(data);
     
-    router.push('/dashboard');
-    
-    setIsSubmitting(false);
+    if (result.success) {
+        toast({
+            title: 'Login Successful',
+            description: 'Welcome back! Redirecting you to the dashboard...',
+        });
+        router.push('/dashboard');
+    } else {
+        toast({
+            title: 'Login Failed',
+            description: result.error,
+            variant: 'destructive',
+        });
+        setIsSubmitting(false);
+    }
   };
 
   return (
@@ -77,12 +79,18 @@ export default function LoginPage() {
                 type="tel"
                 placeholder="0912345678"
                 {...register('phoneNumber')}
+                disabled={isSubmitting}
               />
               {errors.phoneNumber && <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" {...register('password')} />
+              <Input 
+                id="password" 
+                type="password" 
+                {...register('password')} 
+                disabled={isSubmitting}
+              />
               {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
             </div>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
@@ -95,4 +103,3 @@ export default function LoginPage() {
     </div>
   );
 }
-    

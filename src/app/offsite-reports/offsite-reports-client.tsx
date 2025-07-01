@@ -24,6 +24,7 @@ import { Icons } from '@/components/icons';
 import { type SalesLead, type LeadUpdate, type Officer } from '@prisma/client';
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
+import { logoutAction } from '../actions';
 
 type ClientSalesLead = SalesLead & {
     updates: LeadUpdate[];
@@ -110,7 +111,12 @@ export default function OffsiteReportsClient({ leads, distanceThreshold }: { lea
         <SidebarFooter>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <Link href="/"><SidebarMenuButton><Icons.logout className="mr-2" />Logout</SidebarMenuButton></Link>
+                    <form action={logoutAction} className="w-full">
+                        <SidebarMenuButton type="submit" className="w-full">
+                            <Icons.logout className="mr-2" />
+                            Logout
+                        </SidebarMenuButton>
+                    </form>
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarFooter>
