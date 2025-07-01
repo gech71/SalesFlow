@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -19,7 +20,7 @@ import { Icons } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
+  phoneNumber: z.string().min(10, { message: 'Please enter a valid phone number.' }),
   password: z.string().min(1, { message: 'Password is required.' }),
 });
 
@@ -31,7 +32,7 @@ export default function LoginPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
+      phoneNumber: '',
       password: '',
     },
   });
@@ -70,14 +71,14 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="phoneNumber">Phone Number</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                {...register('email')}
+                id="phoneNumber"
+                type="tel"
+                placeholder="+1 (555) 555-5555"
+                {...register('phoneNumber')}
               />
-              {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+              {errors.phoneNumber && <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -94,3 +95,4 @@ export default function LoginPage() {
     </div>
   );
 }
+    
