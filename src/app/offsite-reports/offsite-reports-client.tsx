@@ -66,8 +66,8 @@ export default function OffsiteReportsClient({ leads }: { leads: ClientSalesLead
     const reports: OffsiteReport[] = [];
     leads.forEach(lead => {
       lead.updates.forEach(update => {
-        if (update.reportingLocationJson) {
-            const reportingLocation = JSON.parse(update.reportingLocationJson as string);
+        const reportingLocation = update.reportingLocation as any;
+        if (reportingLocation && typeof reportingLocation === 'object' && 'lat' in reportingLocation && 'lng' in reportingLocation) {
             const distance = getDistanceInKm(
                 lead.location.lat,
                 lead.location.lng,
@@ -148,7 +148,7 @@ export default function OffsiteReportsClient({ leads }: { leads: ClientSalesLead
                     </TableHeader>
                     <TableBody>
                     {offsiteReports.map(({ lead, update, distance }, index) => (
-                        <TableRow key={`${lead.id}-${index}`}>
+                        <TableRow key={`${lead.id}-${update.id}`}>
                             <TableCell className="font-medium">{lead.title}</TableCell>
                             <TableCell>{lead.officer?.name || 'N/A'}</TableCell>
                             <TableCell>{format(new Date(update.timestamp), "PPp")}</TableCell>

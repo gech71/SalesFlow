@@ -30,24 +30,23 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Icons } from '@/components/icons';
-import { type SalesLead, type LeadUpdate, type Officer } from '@prisma/client';
+import { type SalesLead, type LeadUpdate, type Officer, LeadStatus } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
-import { addLeadUpdate, leadStatuses, type LeadStatus } from '@/app/actions';
+import { addLeadUpdate, leadStatuses } from '@/app/actions';
 
 // The client-side type needs to match what the server component constructs
 type ClientSalesLead = SalesLead & {
     location: { lat: number; lng: number };
-    updates: LeadUpdate[];
+    updates: (LeadUpdate & { attachment: any, reportingLocation: any })[];
     officer: Officer | null;
 };
 
 const updateSchema = z.object({
     updateText: z.string().min(5, { message: "Update must be at least 5 characters." }),
-    status: z.enum(leadStatuses),
+    status: z.nativeEnum(LeadStatus),
     generatedSavings: z.coerce.number().min(0, "Savings must be a positive number.").optional(),
 })
 
@@ -289,8 +288,8 @@ export default function AssignmentDetailClient({ lead }: { lead: ClientSalesLead
                         {lead.updates.length > 0 ? (
                                 <div className="space-y-4">
                                     {lead.updates.map((update, index) => {
-                                        const attachment = update.attachmentJson ? JSON.parse(update.attachmentJson as string) : null;
-                                        const reportingLocation = update.reportingLocationJson ? JSON.parse(update.reportingLocationJson as string) : null;
+                                        const attachment = update.attachment as any;
+                                        const reportingLocation = update.reportingLocation as any;
 
                                         return (
                                         <div key={index} className="text-sm">

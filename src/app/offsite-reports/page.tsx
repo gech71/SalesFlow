@@ -8,7 +8,7 @@ export default async function OffsiteReportsPage() {
         where: {
             updates: {
                 some: {
-                    reportingLocationJson: {
+                    reportingLocation: {
                         not: null
                     }
                 }
@@ -18,7 +18,7 @@ export default async function OffsiteReportsPage() {
             officer: true,
             updates: {
                 where: {
-                    reportingLocationJson: {
+                    reportingLocation: {
                         not: null
                     }
                 },
@@ -29,7 +29,7 @@ export default async function OffsiteReportsPage() {
         }
     });
     
-    // Construct the location object for each lead
+    // Construct the location object
     const leadsWithLocation = leads.map(lead => ({
         ...lead,
         location: { lat: lead.lat, lng: lead.lng }

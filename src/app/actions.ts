@@ -4,16 +4,11 @@
 import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
+import { LeadStatus, PlanEntryStatus, PlanEntryType } from '@prisma/client';
 
-export const leadStatuses = ['New', 'Assigned', 'InProgress', 'Reopened', 'PendingClosure', 'PendingDistrictApproval', 'Closed'] as const;
-export type LeadStatus = (typeof leadStatuses)[number];
-
-export const planEntryTypes = ['collection', 'withdrawal'] as const;
-export type PlanEntryType = (typeof planEntryTypes)[number];
-
-export const planEntryStatuses = ['Pending', 'Approved', 'Rejected'] as const;
-export type PlanEntryStatus = (typeof planEntryStatuses)[number];
-
+export const leadStatuses = Object.values(LeadStatus);
+export const planEntryTypes = Object.values(PlanEntryType);
+export const planEntryStatuses = Object.values(PlanEntryStatus);
 
 // Schema for creating a new lead
 const newLeadSchema = z.object({
@@ -42,9 +37,9 @@ export async function createLead(formData: z.infer<typeof newLeadSchema>) {
 const updateSchema = z.object({
   leadId: z.string(),
   updateText: z.string().min(5),
-  status: z.enum(leadStatuses),
+  status: z.nativeEnum(LeadStatus),
   generatedSavings: z.coerce.number().min(0).optional(),
-  attachment: z.any().optional(), // Cannot easily validate file data in server actions
+  attachment: z.any().optional(),
   reportingLocation: z.object({ lat: z.number(), lng: z.number() }).optional(),
   author: z.string(),
 });
@@ -62,8 +57,8 @@ export async function addLeadUpdate(data: z.infer<typeof updateSchema>) {
           text: updateData.updateText,
           author: updateData.author,
           generatedSavings: updateData.generatedSavings,
-          reportingLocationJson: updateData.reportingLocation ? JSON.stringify(updateData.reportingLocation) : undefined,
-          attachmentJson: updateData.attachment ? JSON.stringify(updateData.attachment) : undefined,
+          reportingLocation: updateData.reportingLocation,
+          attachment: updateData.attachment,
         },
       },
     },
@@ -178,7 +173,7 @@ export async function returnLeadForReworkDistrict(leadId: string, note: string) 
   await prisma.salesLead.update({
     where: { id: leadId },
     data: {
-      status: 'Reopened', // Or 'InProgress'
+      status: 'Reopened',
       updates: {
         create: {
           text: `Returned for rework: ${note}`,
@@ -193,7 +188,7 @@ export async function returnLeadForReworkDistrict(leadId: string, note: string) 
 
 // Schema for a new plan entry
 const newPlanEntrySchema = z.object({
-  type: z.enum(planEntryTypes),
+  type: z.nativeEnum(PlanEntryType),
   amount: z.coerce.number().positive(),
   description: z.string().min(5),
 });
@@ -205,6 +200,7 @@ export async function createPlanEntry(branchPlanId: string, data: z.infer<typeof
     data: {
       branchPlanId,
       ...validatedData,
+      date: new Date(),
       status: 'Pending',
       submittedBy: 'Branch Manager',
     },

@@ -1,22 +1,16 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
 generator client {
   provider      = "prisma-client-js"
-  // This is a crucial line that tells Prisma to generate a query engine compatible with various Linux environments,
-  // which is common in containers and cloud setups.
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
-datasource db {
-  provider   = "sqlite"
-  url        = "file:./dev.db"
-  // This line changes the engine loading mechanism to be more compatible with different environments.
-  engineType = "library"
-}
-
 model District {
-  id       String      @id @default(cuid())
+  id       String    @id @default(cuid())
   name     String
   branches Branch[]
   leads    SalesLead[]
@@ -41,57 +35,76 @@ model Officer {
 }
 
 model SalesLead {
-  id              String       @id @default(cuid())
+  id              String      @id @default(cuid())
   title           String
   description     String
-  status          String
-  district        District     @relation(fields: [districtId], references: [id])
+  status          LeadStatus
+  district        District    @relation(fields: [districtId], references: [id])
   districtId      String
-  branch          Branch?      @relation(fields: [branchId], references: [id])
+  branch          Branch?     @relation(fields: [branchId], references: [id])
   branchId        String?
-  officer         Officer?     @relation(fields: [officerId], references: [id])
+  officer         Officer?    @relation(fields: [officerId], references: [id])
   officerId       String?
   lat             Float
   lng             Float
   expectedSavings Float
-  createdAt       DateTime     @default(now())
+  createdAt       DateTime    @default(now())
   deadline        DateTime
   updates         LeadUpdate[]
 }
 
 model LeadUpdate {
-  id                    String    @id @default(cuid())
-  text                  String
-  author                String
-  timestamp             DateTime  @default(now())
-  generatedSavings      Float?
-  attachmentJson        String?
-  reportingLocationJson String?
-  salesLead             SalesLead @relation(fields: [salesLeadId], references: [id])
-  salesLeadId           String
+  id                String   @id @default(cuid())
+  text              String
+  timestamp         DateTime @default(now())
+  author            String
+  generatedSavings  Float?
+  attachment        Json?
+  reportingLocation Json?
+  salesLead         SalesLead @relation(fields: [salesLeadId], references: [id])
+  salesLeadId       String
 }
 
 model BranchPlan {
-  id            String      @id
-  branch        Branch      @relation(fields: [branchId], references: [id])
-  branchId      String
-  quarter       String
-  savingsTarget Float
-  entries       PlanEntry[]
-
-  @@unique([branchId, quarter])
+  id             String      @id
+  branch         Branch      @relation(fields: [branchId], references: [id])
+  branchId       String
+  quarter        String
+  savingsTarget  Float
+  entries        PlanEntry[]
 }
 
 model PlanEntry {
-  id              String   @id @default(cuid())
-  branchPlan      BranchPlan @relation(fields: [branchPlanId], references: [id])
+  id              String          @id @default(cuid())
+  plan            BranchPlan      @relation(fields: [branchPlanId], references: [id])
   branchPlanId    String
-  date            DateTime @default(now())
-  type            String   // 'collection' or 'withdrawal'
+  date            DateTime
+  type            PlanEntryType
   amount          Float
   description     String
-  status          String   // 'Pending', 'Approved', 'Rejected'
+  status          PlanEntryStatus
   submittedBy     String
   reviewedBy      String?
   rejectionReason String?
+}
+
+enum LeadStatus {
+  New
+  Assigned
+  InProgress
+  Reopened
+  PendingClosure
+  PendingDistrictApproval
+  Closed
+}
+
+enum PlanEntryType {
+  collection
+  withdrawal
+}
+
+enum PlanEntryStatus {
+  Pending
+  Approved
+  Rejected
 }
