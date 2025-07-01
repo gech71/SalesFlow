@@ -158,7 +158,7 @@ export default function AssignmentDetailClient({ lead, distanceThreshold }: { le
             title: "Lead Updated",
             description: `Lead "${lead.title}" has been updated.`,
         });
-        router.push('/');
+        router.push('/assignments');
     } catch (error) {
         console.error("Failed to update lead:", error);
         toast({
@@ -209,7 +209,7 @@ export default function AssignmentDetailClient({ lead, distanceThreshold }: { le
                     <Link href="/dashboard"><SidebarMenuButton><Icons.dashboard className="mr-2" />Dashboard</SidebarMenuButton></Link>
                 </SidebarMenuItem>
                  <SidebarMenuItem>
-                    <Link href="/"><SidebarMenuButton isActive><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
+                    <Link href="/assignments"><SidebarMenuButton><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                     <Link href="/branch-plans"><SidebarMenuButton><Icons.landmark className="mr-2" />Branch Plans</SidebarMenuButton></Link>
@@ -374,7 +374,7 @@ export default function AssignmentDetailClient({ lead, distanceThreshold }: { le
                             />
                         </div>
                         <CardFooter className="px-0 pt-4">
-                            <Button type="button" variant="outline" onClick={() => router.push('/')}>Cancel</Button>
+                            <Button type="button" variant="outline" onClick={() => router.push('/assignments')}>Cancel</Button>
                             <Button type="submit" className="ml-auto" disabled={isSubmitting || isPendingApproval}>
                                 {isSubmitting && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
                                 {isSubmitting ? 'Submitting...' : (isPendingApproval ? 'Pending Approval' : 'Submit Update')}

@@ -161,7 +161,7 @@ export default function DashboardClient({ leads, plans, districts, branches }: D
                 <Link href="/dashboard"><SidebarMenuButton isActive><Icons.dashboard className="mr-2" />Dashboard</SidebarMenuButton></Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <Link href="/"><SidebarMenuButton><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
+              <Link href="/assignments"><SidebarMenuButton><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
             </SidebarMenuItem>
              <SidebarMenuItem>
                 <Link href="/branch-plans"><SidebarMenuButton><Icons.landmark className="mr-2" />Branch Plans</SidebarMenuButton></Link>

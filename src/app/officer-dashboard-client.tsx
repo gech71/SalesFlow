@@ -66,7 +66,7 @@ export default function OfficerDashboardClient({ leads }: { leads: ClientSalesLe
                     <Link href="/dashboard"><SidebarMenuButton><Icons.dashboard className="mr-2" />Dashboard</SidebarMenuButton></Link>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                    <Link href="/"><SidebarMenuButton isActive><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
+                    <Link href="/assignments"><SidebarMenuButton isActive><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                     <Link href="/branch-plans"><SidebarMenuButton><Icons.landmark className="mr-2" />Branch Plans</SidebarMenuButton></Link>

@@ -37,7 +37,7 @@ export async function createLead(formData: z.infer<typeof newLeadSchema>) {
     },
   });
   revalidatePath('/district-assignments');
-  revalidatePath('/');
+  revalidatePath('/assignments');
 }
 
 // Schema for adding a lead update
@@ -74,7 +74,7 @@ export async function addLeadUpdate(data: z.infer<typeof updateSchema>) {
   });
 
   revalidatePath(`/assignments/${leadId}`);
-  revalidatePath('/');
+  revalidatePath('/assignments');
   revalidatePath('/dashboard');
 }
 
@@ -98,7 +98,7 @@ export async function assignOfficer(leadId: string, officerId: string, note: str
   });
 
   revalidatePath('/branch-assignments');
-  revalidatePath('/');
+  revalidatePath('/assignments');
 }
 
 // Action for a Branch Manager to approve a lead and send it to the district
@@ -174,7 +174,7 @@ export async function approveLeadDistrict(leadId: string) {
     },
   });
   revalidatePath('/district-assignments');
-  revalidatePath('/');
+  revalidatePath('/assignments');
 }
 
 // Action for a District Manager to return a lead for rework (sends it back to officer)
