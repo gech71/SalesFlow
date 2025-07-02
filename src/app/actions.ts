@@ -429,16 +429,7 @@ export async function registerUser(data: z.infer<typeof registerUserSchema>) {
     const { firstName, lastName, email, phoneNumber, password, roleId } = validatedData.data;
 
     try {
-        // First, check if a user already exists in the local database to prevent duplicates.
-        const existingUser = await prisma.user.findFirst({
-            where: { OR: [{ email }, { phoneNumber }] }
-        });
-
-        if (existingUser) {
-            return { success: false, error: "A user with this email or phone number already exists." };
-        }
-
-        // If the user doesn't exist locally, proceed to register them on the external auth server.
+        // First, call the external auth server to register the user.
         const baseUrl = process.env.AUTH_BASE_URL;
         const authResponse = await fetch(`${baseUrl}/api/Auth/register`, {
             method: 'POST',
@@ -446,12 +437,13 @@ export async function registerUser(data: z.infer<typeof registerUserSchema>) {
             body: JSON.stringify({ firstName, lastName, email, phoneNumber, password }),
         });
 
+        // If the auth server fails (e.g., user already exists there), return its error.
         if (!authResponse.ok) {
             const errorResult = await authResponse.json().catch(() => ({ errors: ['Registration failed on auth server.'] }));
             return { success: false, error: errorResult.errors?.[0] || 'Auth server registration failed.' };
         }
         
-        // After successful external registration, create the user in the local database.
+        // After a successful external registration, create the user in the local database.
         await prisma.user.create({
             data: {
                 email,
@@ -468,7 +460,9 @@ export async function registerUser(data: z.infer<typeof registerUserSchema>) {
 
     } catch (error) {
         console.error('User registration error:', error);
-        return { success: false, error: 'An unexpected error occurred during user registration.' };
+        // This catch block will handle network errors or potential Prisma unique constraint violations,
+        // which would indicate an inconsistency between the auth server and the local database.
+        return { success: false, error: 'An unexpected error occurred. The user might already exist in the local database.' };
     }
 }
 
