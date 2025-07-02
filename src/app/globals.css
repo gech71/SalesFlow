@@ -43,11 +43,11 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --success: 142 76% 36%;
-    --success-foreground: 142 10% 20%;
+    --success-foreground: 142 10% 98%;
     --warning: 45 95% 61%;
-    --warning-foreground: 45 50% 20%;
+    --warning-foreground: 45 50% 98%;
     --info: 217 91% 60%;
-    --info-foreground: 217 10% 20%;
+    --info-foreground: 217 10% 98%;
   }
   .dark {
     --background: 30 20% 8%;
@@ -83,11 +83,11 @@ body {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     --success: 142 61% 45%;
-    --success-foreground: 142 80% 90%;
+    --success-foreground: 142 80% 98%;
     --warning: 45 90% 65%;
-    --warning-foreground: 45 80% 90%;
+    --warning-foreground: 45 80% 98%;
     --info: 217 91% 60%;
-    --info-foreground: 217 80% 90%;
+    --info-foreground: 217 80% 98%;
   }
 }
 

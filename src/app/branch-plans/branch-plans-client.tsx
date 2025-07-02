@@ -86,7 +86,9 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
       }
   };
   
-  const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
+  const formatCurrency = (amount: number | any) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
+  }
   
   const getStatusBadgeVariant = (status: PlanEntry['status']) => {
       switch (status) {
