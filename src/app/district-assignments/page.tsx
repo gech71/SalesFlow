@@ -2,8 +2,18 @@
 import { serialize } from '@/lib/utils';
 import prisma from '@/lib/prisma';
 import DistrictAssignmentsClient from './district-assignments-client';
+import { cookies } from 'next/headers';
 
 export default async function DistrictAssignmentsPage() {
+    const userId = cookies().get('userId')?.value;
+
+    const user = userId ? await prisma.user.findUnique({
+        where: { authId: userId },
+        include: { role: true }
+    }) : null;
+
+    const permissions = user?.role?.permissions ?? [];
+
     const leads = await prisma.salesLead.findMany({
         where: {
             OR: [
@@ -28,6 +38,10 @@ export default async function DistrictAssignmentsPage() {
     });
 
     return (
-        <DistrictAssignmentsClient leads={serialize(leads)} districts={serialize(districts)} />
+        <DistrictAssignmentsClient 
+            leads={serialize(leads)} 
+            districts={serialize(districts)}
+            permissions={permissions} 
+        />
     );
 }

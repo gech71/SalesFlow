@@ -55,7 +55,7 @@ type ClientDistrict = District & {
     branches: Branch[];
 }
 
-export default function DistrictAssignmentsClient({ leads, districts }: { leads: ClientSalesLead[], districts: ClientDistrict[] }) {
+export default function DistrictAssignmentsClient({ leads, districts, permissions }: { leads: ClientSalesLead[], districts: ClientDistrict[], permissions: string[] }) {
   const router = useRouter();
   const { toast } = useToast();
   
@@ -194,9 +194,11 @@ export default function DistrictAssignmentsClient({ leads, districts }: { leads:
                           An overview of all unassigned leads in each district.
                         </CardDescription>
                     </div>
-                    <Link href="/new-lead">
-                      <Button><Icons.plusCircle className="mr-2 h-4 w-4" /> Create New Lead</Button>
-                    </Link>
+                    {permissions.includes('create_lead') && (
+                      <Link href="/new-lead">
+                        <Button><Icons.plusCircle className="mr-2 h-4 w-4" /> Create New Lead</Button>
+                      </Link>
+                    )}
                     </CardHeader>
                     <CardContent>
                     <Table>

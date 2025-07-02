@@ -18,6 +18,7 @@ const SalesLeadStatusEnum = z.enum([
 ]);
 
 const PlanEntryTypeEnum = z.enum(['collection', 'withdrawal']);
+const PlanEntryStatusEnum = z.enum(['Pending', 'Approved', 'Rejected']);
 
 // Schema for creating a new lead
 const newLeadSchema = z.object({
@@ -199,7 +200,7 @@ export async function returnLeadForReworkDistrict(leadId: string, note: string) 
 
 // Schema for a new plan entry
 const newPlanEntrySchema = z.object({
-  type: z.enum(['collection', 'withdrawal']),
+  type: PlanEntryTypeEnum,
   amount: z.coerce.number().positive(),
   description: z.string().min(5),
 });
@@ -222,7 +223,7 @@ export async function createPlanEntry(branchPlanId: string, data: z.infer<typeof
 
 // Action to review a branch plan entry
 export async function reviewPlanEntry(entryId: string, status: string, rejectionReason?: string) {
-  const reviewStatus = z.enum(['Approved', 'Rejected']).parse(status);
+  const reviewStatus = PlanEntryStatusEnum.parse(status);
 
   if (reviewStatus === 'Rejected' && !rejectionReason) {
     throw new Error('Rejection reason is required when rejecting an entry.');

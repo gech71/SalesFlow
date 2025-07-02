@@ -1,7 +1,7 @@
 
 import { serialize } from '@/lib/utils';
 import prisma from '@/lib/prisma';
-import AssignmentsClient from '../officer-dashboard-client';
+import AssignmentsClient from './assignments-client';
 
 export default async function AssignmentsPage() {
 
