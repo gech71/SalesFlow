@@ -39,15 +39,15 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
   
   const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
 
-  const getStatusBadgeVariant = (status: SalesLead['status']): "default" | "secondary" | "destructive" | "outline" => {
+  const getStatusBadgeVariant = (status: SalesLead['status']): "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "info" => {
     switch (status) {
-      case 'New': return 'default';
+      case 'New': return 'info';
       case 'Assigned': return 'secondary';
-      case 'Reopened': return 'secondary';
+      case 'Reopened': return 'warning';
       case 'InProgress': return 'outline';
-      case 'PendingClosure': return 'destructive';
-      case 'PendingDistrictApproval': return 'destructive';
-      case 'Closed': return 'default';
+      case 'PendingClosure': return 'warning';
+      case 'PendingDistrictApproval': return 'warning';
+      case 'Closed': return 'success';
       default: return 'secondary';
     }
   };

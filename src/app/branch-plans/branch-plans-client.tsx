@@ -86,10 +86,10 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
   }
   
   const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
-  const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
+  const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "info" => {
       switch (status) {
-          case 'Approved': return 'default';
-          case 'Pending': return 'outline';
+          case 'Approved': return 'success';
+          case 'Pending': return 'warning';
           case 'Rejected': return 'destructive';
           default: return 'secondary';
       }
@@ -246,7 +246,7 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                                         <TableRow key={entry.id}>
                                             <TableCell className="hidden md:table-cell">{format(new Date(entry.date), "PPP")}</TableCell>
                                             <TableCell className="md:hidden">{format(new Date(entry.date), "P")}</TableCell>
-                                            <TableCell><Badge variant={entry.type === 'collection' ? 'outline' : 'secondary'}>{entry.type}</Badge></TableCell>
+                                            <TableCell><Badge variant={entry.type === 'collection' ? 'success' : 'secondary'}>{entry.type}</Badge></TableCell>
                                             <TableCell className="font-medium">{formatCurrency(entry.amount)}</TableCell>
                                             <TableCell><Badge variant={getStatusBadgeVariant(entry.status)}>{entry.status}</Badge></TableCell>
                                             <TableCell className="text-right">
