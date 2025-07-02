@@ -69,7 +69,7 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
 
   const formatCurrency = (amount: number | any) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
-  }
+  };
 
   return (
     <SidebarProvider>

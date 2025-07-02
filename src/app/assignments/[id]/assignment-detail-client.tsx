@@ -86,7 +86,7 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
           reader.onerror = reject;
           reader.readAsDataURL(file);
       });
-  }
+  };
 
   const getDistanceInKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371; // Radius of the Earth in km
@@ -173,7 +173,7 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
     } finally {
         setIsSubmitting(false);
     }
-  }
+  };
 
   const officerAllowedStatuses: any[] = ['InProgress', 'PendingClosure'];
 
@@ -206,7 +206,7 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
 
   const formatCurrency = (amount: number | any) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
-  }
+  };
 
   const totalGeneratedSavings = lead.updates.reduce((acc, u) => acc + (Number(u.generatedSavings) || 0), 0);
   const achievementPercentage = Number(lead.expectedSavings) > 0 ? Math.min(100, (totalGeneratedSavings / Number(lead.expectedSavings)) * 100) : 0;

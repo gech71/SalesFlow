@@ -28,7 +28,7 @@ import { cn } from '@/lib/utils';
 type ClientBranchPlan = BranchPlan & {
     entries: PlanEntry[];
     branch: Branch;
-}
+};
 
 const newPlanEntrySchema = z.object({
   type: z.enum(['collection', 'withdrawal']),
@@ -100,7 +100,6 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
         default: return null;
     }
   };
-
 
   return (
     <SidebarProvider>
@@ -307,7 +306,7 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
                                     </Table>
                                     {(!currentPlan || currentPlan.entries.length === 0) && <div className="text-center p-8 text-muted-foreground">No entries submitted yet.</div>}
                                 </CardContent>
-                            </div>
+                            </Card>
                         </div>
                 </div>
             )}

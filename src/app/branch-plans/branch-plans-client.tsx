@@ -28,7 +28,7 @@ import { cn } from '@/lib/utils';
 type ClientBranchPlan = BranchPlan & {
     entries: PlanEntry[];
     branch: Branch;
-}
+};
 
 const rejectionSchema = z.object({
   rejectionReason: z.string().min(10, "A reason for rejection is required (min 10 characters)."),
@@ -78,13 +78,13 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
       setSelectedEntry(entry);
       resetReject();
       setIsRejectDialogOpen(true);
-  }
+  };
 
   const onConfirmRejection = (data: z.infer<typeof rejectionSchema>) => {
       if(selectedEntry) {
           handleReview(selectedEntry.id, 'Rejected', data.rejectionReason);
       }
-  }
+  };
   
   const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
   
