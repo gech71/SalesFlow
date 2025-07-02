@@ -46,8 +46,9 @@ async function main() {
     // Admin User
     await prisma.user.create({
         data: {
+            id: '91dff77e-f1f8-49f9-a9f6-482a9744f908',
             email: 'admin@example.com',
-            name: 'Admin User',
+            name: 'Getaye Temesgen',
             phoneNumber: '0912345678',
             roleId: adminRole.id,
         }

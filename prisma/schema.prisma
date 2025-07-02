@@ -2,86 +2,34 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  directUrl    = env("DIRECT_URL")
+  relationMode = "prisma"
 }
 
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-1.0.x"]
-}
-
-model SalesLead {
-  id              String         @id @default(cuid())
-  title           String
-  description     String
-  status          SalesLeadStatus
-  districtId      String
-  district        District       @relation(fields: [districtId], references: [id])
-  branchId        String?
-  branch          Branch?        @relation(fields: [branchId], references: [id])
-  assigneeId      String?
-  assignee        User?          @relation(fields: [assigneeId], references: [id])
-  updates         LeadUpdate[]
-  lat             Decimal?
-  lng             Decimal?
-  expectedSavings Decimal?
-  createdAt       DateTime       @default(now())
-  deadline        DateTime?
-}
-
-model LeadUpdate {
-  id              String    @id @default(cuid())
-  salesLeadId     String
-  salesLead       SalesLead @relation(fields: [salesLeadId], references: [id], onDelete: Cascade)
-  text            String
-  author          String
-  generatedSavings Decimal?
-  attachmentUrl   String?
-  reportingLat    Float?
-  reportingLng    Float?
-  timestamp       DateTime  @default(now())
-}
-
-model BranchPlan {
-  id             String      @id @default(cuid())
-  branchId       String
-  branch         Branch      @relation(fields: [branchId], references: [id])
-  quarter        String
-  savingsTarget  Decimal
-  entries        PlanEntry[]
-  createdAt      DateTime    @default(now())
-}
-
-model PlanEntry {
-  id              String          @id @default(cuid())
-  branchPlanId    String
-  branchPlan      BranchPlan      @relation(fields: [branchPlanId], references: [id], onDelete: Cascade)
-  date            DateTime
-  type            PlanEntryType
-  amount          Decimal
-  description     String
-  status          PlanEntryStatus
-  submittedBy     String
-  reviewedBy      String?
-  rejectionReason String?
-  createdAt       DateTime        @default(now())
+  provider = "prisma-client-js"
+  // The following setting is required for some environments,
+  // such as Google Cloud Run, to be able to find the database engine.
+  // See https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#binarytargets-options
+  binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x", "rhel-openssl-1.1.x", "rhel-openssl-3.0.x"]
 }
 
 model User {
-  id          String    @id @default(cuid())
-  email       String    @unique
+  id          String       @id @default(cuid())
+  email       String       @unique
   name        String
-  phoneNumber String?   @unique
+  phoneNumber String?      @unique
   roleId      String
-  role        Role      @relation(fields: [roleId], references: [id])
+  role        Role         @relation(fields: [roleId], references: [id])
   districtId  String?
-  district    District? @relation(fields: [districtId], references: [id])
+  district    District?    @relation(fields: [districtId], references: [id])
   branchId    String?
-  branch      Branch?   @relation(fields: [branchId], references: [id])
-  leads       SalesLead[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime? @updatedAt
+  branch      Branch?      @relation(fields: [branchId], references: [id])
+  leads       SalesLead[]  @relation("AssignedLeads")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime?    @updatedAt
 }
 
 model Role {
@@ -92,49 +40,82 @@ model Role {
   users       User[]
 }
 
-model Branch {
-  id          String       @id @default(cuid())
-  name        String
-  districtId  String
-  district    District     @relation(fields: [districtId], references: [id])
-  users       User[]
-  leads       SalesLead[]
-  plans       BranchPlan[]
+model District {
+  id         String      @id @default(cuid())
+  name       String      @unique
+  branches   Branch[]
+  users      User[]
+  salesLeads SalesLead[]
 }
 
-model District {
-  id       String      @id @default(cuid())
-  name     String      @unique
-  branches Branch[]
-  users    User[]
-  leads    SalesLead[]
+model Branch {
+  id         String       @id @default(cuid())
+  name       String
+  districtId String
+  district   District     @relation(fields: [districtId], references: [id])
+  users      User[]
+  salesLeads SalesLead[]
+  plans      BranchPlan[]
+}
+
+model SalesLead {
+  id              String       @id @default(cuid())
+  title           String
+  description     String
+  status          String       @default("New")
+  districtId      String
+  district        District     @relation(fields: [districtId], references: [id])
+  branchId        String?
+  branch          Branch?      @relation(fields: [branchId], references: [id])
+  assigneeId      String?
+  assignee        User?        @relation("AssignedLeads", fields: [assigneeId], references: [id])
+  updates         LeadUpdate[]
+  lat             Float?
+  lng             Float?
+  expectedSavings Decimal
+  createdAt       DateTime     @default(now())
+  deadline        DateTime
+}
+
+model LeadUpdate {
+  id               String   @id @default(cuid())
+  salesLeadId      String
+  salesLead        SalesLead @relation(fields: [salesLeadId], references: [id])
+  text             String
+  author           String
+  timestamp        DateTime @default(now())
+  generatedSavings Decimal?
+  attachmentUrl    String?
+  reportingLat     Float?
+  reportingLng     Float?
+}
+
+model BranchPlan {
+  id            String      @id @default(cuid())
+  branchId      String
+  branch        Branch      @relation(fields: [branchId], references: [id])
+  quarter       String
+  savingsTarget Decimal
+  entries       PlanEntry[]
+
+  @@unique([branchId, quarter])
+}
+
+model PlanEntry {
+  id              String   @id @default(cuid())
+  branchPlanId    String
+  branchPlan      BranchPlan @relation(fields: [branchPlanId], references: [id])
+  date            DateTime
+  type            String // "collection" or "withdrawal"
+  amount          Decimal
+  description     String
+  status          String   @default("Pending") // "Pending", "Approved", "Rejected"
+  submittedBy     String
+  reviewedBy      String?
+  rejectionReason String?
 }
 
 model Setting {
-  id        String   @id @default(cuid())
-  key       String   @unique
-  value     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-enum SalesLeadStatus {
-  New
-  Assigned
-  InProgress
-  Reopened
-  PendingClosure
-  PendingDistrictApproval
-  Closed
-}
-
-enum PlanEntryType {
-  collection
-  withdrawal
-}
-
-enum PlanEntryStatus {
-  Pending
-  Approved
-  Rejected
+  key   String @id
+  value String
 }
