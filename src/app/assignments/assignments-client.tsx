@@ -36,11 +36,8 @@ type ClientSalesLead = SalesLead & {
     assignee: User | null;
 };
 
-export default function AssignmentsClient({ user, permissions, leads }: { user: User | null, permissions: string[], leads: ClientSalesLead[] }) {
-  
-  const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
-
-  const getStatusBadgeVariant = (status: SalesLead['status']) => {
+// Helper Functions
+const getStatusBadgeVariant = (status: SalesLead['status']) => {
     switch (status) {
       case 'New': return 'info';
       case 'Assigned': return 'secondary';
@@ -51,9 +48,9 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
       case 'Closed': return 'success';
       default: return 'secondary';
     }
-  };
+};
 
-  const getStatusIcon = (status: SalesLead['status']) => {
+const getStatusIcon = (status: SalesLead['status']) => {
     const iconClass = "h-3.5 w-3.5";
     switch (status) {
         case 'Closed': return <Icons.check className={iconClass} />;
@@ -65,11 +62,15 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
         case 'New': return <Icons.plusCircle className={iconClass} />;
         default: return null;
     }
-  };
+};
 
-  const formatCurrency = (amount: number | any) => {
+const formatCurrency = (amount: number | any) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
-  };
+};
+
+export default function AssignmentsClient({ user, permissions, leads }: { user: User | null, permissions: string[], leads: ClientSalesLead[] }) {
+  
+  const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
 
   return (
     <SidebarProvider>

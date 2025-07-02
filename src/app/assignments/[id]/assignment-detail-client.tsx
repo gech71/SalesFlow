@@ -59,7 +59,51 @@ const updateSchema = z.object({
     updateText: z.string().min(5, { message: "Update must be at least 5 characters." }),
     status: SalesLeadStatusEnum,
     generatedSavings: z.coerce.number().min(0, "Savings must be a positive number.").optional(),
-})
+});
+
+// Helper Functions
+const getStatusBadgeVariant = (status: SalesLead['status']) => {
+    switch (status) {
+      case 'New': return 'info';
+      case 'Assigned': return 'secondary';
+      case 'Reopened': return 'warning';
+      case 'InProgress': return 'outline';
+      case 'PendingClosure': return 'warning';
+      case 'PendingDistrictApproval': return 'warning';
+      case 'Closed': return 'success';
+      default: return 'secondary';
+    }
+};
+
+const getStatusIcon = (status: SalesLead['status']) => {
+    const iconClass = "h-3.5 w-3.5";
+    switch (status) {
+        case 'Closed': return <Icons.check className={iconClass} />;
+        case 'PendingClosure':
+        case 'PendingDistrictApproval':
+        case 'InProgress': return <Icons.spinner className={cn(iconClass, "animate-spin")} />;
+        case 'Reopened': return <Icons.edit className={iconClass} />;
+        case 'Assigned': return <Icons.clipboardList className={iconClass} />;
+        case 'New': return <Icons.plusCircle className={iconClass} />;
+        default: return null;
+    }
+};
+
+const formatCurrency = (amount: number | any) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
+};
+
+const getDistanceInKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371; // Radius of the Earth in km
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+};
 
 export default function AssignmentDetailClient({ user, permissions, lead, distanceThreshold }: { user: User | null, permissions: string[], lead: ClientSalesLead, distanceThreshold: number }) {
   const router = useRouter();
@@ -86,18 +130,6 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
           reader.onerror = reject;
           reader.readAsDataURL(file);
       });
-  };
-
-  const getDistanceInKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-    const R = 6371; // Radius of the Earth in km
-    const dLat = (lat2 - lat1) * (Math.PI / 180);
-    const dLon = (lon2 - lon1) * (Math.PI / 180);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
   };
 
   const onUpdateSubmit = async (data: z.infer<typeof updateSchema>) => {
@@ -176,38 +208,6 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
   };
 
   const officerAllowedStatuses: any[] = ['InProgress', 'PendingClosure'];
-
-  const getStatusBadgeVariant = (status: SalesLead['status']) => {
-    switch (status) {
-      case 'New': return 'info';
-      case 'Assigned': return 'secondary';
-      case 'Reopened': return 'warning';
-      case 'InProgress': return 'outline';
-      case 'PendingClosure': return 'warning';
-      case 'PendingDistrictApproval': return 'warning';
-      case 'Closed': return 'success';
-      default: return 'secondary';
-    }
-  };
-
-  const getStatusIcon = (status: SalesLead['status']) => {
-    const iconClass = "h-3.5 w-3.5";
-    switch (status) {
-        case 'Closed': return <Icons.check className={iconClass} />;
-        case 'PendingClosure':
-        case 'PendingDistrictApproval':
-        case 'InProgress': return <Icons.spinner className={cn(iconClass, "animate-spin")} />;
-        case 'Reopened': return <Icons.edit className={iconClass} />;
-        case 'Assigned': return <Icons.clipboardList className={iconClass} />;
-        case 'New': return <Icons.plusCircle className={iconClass} />;
-        default: return null;
-    }
-  };
-
-  const formatCurrency = (amount: number | any) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
-  };
-
   const totalGeneratedSavings = lead.updates.reduce((acc, u) => acc + (Number(u.generatedSavings) || 0), 0);
   const achievementPercentage = Number(lead.expectedSavings) > 0 ? Math.min(100, (totalGeneratedSavings / Number(lead.expectedSavings)) * 100) : 0;
   const isPendingApproval = lead.status === 'PendingClosure' || lead.status === 'PendingDistrictApproval' || lead.status === 'Closed';

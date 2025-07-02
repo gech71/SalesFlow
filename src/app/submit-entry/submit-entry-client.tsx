@@ -36,6 +36,30 @@ const newPlanEntrySchema = z.object({
   description: z.string().min(5, "Description must be at least 5 characters."),
 });
 
+// Helper Functions
+const formatCurrency = (amount: number | any) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
+};
+
+const getStatusBadgeVariant = (status: PlanEntry['status']) => {
+    switch (status) {
+        case 'Approved': return 'success';
+        case 'Pending': return 'warning';
+        case 'Rejected': return 'destructive';
+        default: return 'secondary';
+    }
+};
+
+const getStatusIcon = (status: PlanEntry['status']) => {
+  const iconClass = "h-3.5 w-3.5";
+  switch (status) {
+      case 'Approved': return <Icons.check className={iconClass} />;
+      case 'Pending': return <Icons.spinner className={cn(iconClass, "animate-spin")} />;
+      case 'Rejected': return <Icons.close className={iconClass} />;
+      default: return null;
+  }
+};
+
 export default function SubmitEntryClient({ user, permissions, plans, branches, quarters }: { user: User | null, permissions: string[], plans: ClientBranchPlan[], branches: Branch[], quarters: string[] }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -80,29 +104,6 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
     }
   };
   
-  const formatCurrency = (amount: number | any) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
-  }
-
-  const getStatusBadgeVariant = (status: PlanEntry['status']) => {
-      switch (status) {
-          case 'Approved': return 'success';
-          case 'Pending': return 'warning';
-          case 'Rejected': return 'destructive';
-          default: return 'secondary';
-      }
-  };
-
-  const getStatusIcon = (status: PlanEntry['status']) => {
-    const iconClass = "h-3.5 w-3.5";
-    switch (status) {
-        case 'Approved': return <Icons.check className={iconClass} />;
-        case 'Pending': return <Icons.spinner className={cn(iconClass, "animate-spin")} />;
-        case 'Rejected': return <Icons.close className={iconClass} />;
-        default: return null;
-    }
-  };
-
   return (
     <SidebarProvider>
       <Sidebar>

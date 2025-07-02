@@ -58,6 +58,9 @@ type ClientBranch = Branch & {
     users: ClientUser[];
 };
 
+// Helper Functions
+const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
+
 export default function BranchAssignmentsClient({ user, permissions, leads, branches }: { user: User | null, permissions: string[], leads: ClientSalesLead[], branches: ClientBranch[] }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -133,8 +136,6 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
   const unassignedLeads = useMemo(() => leads.filter(lead => lead.branchId && !lead.assigneeId && lead.status === 'Assigned'), [leads]);
   const pendingApprovalLeads = useMemo(() => leads.filter(lead => lead.assigneeId && lead.status === 'PendingClosure'), [leads]);
   
-  const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
-
   return (
     <SidebarProvider>
       <Sidebar>

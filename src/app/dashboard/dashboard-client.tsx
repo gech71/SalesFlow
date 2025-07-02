@@ -41,6 +41,11 @@ interface DashboardClientProps {
   branches: ClientBranch[];
 }
 
+// Helper Function
+const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+};
+
 export default function DashboardClient({ user, permissions, leads, plans, districts, branches }: DashboardClientProps) {
   const [selectedDistrict, setSelectedDistrict] = useState('all');
   const [selectedBranch, setSelectedBranch] = useState('all');
@@ -147,10 +152,6 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
       branchPlanPerformance,
     };
   }, [leads, plans, districts, branches, selectedDistrict, selectedBranch]);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-  };
   
   return (
     <SidebarProvider>
