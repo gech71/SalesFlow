@@ -418,32 +418,62 @@ export default function SettingsClient({ loggedInUser, threshold, users, roles, 
                                     name="permissions"
                                     render={({ field }) => (
                                         <>
-                                            {permissionGroups.map((group) => (
-                                                <div key={group.title} className="space-y-3">
-                                                    <h4 className="font-medium text-sm text-foreground">{group.title}</h4>
-                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 pl-2">
-                                                        {group.permissions.map((p) => (
-                                                            <div key={p.id} className="flex items-center space-x-2">
-                                                                <Checkbox
-                                                                    id={`perm-${p.id}`}
-                                                                    checked={field.value?.includes(p.id)}
-                                                                    onCheckedChange={(checked) => {
-                                                                        return checked
-                                                                            ? field.onChange([...(field.value || []), p.id])
-                                                                            : field.onChange(field.value?.filter((v) => v !== p.id));
-                                                                    }}
-                                                                />
-                                                                <label
-                                                                    htmlFor={`perm-${p.id}`}
-                                                                    className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                                                >
-                                                                    {p.label}
-                                                                </label>
-                                                            </div>
-                                                        ))}
+                                            {permissionGroups.map((group) => {
+                                                const allGroupPermissions = group.permissions.map(p => p.id);
+                                                const selectedPermissions = field.value || [];
+                                                const areAllSelected = allGroupPermissions.every(p => selectedPermissions.includes(p));
+                                                const areSomeSelected = allGroupPermissions.some(p => selectedPermissions.includes(p));
+
+                                                const handleGroupCheck = (checked: boolean | 'indeterminate') => {
+                                                    const currentPermissions = field.value || [];
+                                                    if (checked) {
+                                                        const newPermissions = [...new Set([...currentPermissions, ...allGroupPermissions])];
+                                                        field.onChange(newPermissions);
+                                                    } else {
+                                                        const newPermissions = currentPermissions.filter(p => !allGroupPermissions.includes(p));
+                                                        field.onChange(newPermissions);
+                                                    }
+                                                };
+
+                                                return (
+                                                    <div key={group.title} className="space-y-3">
+                                                        <div className="flex items-center space-x-3">
+                                                            <Checkbox
+                                                                id={`group-${group.title.replace(/\s+/g, '-')}`}
+                                                                checked={areAllSelected ? true : areSomeSelected ? 'indeterminate' : false}
+                                                                onCheckedChange={handleGroupCheck}
+                                                            />
+                                                            <label
+                                                                htmlFor={`group-${group.title.replace(/\s+/g, '-')}`}
+                                                                className="font-medium text-sm text-foreground leading-none"
+                                                            >
+                                                                {group.title}
+                                                            </label>
+                                                        </div>
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 pl-8">
+                                                            {group.permissions.map((p) => (
+                                                                <div key={p.id} className="flex items-center space-x-3">
+                                                                    <Checkbox
+                                                                        id={`perm-${p.id}`}
+                                                                        checked={field.value?.includes(p.id)}
+                                                                        onCheckedChange={(checked) => {
+                                                                            return checked
+                                                                                ? field.onChange([...(field.value || []), p.id])
+                                                                                : field.onChange(field.value?.filter((v) => v !== p.id));
+                                                                        }}
+                                                                    />
+                                                                    <label
+                                                                        htmlFor={`perm-${p.id}`}
+                                                                        className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                                    >
+                                                                        {p.label}
+                                                                    </label>
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </>
                                     )}
                                 />
