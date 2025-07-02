@@ -60,9 +60,10 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-            <div className="flex items-center justify-center p-2">
+            <div className="flex items-center gap-2 justify-center p-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="https://play-lh.googleusercontent.com/bXqMt9ROsGd0H9vPhib5hG-0NB-EJcAwZy6UUDhvlP-ykE595IMQtzr14R6IRWtJiGTh=w600-h300-pc0xffffff-pd" alt="NIB International Bank Logo" className="h-12 w-auto" />
+                <img src="https://play-lh.googleusercontent.com/bXqMt9ROsGd0H9vPhib5hG-0NB-EJcAwZy6UUDhvlP-ykE595IMQtzr14R6IRWtJiGTh=w600-h300-pc0xffffff-pd" alt="NIB International Bank Logo" className="h-8 w-auto" />
+                <span className="font-semibold text-lg">Nib Sales</span>
             </div>
         </SidebarHeader>
         <SidebarContent>
