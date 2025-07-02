@@ -209,7 +209,7 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
                           An overview of all unassigned leads in each district.
                         </CardDescription>
                     </div>
-                    {permissions.includes('create_lead') && (
+                    {permissions.includes('district_assignments:create_lead') && (
                       <Link href="/new-lead">
                         <Button><Icons.plusCircle className="mr-2 h-4 w-4" /> Create New Lead</Button>
                       </Link>

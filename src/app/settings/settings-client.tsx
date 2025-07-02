@@ -52,32 +52,54 @@ const roleSchema = z.object({
 });
 
 const permissionGroups = [
-  {
-    title: 'General & Settings',
-    permissions: [{ id: 'manage_settings', label: 'Manage users, roles, and system settings' }],
-  },
-  {
-    title: 'Reporting & Dashboards',
-    permissions: [{ id: 'view_all_reports', label: 'View all reports and dashboards' }],
-  },
-  {
-    title: 'Lead Management Workflow',
-    permissions: [
-      { id: 'create_lead', label: 'Create a new lead (District)' },
-      { id: 'assign_branch', label: 'Assign a lead to a Branch (District)' },
-      { id: 'approve_district', label: 'Give final approval to a lead (District)' },
-      { id: 'assign_user', label: 'Assign a lead to an Officer (Branch)' },
-      { id: 'approve_branch', label: 'Approve a lead submission (Branch)' },
-      { id: 'update_lead', label: 'Update an assigned lead (Officer)' },
-    ],
-  },
-  {
-    title: 'Branch Savings Plans',
-    permissions: [
-        { id: 'create_plan_entry', label: 'Submit collection/withdrawal entries (Branch)' },
-        { id: 'review_plan_entry', label: 'Review (approve/reject) plan entries (District)' },
-    ]
-  }
+    {
+        title: 'Dashboard',
+        permissions: [{ id: 'dashboard:read', label: 'View sales dashboard' }],
+    },
+    {
+        title: 'My Assignments',
+        permissions: [
+            { id: 'assignments:read_own', label: 'View own assigned leads' },
+            { id: 'assignments:update_own', label: 'Update own assigned leads' },
+        ],
+    },
+    {
+        title: 'District View',
+        permissions: [
+            { id: 'district_assignments:read', label: 'View leads at district level' },
+            { id: 'district_assignments:create_lead', label: 'Create new leads' },
+            { id: 'district_assignments:assign_branch', label: 'Assign leads to branches' },
+            { id: 'district_assignments:approve', label: 'Approve/rework leads for final closure' },
+        ],
+    },
+    {
+        title: 'Branch View',
+        permissions: [
+            { id: 'branch_assignments:read', label: 'View leads at branch level' },
+            { id: 'branch_assignments:assign_officer', label: 'Assign leads to officers' },
+            { id: 'branch_assignments:approve', label: 'Approve/rework leads for district review' },
+        ],
+    },
+    {
+        title: 'Branch Savings Plans',
+        permissions: [
+            { id: 'branch_plans:read', label: 'View branch savings plans' },
+            { id: 'branch_plans:review', label: 'Review (approve/reject) plan entries' },
+            { id: 'branch_plans:create_entry', label: 'Submit collection/withdrawal entries' },
+        ],
+    },
+    {
+        title: 'Off-site Reports',
+        permissions: [{ id: 'offsite_reports:read', label: 'View off-site reporting violations' }],
+    },
+    {
+        title: 'Settings',
+        permissions: [
+            { id: 'settings:manage_users', label: 'Manage users and their assignments' },
+            { id: 'settings:manage_roles', label: 'Manage roles and permissions' },
+            { id: 'settings:manage_reporting', label: 'Manage reporting settings (e.g., distance threshold)' },
+        ],
+    },
 ];
 
 
