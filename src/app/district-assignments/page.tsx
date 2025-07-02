@@ -5,7 +5,8 @@ import DistrictAssignmentsClient from './district-assignments-client';
 import { cookies } from 'next/headers';
 
 export default async function DistrictAssignmentsPage() {
-    const userId = cookies().get('userId')?.value;
+    const cookieStore = await cookies();
+    const userId = cookieStore.get('userId')?.value;
 
     const user = userId ? await prisma.user.findUnique({
         where: { id: userId },

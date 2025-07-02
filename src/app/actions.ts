@@ -278,7 +278,8 @@ export async function loginAction(data: z.infer<typeof loginSchema>) {
     const { phoneNumber, password } = validatedFields.data;
 
     try {
-        const response = await fetch('http://localhost:5160/api/Auth/login', {
+        const baseUrl = process.env.AUTH_BASE_URL;
+        const response = await fetch(`${baseUrl}/api/Auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ phoneNumber, password }),
@@ -300,19 +301,20 @@ export async function loginAction(data: z.infer<typeof loginSchema>) {
                 return { success: false, error: "Authenticated user not found in application database." };
             }
 
-            cookies().set('accessToken', result.accessToken, {
+            const cookieStore = await cookies();
+            cookieStore.set('accessToken', result.accessToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
                 path: '/',
             });
-            cookies().set('refreshToken', result.refreshToken, {
+            cookieStore.set('refreshToken', result.refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
                 path: '/',
             });
-            cookies().set('userId', user.id, {
+            cookieStore.set('userId', user.id, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
@@ -331,12 +333,14 @@ export async function loginAction(data: z.infer<typeof loginSchema>) {
 
 
 export async function logoutAction() {
-    const accessToken = cookies().get('accessToken')?.value;
-    const refreshToken = cookies().get('refreshToken')?.value;
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get('accessToken')?.value;
+    const refreshToken = cookieStore.get('refreshToken')?.value;
 
     if (accessToken && refreshToken) {
         try {
-            await fetch('http://localhost:5160/api/Auth/logout', {
+            const baseUrl = process.env.AUTH_BASE_URL;
+            await fetch(`${baseUrl}/api/Auth/logout`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: accessToken, refreshToken }),
@@ -346,8 +350,8 @@ export async function logoutAction() {
         }
     }
 
-    cookies().delete('accessToken');
-    cookies().delete('refreshToken');
-    cookies().delete('userId');
+    cookieStore.delete('accessToken');
+    cookieStore.delete('refreshToken');
+    cookieStore.delete('userId');
     redirect('/');
 }
