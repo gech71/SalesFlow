@@ -150,7 +150,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
     } else {
       toast({ title: "Registration Failed", description: result.error, variant: "destructive" });
     }
-  }
+  };
 
   const handleRoleChange = async (userId: string, roleId: string) => {
     try {
@@ -159,7 +159,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
     } catch (error) {
         toast({ title: "Error", description: "Failed to update user role.", variant: "destructive" });
     }
-  }
+  };
 
   const handleAssignmentChange = async (userId: string, districtId?: string, branchId?: string) => {
     try {
@@ -168,7 +168,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
     } catch (error) {
       toast({ title: "Error", description: "Failed to save assignment.", variant: "destructive" });
     }
-  }
+  };
   
   const openRoleDialog = (role: Role | null) => {
     if (role) {
@@ -179,7 +179,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
       resetRole({ name: '', description: '', permissions: [] });
     }
     setIsRoleDialogOpen(true);
-  }
+  };
 
   const onRoleSubmit = async (data: z.infer<typeof roleSchema>) => {
     try {
@@ -189,7 +189,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
     } catch (error) {
       toast({ title: "Error", description: "Failed to save role.", variant: "destructive" });
     }
-  }
+  };
 
   const onDeleteRole = async (roleId: string) => {
     if (confirm("Are you sure you want to delete this role? This cannot be undone.")) {
@@ -200,7 +200,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
         toast({ title: "Error Deleting Role", description: error.message, variant: "destructive" });
       }
     }
-  }
+  };
 
   const renderAssignmentControls = (user: ClientUser) => {
     const roleName = roles.find(r => r.id === user.roleId)?.name;

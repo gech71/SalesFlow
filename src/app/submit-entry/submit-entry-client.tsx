@@ -87,7 +87,7 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
     } catch (error) {
         toast({ title: "Error", description: "Failed to submit entry.", variant: "destructive" });
     }
-  };
+  }
 
   return (
     <SidebarProvider>
