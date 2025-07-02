@@ -27,6 +27,7 @@ import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, 
 import { Progress } from '@/components/ui/progress';
 import { logoutAction } from '../actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 type ClientSalesLead = SalesLead & {
     updates: LeadUpdate[];
@@ -35,26 +36,37 @@ type ClientSalesLead = SalesLead & {
     assignee: User | null;
 };
 
+const formatCurrency = (amount: number | any) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
+}
+
+const StatusBadge = ({ status }: { status: SalesLead['status'] }) => {
+    const statusConfig = useMemo(() => {
+        switch (status) {
+            case 'Closed': return { variant: 'success', Icon: Icons.checkCircle2, text: 'Closed' };
+            case 'PendingClosure':
+            case 'PendingDistrictApproval': return { variant: 'warning', Icon: Icons.hourglass, text: status };
+            case 'New': return { variant: 'info', Icon: Icons.filePlus2, text: 'New' };
+            case 'Reopened': return { variant: 'warning', Icon: Icons.refreshCw, text: 'Reopened' };
+            case 'Assigned': return { variant: 'default', Icon: Icons.arrowRightCircle, text: 'Assigned' };
+            case 'InProgress': return { variant: 'default', Icon: Icons.loader2, text: 'In Progress' };
+            default: return { variant: 'secondary', Icon: Icons.circle, text: status };
+        }
+    }, [status]);
+
+    const iconClassName = status === 'InProgress' ? 'animate-spin' : '';
+
+    return (
+        <Badge variant={statusConfig.variant}>
+            <statusConfig.Icon className={cn("h-3 w-3", iconClassName)} />
+            <span>{statusConfig.text}</span>
+        </Badge>
+    );
+};
+
 export default function AssignmentsClient({ user, permissions, leads }: { user: User | null, permissions: string[], leads: ClientSalesLead[] }) {
   
   const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
-
-  const getStatusBadgeVariant = (status: SalesLead['status']): "default" | "secondary" | "destructive" | "outline" => {
-    switch (status) {
-      case 'New': return 'default';
-      case 'Assigned': return 'secondary';
-      case 'Reopened': return 'secondary';
-      case 'InProgress': return 'outline';
-      case 'PendingClosure': return 'destructive';
-      case 'PendingDistrictApproval': return 'destructive';
-      case 'Closed': return 'default';
-      default: return 'secondary';
-    }
-  };
-
-  const formatCurrency = (amount: number | any) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
-  }
 
   return (
     <SidebarProvider>
@@ -172,7 +184,7 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
                         return (
                             <TableRow key={lead.id}>
                                 <TableCell className="font-medium">{lead.title}</TableCell>
-                                <TableCell><Badge variant={getStatusBadgeVariant(lead.status as any)}>{lead.status}</Badge></TableCell>
+                                <TableCell><StatusBadge status={lead.status as any} /></TableCell>
                                 <TableCell className="hidden md:table-cell">{lead.assignee?.name || 'N/A'}, {lead.branch?.name || 'N/A'}, {lead.district?.name || 'N/A'}</TableCell>
                                 <TableCell>
                                     <div className="font-medium">{formatCurrency(lead.expectedSavings)} <span className="text-xs text-muted-foreground">Target</span></div>

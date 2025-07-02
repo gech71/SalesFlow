@@ -37,6 +37,7 @@ import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, 
 import { Progress } from '@/components/ui/progress';
 import { addLeadUpdate, logoutAction } from '@/app/actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 // The client-side type needs to match what the server component constructs
 type ClientSalesLead = SalesLead & {
@@ -58,7 +59,61 @@ const updateSchema = z.object({
     updateText: z.string().min(5, { message: "Update must be at least 5 characters." }),
     status: SalesLeadStatusEnum,
     generatedSavings: z.coerce.number().min(0, "Savings must be a positive number.").optional(),
-})
+});
+
+const getDistanceInKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371; // Radius of the Earth in km
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+};
+
+const formatCurrency = (amount: number | any) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
+}
+
+const StatusBadge = ({ status }: { status: SalesLead['status'] }) => {
+    const statusConfig = useMemo(() => {
+        switch (status) {
+            case 'Closed': return { variant: 'success', Icon: Icons.checkCircle2, text: 'Closed' };
+            case 'PendingClosure':
+            case 'PendingDistrictApproval': return { variant: 'warning', Icon: Icons.hourglass, text: status };
+            case 'New': return { variant: 'info', Icon: Icons.filePlus2, text: 'New' };
+            case 'Reopened': return { variant: 'warning', Icon: Icons.refreshCw, text: 'Reopened' };
+            case 'Assigned': return { variant: 'default', Icon: Icons.arrowRightCircle, text: 'Assigned' };
+            case 'InProgress': return { variant: 'default', Icon: Icons.loader2, text: 'In Progress' };
+            default: return { variant: 'secondary', Icon: Icons.circle, text: status };
+        }
+    }, [status]);
+
+    const iconClassName = status === 'InProgress' ? 'animate-spin' : '';
+
+    return (
+        <Badge variant={statusConfig.variant}>
+            <statusConfig.Icon className={cn("h-3 w-3", iconClassName)} />
+            <span>{statusConfig.text}</span>
+        </Badge>
+    );
+};
+
+const OnSiteBadge = ({ isOnSite, distance }: { isOnSite: boolean, distance: number }) => {
+    const variant = isOnSite ? 'success' : 'destructive';
+    const Icon = isOnSite ? Icons.shieldCheck : Icons.shieldAlert;
+    const text = isOnSite ? "On-site" : "Off-site";
+
+    return (
+        <Badge variant={variant}>
+            <Icon className="h-3 w-3" />
+            <span>{text} ({distance.toFixed(2)} km away)</span>
+        </Badge>
+    );
+};
+
 
 export default function AssignmentDetailClient({ user, permissions, lead, distanceThreshold }: { user: User | null, permissions: string[], lead: ClientSalesLead, distanceThreshold: number }) {
   const router = useRouter();
@@ -86,18 +141,6 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
           reader.readAsDataURL(file);
       });
   }
-
-  const getDistanceInKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-    const R = 6371; // Radius of the Earth in km
-    const dLat = (lat2 - lat1) * (Math.PI / 180);
-    const dLon = (lon2 - lon1) * (Math.PI / 180);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
 
   const onUpdateSubmit = async (data: z.infer<typeof updateSchema>) => {
     setIsSubmitting(true);
@@ -175,23 +218,6 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
   }
 
   const officerAllowedStatuses: any[] = ['InProgress', 'PendingClosure'];
-
-  const getStatusBadgeVariant = (status: SalesLead['status']): "default" | "secondary" | "destructive" | "outline" => {
-    switch (status) {
-      case 'New': return 'default';
-      case 'Assigned': return 'secondary';
-      case 'Reopened': return 'secondary';
-      case 'InProgress': return 'outline';
-      case 'PendingClosure': return 'destructive';
-      case 'PendingDistrictApproval': return 'destructive';
-      case 'Closed': return 'default';
-      default: return 'secondary';
-    }
-  };
-
-  const formatCurrency = (amount: number | any) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
-  }
 
   const totalGeneratedSavings = lead.updates.reduce((acc, u) => acc + (Number(u.generatedSavings) || 0), 0);
   const achievementPercentage = Number(lead.expectedSavings) > 0 ? Math.min(100, (totalGeneratedSavings / Number(lead.expectedSavings)) * 100) : 0;
@@ -308,7 +334,7 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
                         </div>
                         <div>
                             <p className="font-medium">Status</p>
-                            <Badge variant={getStatusBadgeVariant(lead.status as any)}>{lead.status}</Badge>
+                            <StatusBadge status={lead.status as any} />
                         </div>
                         <div className="col-span-2 md:col-span-1">
                             <p className="font-medium">Savings Progress ({achievementPercentage.toFixed(0)}%)</p>
@@ -359,9 +385,7 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
                                                         >
                                                             Reported from location
                                                         </a>
-                                                        <Badge variant={isOnSite ? 'default' : 'destructive'}>
-                                                            {isOnSite ? "On-site" : "Off-site"} ({distance.toFixed(2)} km away)
-                                                        </Badge>
+                                                        <OnSiteBadge isOnSite={isOnSite} distance={distance} />
                                                     </div>
                                                 )
                                             })()}

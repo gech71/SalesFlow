@@ -23,6 +23,7 @@ import { Progress } from '@/components/ui/progress';
 import { createPlanEntry, logoutAction } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 type ClientBranchPlan = BranchPlan & {
     entries: PlanEntry[];
@@ -34,6 +35,44 @@ const newPlanEntrySchema = z.object({
   amount: z.coerce.number().positive("Amount must be a positive number."),
   description: z.string().min(5, "Description must be at least 5 characters."),
 });
+
+const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
+
+const PlanStatusBadge = ({ status }: { status: PlanEntry['status'] }) => {
+    const config = useMemo(() => {
+        switch (status) {
+            case 'Approved': return { variant: 'success', Icon: Icons.checkCircle2, text: 'Approved' };
+            case 'Pending': return { variant: 'warning', Icon: Icons.hourglass, text: 'Pending' };
+            case 'Rejected': return { variant: 'destructive', Icon: Icons.xCircle, text: 'Rejected' };
+            default: return { variant: 'secondary', Icon: Icons.circle, text: status };
+        }
+    }, [status]);
+
+    return (
+        <Badge variant={config.variant}>
+            <config.Icon className="h-3 w-3" />
+            <span>{config.text}</span>
+        </Badge>
+    );
+};
+
+const PlanTypeBadge = ({ type }: { type: PlanEntry['type'] }) => {
+    const config = useMemo(() => {
+        switch (type) {
+            case 'collection': return { variant: 'success', Icon: Icons.arrowDownCircle, text: 'Collection' };
+            case 'withdrawal': return { variant: 'warning', Icon: Icons.arrowUpCircle, text: 'Withdrawal' };
+            default: return { variant: 'secondary', Icon: Icons.circle, text: type };
+        }
+    }, [type]);
+
+    return (
+        <Badge variant={config.variant}>
+            <config.Icon className="h-3 w-3" />
+            <span>{config.text}</span>
+        </Badge>
+    );
+};
+
 
 export default function SubmitEntryClient({ user, permissions, plans, branches, quarters }: { user: User | null, permissions: string[], plans: ClientBranchPlan[], branches: Branch[], quarters: string[] }) {
   const router = useRouter();
@@ -77,16 +116,6 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
     } catch (error) {
         toast({ title: "Error", description: "Failed to submit entry.", variant: "destructive" });
     }
-  };
-  
-  const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
-  const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
-      switch (status) {
-          case 'Approved': return 'default';
-          case 'Pending': return 'outline';
-          case 'Rejected': return 'destructive';
-          default: return 'secondary';
-      }
   };
 
   return (
@@ -279,9 +308,9 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
                                                 <TableRow key={entry.id}>
                                                     <TableCell className="hidden md:table-cell">{format(new Date(entry.date), "P")}</TableCell>
                                                     <TableCell className="md:hidden">{format(new Date(entry.date), "P")}</TableCell>
-                                                    <TableCell><Badge variant={entry.type === 'collection' ? 'outline' : 'secondary'}>{entry.type}</Badge></TableCell>
+                                                    <TableCell><PlanTypeBadge type={entry.type as any} /></TableCell>
                                                     <TableCell className="font-medium">{formatCurrency(entry.amount)}</TableCell>
-                                                    <TableCell><Badge variant={getStatusBadgeVariant(entry.status)}>{entry.status}</Badge></TableCell>
+                                                    <TableCell><PlanStatusBadge status={entry.status as any} /></TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>
