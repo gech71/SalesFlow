@@ -1,6 +1,7 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
+import AuthRefresher from '@/components/auth-refresher';
 
 export const metadata: Metadata = {
   title: 'Sales Lead Management',
@@ -15,6 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+        <AuthRefresher />
         {children}
         <Toaster />
       </body>

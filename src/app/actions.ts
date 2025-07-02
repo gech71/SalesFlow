@@ -302,23 +302,23 @@ export async function loginAction(data: z.infer<typeof loginSchema>) {
             }
 
             const cookieStore = await cookies();
-            cookieStore.set('accessToken', result.accessToken, {
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + 7);
+
+            const cookieOptions = {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
+                sameSite: 'strict' as const,
                 path: '/',
-            });
-            cookieStore.set('refreshToken', result.refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                path: '/',
-            });
-            cookieStore.set('userId', user.id, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                path: '/',
+            };
+
+            cookieStore.set('accessToken', result.accessToken, cookieOptions);
+            cookieStore.set('refreshToken', result.refreshToken, cookieOptions);
+            cookieStore.set('userId', user.id, cookieOptions);
+            cookieStore.set('refreshTokenExpiry', expiryDate.toISOString(), {
+                ...cookieOptions,
+                httpOnly: false, // Client needs to read this
+                expires: expiryDate,
             });
 
             return { success: true };
@@ -353,5 +353,59 @@ export async function logoutAction() {
     cookieStore.delete('accessToken');
     cookieStore.delete('refreshToken');
     cookieStore.delete('userId');
+    cookieStore.delete('refreshTokenExpiry');
     redirect('/');
+}
+
+export async function refreshTokenAction() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken')?.value;
+  const refreshToken = cookieStore.get('refreshToken')?.value;
+
+  if (!refreshToken) {
+    return { success: false, error: 'No refresh token found.' };
+  }
+
+  try {
+    const baseUrl = process.env.AUTH_BASE_URL;
+    const response = await fetch(`${baseUrl}/api/Auth/refresh-token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: accessToken, refreshToken }),
+    });
+
+    if (!response.ok) {
+        console.error("Refresh token failed with status:", response.status)
+        return { success: false, error: 'Failed to refresh token.' };
+    }
+
+    const result = await response.json();
+
+    if (result.isSuccess && result.accessToken && result.refreshToken) {
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + 7);
+
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict' as const,
+        path: '/',
+      };
+      
+      cookieStore.set('accessToken', result.accessToken, cookieOptions);
+      cookieStore.set('refreshToken', result.refreshToken, cookieOptions);
+      cookieStore.set('refreshTokenExpiry', expiryDate.toISOString(), {
+          ...cookieOptions,
+          httpOnly: false,
+          expires: expiryDate,
+      });
+
+      return { success: true };
+    } else {
+      return { success: false, error: result.errors?.[0] || 'Token refresh failed.' };
+    }
+  } catch (error) {
+    console.error('Token refresh error:', error);
+    return { success: false, error: 'An unexpected error occurred during token refresh.' };
+  }
 }
