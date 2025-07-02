@@ -46,33 +46,33 @@ async function main() {
     // Admin User
     await prisma.user.create({
         data: {
-            authId: '91dff77e-f1f8-49f9-a9f6-482a9744f908',
             email: 'admin@example.com',
             name: 'Admin User',
+            phoneNumber: '0912345678',
             roleId: adminRole.id,
         }
     });
 
     // District Managers
     const distManager1 = await prisma.user.create({
-        data: { authId: 'dist-manager-1', email: 'dm1@example.com', name: 'Diana Prince', roleId: districtManagerRole.id, districtId: dist1.id }
+        data: { email: 'dm1@example.com', name: 'Diana Prince', roleId: districtManagerRole.id, districtId: dist1.id, phoneNumber: '0911111111' }
     });
     const distManager2 = await prisma.user.create({
-        data: { authId: 'dist-manager-2', email: 'dm2@example.com', name: 'Bruce Wayne', roleId: districtManagerRole.id, districtId: dist2.id }
+        data: { email: 'dm2@example.com', name: 'Bruce Wayne', roleId: districtManagerRole.id, districtId: dist2.id, phoneNumber: '0922222222' }
     });
 
     // Branch Managers
     const branchManager1 = await prisma.user.create({
-        data: { authId: 'branch-manager-1', email: 'bm1@example.com', name: 'Clark Kent', roleId: branchManagerRole.id, branchId: branch1.id }
+        data: { email: 'bm1@example.com', name: 'Clark Kent', roleId: branchManagerRole.id, branchId: branch1.id, phoneNumber: '0933333333' }
     });
 
     // Officers
-    const officer1 = await prisma.user.create({ data: { authId: 'officer-1', email: 'johndoe@example.com', name: 'John Doe', branchId: branch1.id, roleId: officerRole.id } });
-    const officer2 = await prisma.user.create({ data: { authId: 'officer-2', email: 'janesmith@example.com', name: 'Jane Smith', branchId: branch1.id, roleId: officerRole.id } });
-    const officer3 = await prisma.user.create({ data: { authId: 'officer-3', email: 'peterjones@example.com', name: 'Peter Jones', branchId: branch2.id, roleId: officerRole.id } });
-    const officer4 = await prisma.user.create({ data: { authId: 'officer-4', email: 'marywilliams@example.com', name: 'Mary Williams', branchId: branch2.id, roleId: officerRole.id } });
-    const officer5 = await prisma.user.create({ data: { authId: 'officer-5', email: 'sambrown@example.com', name: 'Sam Brown', branchId: branch3.id, roleId: officerRole.id } });
-    const officer6 = await prisma.user.create({ data: { authId: 'officer-6', email: 'patriciagreen@example.com', name: 'Patricia Green', branchId: branch3.id, roleId: officerRole.id } });
+    const officer1 = await prisma.user.create({ data: { email: 'johndoe@example.com', name: 'John Doe', branchId: branch1.id, roleId: officerRole.id, phoneNumber: '0944444441' } });
+    const officer2 = await prisma.user.create({ data: { email: 'janesmith@example.com', name: 'Jane Smith', branchId: branch1.id, roleId: officerRole.id, phoneNumber: '0944444442' } });
+    const officer3 = await prisma.user.create({ data: { email: 'peterjones@example.com', name: 'Peter Jones', branchId: branch2.id, roleId: officerRole.id, phoneNumber: '0944444443' } });
+    const officer4 = await prisma.user.create({ data: { email: 'marywilliams@example.com', name: 'Mary Williams', branchId: branch2.id, roleId: officerRole.id, phoneNumber: '0944444444' } });
+    const officer5 = await prisma.user.create({ data: { email: 'sambrown@example.com', name: 'Sam Brown', branchId: branch3.id, roleId: officerRole.id, phoneNumber: '0944444445' } });
+    const officer6 = await prisma.user.create({ data: { email: 'patriciagreen@example.com', name: 'Patricia Green', branchId: branch3.id, roleId: officerRole.id, phoneNumber: '0944444446' } });
     console.log(`Seeded users`);
 
     // Seed Sales Leads

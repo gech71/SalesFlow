@@ -8,7 +8,7 @@ export default async function DistrictAssignmentsPage() {
     const userId = cookies().get('userId')?.value;
 
     const user = userId ? await prisma.user.findUnique({
-        where: { authId: userId },
+        where: { id: userId },
         include: { role: true }
     }) : null;
 

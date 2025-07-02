@@ -292,6 +292,14 @@ export async function loginAction(data: z.infer<typeof loginSchema>) {
         const result = await response.json();
 
         if (result.isSuccess && result.accessToken && result.refreshToken) {
+            const user = await prisma.user.findUnique({
+                where: { phoneNumber }
+            });
+
+            if (!user) {
+                return { success: false, error: "Authenticated user not found in application database." };
+            }
+
             cookies().set('accessToken', result.accessToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
@@ -304,16 +312,12 @@ export async function loginAction(data: z.infer<typeof loginSchema>) {
                 sameSite: 'strict',
                 path: '/',
             });
-            
-            // Store admin user ID if phone number matches
-            if (phoneNumber.endsWith('912345678')) {
-                cookies().set('userId', '91dff77e-f1f8-49f9-a9f6-482a9744f908', {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
-                    path: '/',
-                });
-            }
+            cookies().set('userId', user.id, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                path: '/',
+            });
 
             return { success: true };
         } else {
