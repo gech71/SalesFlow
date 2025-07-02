@@ -156,9 +156,10 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-            <div className="flex items-center justify-center p-2">
+            <div className="flex items-center justify-center gap-2 p-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="https://play-lh.googleusercontent.com/bXqMt9ROsGd0H9vPhib5hG-0NB-EJcAwZy6UUDhvlP-ykE595IMQtzr14R6IRWtJiGTh=w600-h300-pc0xffffff-pd" alt="NIB International Bank Logo" className="h-12 w-auto" />
+                <img src="https://play-lh.googleusercontent.com/bXqMt9ROsGd0H9vPhib5hG-0NB-EJcAwZy6UUDhvlP-ykE595IMQtzr14R6IRWtJiGTh=w600-h300-pc0xffffff-pd" alt="NIB International Bank Logo" className="h-8 w-auto" />
+                <span className="text-lg font-semibold">Nib Sales</span>
             </div>
         </SidebarHeader>
         <SidebarContent>
@@ -181,7 +182,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
             {permissions.includes('branch_plans:create_entry') && (
                 <SidebarMenuItem>
                 <Link href="/submit-entry"><SidebarMenuButton><Icons.plusCircle className="mr-2" />Submit Entry</SidebarMenuButton></Link>
-            </SidebarMenuItem>
+                </SidebarMenuItem>
             )}
             {permissions.includes('district_assignments:read') && (
                 <SidebarMenuItem>
