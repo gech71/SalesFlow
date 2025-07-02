@@ -437,32 +437,51 @@ export async function registerUser(data: z.infer<typeof registerUserSchema>) {
             body: JSON.stringify({ firstName, lastName, email, phoneNumber, password }),
         });
 
-        // If the auth server fails (e.g., user already exists there), return its error.
         if (!authResponse.ok) {
             const errorResult = await authResponse.json().catch(() => ({ errors: ['Registration failed on auth server.'] }));
             return { success: false, error: errorResult.errors?.[0] || 'Auth server registration failed.' };
         }
         
-        // After a successful external registration, create the user in the local database.
-        await prisma.user.create({
-            data: {
-                email,
-                name: `${firstName} ${lastName}`,
-                firstName,
-                lastName,
-                phoneNumber,
-                roleId
-            }
-        });
+        const authResult = await authResponse.json();
 
-        revalidatePath('/settings');
-        return { success: true };
+        if (authResult.isSuccess && authResult.accessToken) {
+            const tokenParts = authResult.accessToken.split('.');
+            if (tokenParts.length !== 3) {
+                return { success: false, error: 'Invalid access token format from auth server.' };
+            }
+
+            const payload = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString());
+            const userId = payload.sub;
+
+            if (!userId) {
+                return { success: false, error: 'Could not extract user ID from access token.' };
+            }
+            
+            // After successful external registration, create the user in the local database with the ID from the token.
+            await prisma.user.create({
+                data: {
+                    id: userId,
+                    email,
+                    name: `${firstName} ${lastName}`,
+                    firstName,
+                    lastName,
+                    phoneNumber,
+                    roleId
+                }
+            });
+
+            revalidatePath('/settings');
+            return { success: true };
+
+        } else {
+            return { success: false, error: authResult.errors?.[0] || 'Registration failed after auth server call.' };
+        }
 
     } catch (error) {
         console.error('User registration error:', error);
         // This catch block will handle network errors or potential Prisma unique constraint violations,
-        // which would indicate an inconsistency between the auth server and the local database.
-        return { success: false, error: 'An unexpected error occurred. The user might already exist in the local database.' };
+        // which could indicate an inconsistency between the auth server and the local database.
+        return { success: false, error: 'An unexpected error occurred. A user with these details might already exist locally.' };
     }
 }
 
