@@ -1,104 +1,97 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
 }
 
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
-}
-
-model District {
-  id         String      @id @default(cuid())
-  name       String
-  branches   Branch[]
-  salesLeads SalesLead[]
-}
-
-model Branch {
-  id         String       @id @default(cuid())
-  name       String
-  district   District     @relation(fields: [districtId], references: [id])
-  districtId String
-  officers   Officer[]
-  salesLeads SalesLead[]
-  plans      BranchPlan[]
-}
-
-model Officer {
-  id         String      @id @default(cuid())
-  name       String
-  branch     Branch      @relation(fields: [branchId], references: [id])
-  branchId   String
-  salesLeads SalesLead[]
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 model SalesLead {
-  id              String       @id @default(cuid())
-  title           String
-  description     String
-  status          SalesLeadStatus @default(New)
-  district        District?    @relation(fields: [districtId], references: [id])
-  districtId      String?
-  branch          Branch?      @relation(fields: [branchId], references: [id])
-  branchId        String?
-  officer         Officer?     @relation(fields: [officerId], references: [id])
-  officerId       String?
-  lat             Float?
-  lng             Float?
-  expectedSavings Decimal
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  deadline        DateTime?
-  updates         LeadUpdate[]
+  id               String      @id @default(cuid())
+  title            String
+  description      String
+  status           SalesLeadStatus @default(New)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  districtId       String
+  district         District    @relation(fields: [districtId], references: [id])
+  branchId         String?
+  branch           Branch?     @relation(fields: [branchId], references: [id])
+  officerId        String?
+  officer          Officer?    @relation(fields: [officerId], references: [id])
+  lat              Float
+  lng              Float
+  expectedSavings  Decimal
+  deadline         DateTime
+  updates          LeadUpdate[]
 }
 
 model LeadUpdate {
-  id               String    @id @default(cuid())
-  salesLead        SalesLead @relation(fields: [salesLeadId], references: [id])
+  id               String      @id @default(cuid())
   salesLeadId      String
+  salesLead        SalesLead   @relation(fields: [salesLeadId], references: [id], onDelete: Cascade)
+  timestamp        DateTime    @default(now())
   text             String
   author           String
-  timestamp        DateTime  @default(now())
   generatedSavings Decimal?
   attachmentUrl    String?
   reportingLat     Float?
   reportingLng     Float?
 }
 
+model District {
+  id         String      @id @default(cuid())
+  name       String      @unique
+  branches   Branch[]
+  salesLeads SalesLead[]
+}
+
+model Branch {
+  id          String       @id @default(cuid())
+  name        String
+  districtId  String
+  district    District     @relation(fields: [districtId], references: [id])
+  officers    Officer[]
+  salesLeads  SalesLead[]
+  plans       BranchPlan[]
+}
+
+model Officer {
+  id         String      @id @default(cuid())
+  name       String
+  branchId   String
+  branch     Branch      @relation(fields: [branchId], references: [id])
+  salesLeads SalesLead[]
+}
+
 model BranchPlan {
-  id             String      @id @default(cuid())
-  branch         Branch      @relation(fields: [branchId], references: [id])
-  branchId       String
-  quarter        String // e.g., "Q3 2024"
-  savingsTarget  Decimal
-  entries        PlanEntry[]
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  id            String      @id @default(cuid())
+  branchId      String
+  branch        Branch      @relation(fields: [branchId], references: [id])
+  quarter       String
+  savingsTarget Decimal
+  entries       PlanEntry[]
 }
 
 model PlanEntry {
   id              String        @id @default(cuid())
-  branchPlan      BranchPlan    @relation(fields: [branchPlanId], references: [id])
   branchPlanId    String
+  branchPlan      BranchPlan    @relation(fields: [branchPlanId], references: [id], onDelete: Cascade)
   date            DateTime
   type            PlanEntryType
   amount          Decimal
   description     String
-  status          String // Pending, Approved, Rejected
-  submittedBy     String // e.g., Officer or Manager name/ID
+  status          String // e.g., Pending, Approved, Rejected
+  submittedBy     String
   reviewedBy      String?
   rejectionReason String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
 }
 
 model Setting {
-  id    String @id @default(cuid())
-  key   String @unique
+  key   String @id
   value String
 }
 
