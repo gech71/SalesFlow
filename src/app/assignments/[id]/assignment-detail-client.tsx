@@ -86,7 +86,7 @@ const StatusBadge = ({ status }: { status: SalesLead['status'] }) => {
             case 'New': return { variant: 'info', Icon: Icons.filePlus2, text: 'New' };
             case 'Reopened': return { variant: 'warning', Icon: Icons.refreshCw, text: 'Reopened' };
             case 'Assigned': return { variant: 'default', Icon: Icons.arrowRightCircle, text: 'Assigned' };
-            case 'InProgress': return { variant: 'default', Icon: Icons.loader2, text: 'In Progress' };
+            case 'InProgress': return { variant: 'default', Icon: Icons.loader, text: 'In Progress' };
             default: return { variant: 'secondary', Icon: Icons.circle, text: status };
         }
     }, [status]);
@@ -227,9 +227,9 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-            <div className="flex items-center gap-2 p-2">
-                <Icons.workflow className="w-6 h-6 text-primary" />
-                <h2 className="font-semibold text-lg">SalesFlow</h2>
+            <div className="flex items-center gap-2 justify-center p-2">
+                <img src="https://play-lh.googleusercontent.com/bXqMt9ROsGd0H9vPhib5hG-0NB-EJcAwZy6UUDhvlP-ykE595IMQtzr14R6IRWtJiGTh=w600-h300-pc0xffffff-pd" alt="NIB International Bank Logo" className="h-8 w-auto" />
+                <h2 className="font-semibold text-lg text-primary">Nib Sales</h2>
             </div>
         </SidebarHeader>
         <SidebarContent>
