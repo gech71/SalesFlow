@@ -486,12 +486,30 @@ export async function registerUser(data: z.infer<typeof registerUserSchema>) {
 }
 
 export async function updateUserRole(userId: string, roleId: string) {
+    // When changing a role, we should clear the district/branch assignments
+    // as they may no longer be relevant. The admin will need to re-assign.
     await prisma.user.update({
         where: { id: userId },
-        data: { roleId },
+        data: { 
+            roleId,
+            districtId: null,
+            branchId: null,
+        },
     });
     revalidatePath('/settings');
 }
+
+export async function updateUserAssignment(userId: string, districtId?: string | null, branchId?: string | null) {
+    await prisma.user.update({
+        where: { id: userId },
+        data: {
+            districtId: districtId,
+            branchId: branchId
+        },
+    });
+    revalidatePath('/settings');
+}
+
 
 const roleSchema = z.object({
   id: z.string().optional(),

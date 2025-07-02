@@ -11,12 +11,22 @@ export default async function SettingsPage() {
     const threshold = thresholdSetting ? parseFloat(thresholdSetting.value) : 1.0;
 
     const users = await prisma.user.findMany({
-        include: { role: true },
+        include: { 
+            role: true,
+            district: true,
+            branch: true,
+        },
         orderBy: { createdAt: 'desc'}
     });
     
     const roles = await prisma.role.findMany({
         orderBy: { name: 'asc' }
+    });
+    
+    const districts = await prisma.district.findMany({
+        include: {
+            branches: true
+        }
     });
 
     return (
@@ -24,6 +34,7 @@ export default async function SettingsPage() {
             threshold={threshold}
             users={serialize(users)}
             roles={serialize(roles)}
+            districts={serialize(districts)}
         />
     );
 }

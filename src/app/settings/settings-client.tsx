@@ -20,7 +20,7 @@ import { Label } from '@/components/ui/label';
 import { Icons } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
-import { updateSetting, logoutAction, registerUser, updateUserRole, saveRole, deleteRole } from '@/app/actions';
+import { updateSetting, logoutAction, registerUser, updateUserRole, saveRole, deleteRole, updateUserAssignment } from '@/app/actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
@@ -28,7 +28,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import type { User, Role } from '@prisma/client';
+import type { User, Role, District, Branch } from '@prisma/client';
 
 const settingsSchema = z.object({
   threshold: z.coerce.number().min(0, { message: "Distance must be a positive number." }),
@@ -61,9 +61,10 @@ const allPermissions = [
     { id: 'update_lead', label: 'Update Own Lead' },
 ];
 
-type ClientUser = User & { role: Role };
+type ClientUser = User & { role: Role, district: District | null, branch: Branch | null };
+type ClientDistrict = District & { branches: Branch[] };
 
-export default function SettingsClient({ threshold, users, roles }: { threshold: number, users: ClientUser[], roles: Role[] }) {
+export default function SettingsClient({ threshold, users, roles, districts }: { threshold: number, users: ClientUser[], roles: Role[], districts: ClientDistrict[] }) {
   const { toast } = useToast();
   
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
@@ -79,7 +80,7 @@ export default function SettingsClient({ threshold, users, roles }: { threshold:
     resolver: zodResolver(registerUserSchema),
   });
 
-  const { register: registerRole, handleSubmit: handleSubmitRole, reset: resetRole, control: controlRole, setValue: setRoleValue, formState: { errors: roleErrors, isSubmitting: isSubmittingRole } } = useForm<z.infer<typeof roleSchema>>({
+  const { register: registerRole, handleSubmit: handleSubmitRole, reset: resetRole, control: controlRole, formState: { errors: roleErrors, isSubmitting: isSubmittingRole } } = useForm<z.infer<typeof roleSchema>>({
     resolver: zodResolver(roleSchema),
   });
 
@@ -110,9 +111,18 @@ export default function SettingsClient({ threshold, users, roles }: { threshold:
   const handleRoleChange = async (userId: string, roleId: string) => {
     try {
         await updateUserRole(userId, roleId);
-        toast({ title: "Role Updated", description: "User's role has been changed." });
+        toast({ title: "Role Updated", description: "User's role has been changed. Please set new assignments if required." });
     } catch (error) {
         toast({ title: "Error", description: "Failed to update user role.", variant: "destructive" });
+    }
+  }
+
+  const handleAssignmentChange = async (userId: string, districtId?: string, branchId?: string) => {
+    try {
+      await updateUserAssignment(userId, districtId || null, branchId || null);
+      toast({ title: "Assignment Updated", description: "User's assignment has been saved." });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to save assignment.", variant: "destructive" });
     }
   }
   
@@ -148,6 +158,44 @@ export default function SettingsClient({ threshold, users, roles }: { threshold:
     }
   }
 
+  const renderAssignmentControls = (user: ClientUser) => {
+    const roleName = roles.find(r => r.id === user.roleId)?.name;
+
+    switch (roleName) {
+        case 'DISTRICT_MANAGER':
+            return (
+                <Select defaultValue={user.districtId || ''} onValueChange={(districtId) => handleAssignmentChange(user.id, districtId, undefined)}>
+                    <SelectTrigger><SelectValue placeholder="Assign District..." /></SelectTrigger>
+                    <SelectContent>
+                        {districts.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
+                    </SelectContent>
+                </Select>
+            );
+        case 'BRANCH_MANAGER':
+        case 'OFFICER':
+            return (
+                 <div className="flex flex-col sm:flex-row gap-2">
+                    <Select defaultValue={user.districtId || ''} onValueChange={(districtId) => handleAssignmentChange(user.id, districtId, undefined)}>
+                        <SelectTrigger><SelectValue placeholder="Assign District..." /></SelectTrigger>
+                        <SelectContent>
+                            {districts.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                    <Select defaultValue={user.branchId || ''} onValueChange={(branchId) => handleAssignmentChange(user.id, user.districtId, branchId)} disabled={!user.districtId}>
+                        <SelectTrigger><SelectValue placeholder="Assign Branch..." /></SelectTrigger>
+                        <SelectContent>
+                            {districts.find(d => d.id === user.districtId)?.branches.map(b => (
+                                <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            );
+        default:
+            return <div className="text-sm text-muted-foreground italic">N/A</div>;
+    }
+}
+
   return (
     <SidebarProvider>
       <Sidebar>
@@ -179,11 +227,11 @@ export default function SettingsClient({ threshold, users, roles }: { threshold:
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center"><h1 className="text-lg font-semibold md:text-2xl">Settings</h1></div>
             
-            <Tabs defaultValue="reporting" className="w-full">
+            <Tabs defaultValue="users" className="w-full">
                 <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 sm:max-w-2xl">
-                    <TabsTrigger value="reporting">Reporting</TabsTrigger>
                     <TabsTrigger value="users">User Management</TabsTrigger>
                     <TabsTrigger value="roles">Role Management</TabsTrigger>
+                    <TabsTrigger value="reporting">Reporting</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="reporting" className="mt-6">
@@ -210,7 +258,7 @@ export default function SettingsClient({ threshold, users, roles }: { threshold:
                 <TabsContent value="users" className="mt-6">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
-                            <div><CardTitle>Users</CardTitle><CardDescription>Manage user accounts and their assigned roles.</CardDescription></div>
+                            <div><CardTitle>Users</CardTitle><CardDescription>Manage user accounts, their roles, and their branch/district assignments.</CardDescription></div>
                              <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
                                 <DialogTrigger asChild><Button><Icons.plusCircle className="mr-2 h-4 w-4" />Register User</Button></DialogTrigger>
                                 <DialogContent className="sm:max-w-lg">
@@ -241,17 +289,23 @@ export default function SettingsClient({ threshold, users, roles }: { threshold:
                         </CardHeader>
                         <CardContent>
                             <Table>
-                                <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email / Phone</TableHead><TableHead className="w-[200px]">Role</TableHead></TableRow></TableHeader>
+                                <TableHeader><TableRow><TableHead>User</TableHead><TableHead className="w-[180px]">Role</TableHead><TableHead className="w-[40%]">Assignment</TableHead></TableRow></TableHeader>
                                 <TableBody>
                                     {users.map(user => (
                                         <TableRow key={user.id}>
-                                            <TableCell className="font-medium">{user.name}</TableCell>
-                                            <TableCell><div className="text-sm">{user.email}</div><div className="text-xs text-muted-foreground">{user.phoneNumber}</div></TableCell>
+                                            <TableCell>
+                                                <div className="font-medium">{user.name}</div>
+                                                <div className="text-xs text-muted-foreground">{user.email}</div>
+                                                <div className="text-xs text-muted-foreground">{user.phoneNumber}</div>
+                                            </TableCell>
                                             <TableCell>
                                                 <Select defaultValue={user.roleId} onValueChange={(roleId) => handleRoleChange(user.id, roleId)}>
                                                     <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
                                                     <SelectContent>{roles.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}</SelectContent>
                                                 </Select>
+                                            </TableCell>
+                                            <TableCell>
+                                                {renderAssignmentControls(user)}
                                             </TableCell>
                                         </TableRow>
                                     ))}
