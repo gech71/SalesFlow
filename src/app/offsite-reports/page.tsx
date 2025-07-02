@@ -14,28 +14,20 @@ export default async function OffsiteReportsPage() {
     
     const permissions = user?.role?.permissions ?? [];
 
-    const leadsWithOffsiteUpdates = await prisma.salesLead.findMany({
+    const updatesWithLocation = await prisma.leadUpdate.findMany({
         where: {
-            updates: {
-                some: {
-                    reportingLat: {
-                        not: null
-                    }
-                }
-            }
+            reportingLat: { not: null },
+            reportingLng: { not: null },
         },
         include: {
-            assignee: true,
-            updates: {
-                where: {
-                    reportingLat: {
-                       not: null,
-                    }
-                },
-                orderBy: {
-                    timestamp: 'desc'
+            lead: {
+                include: {
+                    assignee: true,
                 }
-            }
+            },
+        },
+        orderBy: {
+            timestamp: 'desc'
         }
     });
 
@@ -45,6 +37,6 @@ export default async function OffsiteReportsPage() {
     const threshold = thresholdSetting ? parseFloat(thresholdSetting.value) : 1.0;
 
     return (
-        <OffsiteReportsClient user={serialize(user)} permissions={permissions} leads={serialize(leadsWithOffsiteUpdates)} distanceThreshold={threshold} />
+        <OffsiteReportsClient user={serialize(user)} permissions={permissions} updates={serialize(updatesWithLocation)} distanceThreshold={threshold} />
     );
 }

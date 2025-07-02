@@ -26,19 +26,21 @@ import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator } from '@/components/ui/sidebar';
 import { logoutAction } from '../actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
-type ClientSalesLead = SalesLead & {
-    updates: LeadUpdate[];
-    assignee: User | null;
+type ClientLeadUpdate = LeadUpdate & {
+    lead: (SalesLead & {
+        assignee: User | null;
+    }) | null;
 };
 
 type OffsiteReport = {
-  lead: ClientSalesLead;
+  lead: SalesLead & { assignee: User | null };
   update: LeadUpdate;
   distance: number;
 };
 
-export default function OffsiteReportsClient({ user, permissions, leads, distanceThreshold }: { user: User | null, permissions: string[], leads: ClientSalesLead[], distanceThreshold: number }) {
+export default function OffsiteReportsClient({ user, permissions, updates, distanceThreshold }: { user: User | null, permissions: string[], updates: ClientLeadUpdate[], distanceThreshold: number }) {
 
   const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
 
@@ -56,31 +58,30 @@ export default function OffsiteReportsClient({ user, permissions, leads, distanc
 
   const offsiteReports = useMemo((): OffsiteReport[] => {
     const reports: OffsiteReport[] = [];
-    leads.forEach(lead => {
-      lead.updates.forEach(update => {
-        if (update.reportingLat && update.reportingLng && lead.lat && lead.lng) {
-            const distance = getDistanceInKm(
-                Number(lead.lat),
-                Number(lead.lng),
-                update.reportingLat,
-                update.reportingLng
-            );
-            if (distance > distanceThreshold) {
-                reports.push({ lead, update, distance });
-            }
-        }
-      });
+    updates.forEach(update => {
+      const { lead } = update;
+      if (lead && update.reportingLat && update.reportingLng && lead.lat && lead.lng) {
+          const distance = getDistanceInKm(
+              Number(lead.lat),
+              Number(lead.lng),
+              update.reportingLat,
+              update.reportingLng
+          );
+          if (distance > distanceThreshold) {
+              reports.push({ lead, update, distance });
+          }
+      }
     });
-    return reports.sort((a, b) => new Date(b.update.timestamp).getTime() - new Date(a.update.timestamp).getTime());
-  }, [leads, distanceThreshold]);
+    return reports; // Already sorted by date from the server query
+  }, [updates, distanceThreshold]);
 
   return (
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-            <div className="flex items-center gap-2 p-2">
-                <Icons.workflow className="w-6 h-6 text-primary" />
-                <h2 className="font-semibold text-lg">SalesFlow</h2>
+            <div className="flex items-center gap-2 justify-center p-2">
+                <img src="https://play-lh.googleusercontent.com/bXqMt9ROsGd0H9vPhib5hG-0NB-EJcAwZy6UUDhvlP-ykE595IMQtzr14R6IRWtJiGTh=w600-h300-pc0xffffff-pd" alt="NIB International Bank Logo" className="h-8 w-auto" />
+                <h2 className="font-semibold text-lg text-primary">Nib Sales</h2>
             </div>
         </SidebarHeader>
         <SidebarContent>
