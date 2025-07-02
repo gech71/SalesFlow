@@ -64,7 +64,7 @@ export default function LoginPage() {
         <CardHeader className="text-center">
             <div className="flex justify-center items-center mb-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="https://www.2merkato.com/images/stories/NIB_Logo.png" alt="NIB Bank Logo" className="h-20 w-20" />
+                <img src="https://play-lh.googleusercontent.com/bXqMt9ROsGd0H9vPhib5hG-0NB-EJcAwZy6UUDhvlP-ykE595IMQtzr14R6IRWtJiGTh=w600-h300-pc0xffffff-pd" alt="NIB International Bank Logo" className="h-20 w-auto" />
             </div>
           <CardTitle>Login</CardTitle>
           <CardDescription>Enter your credentials to access your account.</CardDescription>
