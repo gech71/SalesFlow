@@ -79,6 +79,7 @@ export async function addLeadUpdate(data: z.infer<typeof updateSchema>) {
   revalidatePath(`/assignments/${leadId}`);
   revalidatePath('/assignments');
   revalidatePath('/dashboard');
+  revalidatePath('/offsite-reports');
 }
 
 // Action for a Branch Manager to assign a lead to a user
