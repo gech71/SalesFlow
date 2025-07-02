@@ -1,93 +1,119 @@
-
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
 }
 
-model SalesLead {
-  id               String      @id @default(cuid())
-  title            String
-  description      String
-  status           SalesLeadStatus @default(New)
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
-  districtId       String
-  district         District    @relation(fields: [districtId], references: [id])
-  branchId         String?
-  branch           Branch?     @relation(fields: [branchId], references: [id])
-  officerId        String?
-  officer          Officer?    @relation(fields: [officerId], references: [id])
-  lat              Float
-  lng              Float
-  expectedSavings  Decimal
-  deadline         DateTime
-  updates          LeadUpdate[]
+model User {
+  id          String    @id @default(cuid())
+  authId      String    @unique // From authentication server
+  email       String    @unique
+  name        String
+  roleId      String
+  districtId  String?
+  branchId    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  role      Role      @relation(fields: [roleId], references: [id])
+  district  District? @relation(fields: [districtId], references: [id])
+  branch    Branch?   @relation(fields: [branchId], references: [id])
+  leads     SalesLead[] @relation("AssignedLeads")
 }
 
-model LeadUpdate {
-  id               String      @id @default(cuid())
-  salesLeadId      String
-  salesLead        SalesLead   @relation(fields: [salesLeadId], references: [id], onDelete: Cascade)
-  timestamp        DateTime    @default(now())
-  text             String
-  author           String
-  generatedSavings Decimal?
-  attachmentUrl    String?
-  reportingLat     Float?
-  reportingLng     Float?
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g., ADMIN, DISTRICT_MANAGER, BRANCH_MANAGER, OFFICER
+  description String?
+  users       User[]
 }
 
 model District {
-  id         String      @id @default(cuid())
-  name       String      @unique
-  branches   Branch[]
-  salesLeads SalesLead[]
+  id        String   @id @default(cuid())
+  name      String   @unique
+  
+  users     User[]
+  branches  Branch[]
+  leads     SalesLead[] @relation("DistrictLeads")
 }
 
 model Branch {
-  id          String       @id @default(cuid())
+  id          String    @id @default(cuid())
   name        String
   districtId  String
-  district    District     @relation(fields: [districtId], references: [id])
-  officers    Officer[]
-  salesLeads  SalesLead[]
+  
+  district    District   @relation(fields: [districtId], references: [id])
+  users       User[]
+  leads       SalesLead[] @relation("BranchLeads")
   plans       BranchPlan[]
 }
 
-model Officer {
-  id         String      @id @default(cuid())
-  name       String
-  branchId   String
-  branch     Branch      @relation(fields: [branchId], references: [id])
-  salesLeads SalesLead[]
+model SalesLead {
+  id              String   @id @default(cuid())
+  title           String
+  description     String
+  status          SalesLeadStatus @default(New)
+  
+  districtId      String
+  branchId        String?
+  assigneeId      String?
+  
+  lat             Decimal
+  lng             Decimal
+  expectedSavings Decimal
+  deadline        DateTime
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  district        District @relation("DistrictLeads", fields: [districtId], references: [id])
+  branch          Branch?  @relation("BranchLeads", fields: [branchId], references: [id])
+  assignee        User?    @relation("AssignedLeads", fields: [assigneeId], references: [id])
+  
+  updates         LeadUpdate[]
+}
+
+model LeadUpdate {
+  id                String   @id @default(cuid())
+  salesLeadId       String
+  text              String
+  author            String
+  generatedSavings  Decimal?
+  attachmentUrl     String?
+  reportingLat      Float?
+  reportingLng      Float?
+  timestamp         DateTime @default(now())
+  
+  salesLead         SalesLead @relation(fields: [salesLeadId], references: [id])
 }
 
 model BranchPlan {
-  id            String      @id @default(cuid())
-  branchId      String
-  branch        Branch      @relation(fields: [branchId], references: [id])
-  quarter       String
-  savingsTarget Decimal
-  entries       PlanEntry[]
+  id              String      @id @default(cuid())
+  branchId        String
+  quarter         String      // e.g., "Q3 2024"
+  savingsTarget   Decimal
+  
+  branch          Branch      @relation(fields: [branchId], references: [id])
+  entries         PlanEntry[]
 }
 
 model PlanEntry {
-  id              String        @id @default(cuid())
+  id              String      @id @default(cuid())
   branchPlanId    String
-  branchPlan      BranchPlan    @relation(fields: [branchPlanId], references: [id], onDelete: Cascade)
   date            DateTime
   type            PlanEntryType
   amount          Decimal
   description     String
-  status          String // e.g., Pending, Approved, Rejected
+  status          String // Pending, Approved, Rejected
   submittedBy     String
   reviewedBy      String?
   rejectionReason String?
+  
+  branchPlan      BranchPlan @relation(fields: [branchPlanId], references: [id])
 }
 
 model Setting {

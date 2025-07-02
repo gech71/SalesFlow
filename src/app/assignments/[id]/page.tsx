@@ -15,7 +15,7 @@ export default async function AssignmentDetailPage({ params }: { params: { id: s
                     timestamp: 'desc'
                 }
             },
-            officer: true,
+            assignee: true,
         }
     });
 

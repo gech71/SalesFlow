@@ -1,16 +1,16 @@
 
 import { serialize } from '@/lib/utils';
 import prisma from '@/lib/prisma';
-import OfficerDashboardClient from '../officer-dashboard-client';
+import AssignmentsClient from '../officer-dashboard-client';
 
 export default async function AssignmentsPage() {
 
     const leads = await prisma.salesLead.findMany({
-        where: { officerId: { not: null } },
+        where: { assigneeId: { not: null } },
         include: {
             district: true,
             branch: true,
-            officer: true,
+            assignee: true,
             updates: {
                 orderBy: {
                     timestamp: 'desc'
@@ -23,6 +23,6 @@ export default async function AssignmentsPage() {
     });
     
     return (
-        <OfficerDashboardClient leads={serialize(leads)} />
+        <AssignmentsClient leads={serialize(leads)} />
     );
 }

@@ -30,7 +30,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Icons } from '@/components/icons';
-import { type SalesLead, type LeadUpdate, type Officer } from '@prisma/client';
+import { type SalesLead, type LeadUpdate, type User } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
@@ -40,7 +40,7 @@ import { addLeadUpdate, logoutAction } from '@/app/actions';
 // The client-side type needs to match what the server component constructs
 type ClientSalesLead = SalesLead & {
     updates: LeadUpdate[];
-    officer: Officer | null;
+    assignee: User | null;
 };
 
 const SalesLeadStatusEnum = z.enum([
@@ -70,7 +70,7 @@ export default function AssignmentDetailClient({ lead, distanceThreshold }: { le
     resolver: zodResolver(updateSchema),
     defaultValues: {
         updateText: '',
-        status: lead.status,
+        status: lead.status as any,
         generatedSavings: 0,
     }
   });
@@ -148,7 +148,7 @@ export default function AssignmentDetailClient({ lead, distanceThreshold }: { le
             updateText: data.updateText,
             status: data.status,
             generatedSavings: data.generatedSavings,
-            author: lead.officer?.name || 'System',
+            author: lead.assignee?.name || 'System',
             attachmentUrl,
             reportingLat,
             reportingLng,
@@ -171,7 +171,7 @@ export default function AssignmentDetailClient({ lead, distanceThreshold }: { le
     }
   }
 
-  const officerAllowedStatuses: (keyof typeof SalesLeadStatusEnum.Values)[] = ['InProgress', 'PendingClosure'];
+  const officerAllowedStatuses: any[] = ['InProgress', 'PendingClosure'];
 
   const getStatusBadgeVariant = (status: SalesLead['status']): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
@@ -267,7 +267,7 @@ export default function AssignmentDetailClient({ lead, distanceThreshold }: { le
                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                             <p className="font-medium">Assignee</p>
-                            <p className="text-muted-foreground">{lead.officer?.name || 'Unassigned'}</p>
+                            <p className="text-muted-foreground">{lead.assignee?.name || 'Unassigned'}</p>
                         </div>
                         <div>
                             <p className="font-medium">Deadline</p>
@@ -275,7 +275,7 @@ export default function AssignmentDetailClient({ lead, distanceThreshold }: { le
                         </div>
                         <div>
                             <p className="font-medium">Status</p>
-                            <Badge variant={getStatusBadgeVariant(lead.status)}>{lead.status}</Badge>
+                            <Badge variant={getStatusBadgeVariant(lead.status as any)}>{lead.status}</Badge>
                         </div>
                         <div className="col-span-2 md:col-span-1">
                             <p className="font-medium">Savings Progress ({achievementPercentage.toFixed(0)}%)</p>
@@ -313,7 +313,7 @@ export default function AssignmentDetailClient({ lead, distanceThreshold }: { le
                                                 </a>
                                             )}
                                             {update.reportingLat && update.reportingLng && lead.lat && lead.lng && (() => {
-                                                const distance = getDistanceInKm(lead.lat, lead.lng, update.reportingLat!, update.reportingLng!);
+                                                const distance = getDistanceInKm(Number(lead.lat), Number(lead.lng), update.reportingLat!, update.reportingLng!);
                                                 const isOnSite = distance < distanceThreshold;
                                                 return (
                                                     <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
@@ -356,7 +356,7 @@ export default function AssignmentDetailClient({ lead, distanceThreshold }: { le
                                     control={controlUpdate}
                                     name="status"
                                     render={({ field }) => (
-                                        <Select onValueChange={field.onChange} value={field.value} disabled={isPendingApproval}>
+                                        <Select onValueChange={field.onChange} value={field.value as string} disabled={isPendingApproval}>
                                             <SelectTrigger><SelectValue placeholder="Select a status" /></SelectTrigger>
                                             <SelectContent>
                                                 {isPendingApproval ? (

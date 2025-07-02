@@ -21,14 +21,14 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Icons } from '@/components/icons';
-import { type SalesLead, type LeadUpdate, type Officer } from '@prisma/client';
+import { type SalesLead, type LeadUpdate, type User } from '@prisma/client';
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
 import { logoutAction } from '../actions';
 
 type ClientSalesLead = SalesLead & {
     updates: LeadUpdate[];
-    officer: Officer | null;
+    assignee: User | null;
 };
 
 type OffsiteReport = {
@@ -57,8 +57,8 @@ export default function OffsiteReportsClient({ leads, distanceThreshold }: { lea
       lead.updates.forEach(update => {
         if (update.reportingLat && update.reportingLng && lead.lat && lead.lng) {
             const distance = getDistanceInKm(
-                lead.lat,
-                lead.lng,
+                Number(lead.lat),
+                Number(lead.lng),
                 update.reportingLat,
                 update.reportingLng
             );
@@ -150,7 +150,7 @@ export default function OffsiteReportsClient({ leads, distanceThreshold }: { lea
                     {offsiteReports.map(({ lead, update, distance }) => (
                         <TableRow key={`${lead.id}-${update.id}`}>
                             <TableCell className="font-medium">{lead.title}</TableCell>
-                            <TableCell>{lead.officer?.name || 'N/A'}</TableCell>
+                            <TableCell>{lead.assignee?.name || 'N/A'}</TableCell>
                             <TableCell>{format(new Date(update.timestamp), "PPp")}</TableCell>
                             <TableCell>
                                 <Badge variant="destructive">{distance.toFixed(2)} km away</Badge>

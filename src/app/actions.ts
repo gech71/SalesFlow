@@ -80,19 +80,19 @@ export async function addLeadUpdate(data: z.infer<typeof updateSchema>) {
   revalidatePath('/dashboard');
 }
 
-// Action for a Branch Manager to assign a lead to an officer
-export async function assignOfficer(leadId: string, officerId: string, note: string) {
-  const officer = await prisma.officer.findUnique({ where: { id: officerId }});
-  if (!officer) throw new Error("Officer not found");
+// Action for a Branch Manager to assign a lead to a user
+export async function assignUser(leadId: string, userId: string, note: string) {
+  const user = await prisma.user.findUnique({ where: { id: userId }});
+  if (!user) throw new Error("User not found");
 
   await prisma.salesLead.update({
     where: { id: leadId },
     data: {
-      officerId,
+      assigneeId: userId,
       status: 'InProgress',
       updates: {
         create: [
-          { text: `Assigned to officer ${officer.name}.`, author: 'Branch Manager' },
+          { text: `Assigned to officer ${user.name}.`, author: 'Branch Manager' },
           ...(note ? [{ text: `Note: ${note}`, author: 'Branch Manager' }] : []),
         ]
       },

@@ -11,7 +11,8 @@ async function main() {
     await prisma.planEntry.deleteMany();
     await prisma.branchPlan.deleteMany();
     await prisma.salesLead.deleteMany();
-    await prisma.officer.deleteMany();
+    await prisma.user.deleteMany();
+    await prisma.role.deleteMany();
     await prisma.branch.deleteMany();
     await prisma.district.deleteMany();
     await prisma.setting.deleteMany();
@@ -22,6 +23,13 @@ async function main() {
         data: { key: 'offsiteDistanceThreshold', value: '1' }
     });
     console.log(`Seeded 1 setting`);
+
+    // Seed Roles
+    const adminRole = await prisma.role.create({ data: { name: 'ADMIN', description: 'System Administrator' } });
+    const districtManagerRole = await prisma.role.create({ data: { name: 'DISTRICT_MANAGER', description: 'Manages a district' } });
+    const branchManagerRole = await prisma.role.create({ data: { name: 'BRANCH_MANAGER', description: 'Manages a branch' } });
+    const officerRole = await prisma.role.create({ data: { name: 'OFFICER', description: 'Sales Officer' } });
+    console.log('Seeded 4 roles');
 
     // Seed Districts
     const dist1 = await prisma.district.create({ data: { name: 'Metro Area' } });
@@ -34,14 +42,38 @@ async function main() {
     const branch3 = await prisma.branch.create({ data: { name: 'West Branch', districtId: dist2.id } });
     console.log(`Seeded 3 branches`);
 
-    // Seed Officers
-    const officer1 = await prisma.officer.create({ data: { name: 'John Doe', branchId: branch1.id } });
-    const officer2 = await prisma.officer.create({ data: { name: 'Jane Smith', branchId: branch1.id } });
-    const officer3 = await prisma.officer.create({ data: { name: 'Peter Jones', branchId: branch2.id } });
-    const officer4 = await prisma.officer.create({ data: { name: 'Mary Williams', branchId: branch2.id } });
-    const officer5 = await prisma.officer.create({ data: { name: 'Sam Brown', branchId: branch3.id } });
-    const officer6 = await prisma.officer.create({ data: { name: 'Patricia Green', branchId: branch3.id } });
-    console.log(`Seeded 6 officers`);
+    // Seed Users
+    // Admin User
+    await prisma.user.create({
+        data: {
+            authId: '91dff77e-f1f8-49f9-a9f6-482a9744f908',
+            email: 'admin@example.com',
+            name: 'Admin User',
+            roleId: adminRole.id,
+        }
+    });
+
+    // District Managers
+    const distManager1 = await prisma.user.create({
+        data: { authId: 'dist-manager-1', email: 'dm1@example.com', name: 'Diana Prince', roleId: districtManagerRole.id, districtId: dist1.id }
+    });
+    const distManager2 = await prisma.user.create({
+        data: { authId: 'dist-manager-2', email: 'dm2@example.com', name: 'Bruce Wayne', roleId: districtManagerRole.id, districtId: dist2.id }
+    });
+
+    // Branch Managers
+    const branchManager1 = await prisma.user.create({
+        data: { authId: 'branch-manager-1', email: 'bm1@example.com', name: 'Clark Kent', roleId: branchManagerRole.id, branchId: branch1.id }
+    });
+
+    // Officers
+    const officer1 = await prisma.user.create({ data: { authId: 'officer-1', email: 'johndoe@example.com', name: 'John Doe', branchId: branch1.id, roleId: officerRole.id } });
+    const officer2 = await prisma.user.create({ data: { authId: 'officer-2', email: 'janesmith@example.com', name: 'Jane Smith', branchId: branch1.id, roleId: officerRole.id } });
+    const officer3 = await prisma.user.create({ data: { authId: 'officer-3', email: 'peterjones@example.com', name: 'Peter Jones', branchId: branch2.id, roleId: officerRole.id } });
+    const officer4 = await prisma.user.create({ data: { authId: 'officer-4', email: 'marywilliams@example.com', name: 'Mary Williams', branchId: branch2.id, roleId: officerRole.id } });
+    const officer5 = await prisma.user.create({ data: { authId: 'officer-5', email: 'sambrown@example.com', name: 'Sam Brown', branchId: branch3.id, roleId: officerRole.id } });
+    const officer6 = await prisma.user.create({ data: { authId: 'officer-6', email: 'patriciagreen@example.com', name: 'Patricia Green', branchId: branch3.id, roleId: officerRole.id } });
+    console.log(`Seeded users`);
 
     // Seed Sales Leads
     const lead1 = await prisma.salesLead.create({
@@ -51,7 +83,7 @@ async function main() {
             status: 'InProgress',
             districtId: dist1.id,
             branchId: branch1.id,
-            officerId: officer1.id,
+            assigneeId: officer1.id,
             lat: 34.0522,
             lng: -118.2437,
             expectedSavings: 50000,
@@ -61,8 +93,8 @@ async function main() {
 
     await prisma.leadUpdate.createMany({
         data: [
-            { salesLeadId: lead1.id, text: 'Assigned to John Doe', author: 'Branch Manager' },
-            { salesLeadId: lead1.id, text: 'Initial meeting held. Client is very interested.', author: 'John Doe', generatedSavings: 25000 }
+            { salesLeadId: lead1.id, text: `Assigned to ${officer1.name}`, author: 'Branch Manager' },
+            { salesLeadId: lead1.id, text: 'Initial meeting held. Client is very interested.', author: officer1.name, generatedSavings: 25000 }
         ]
     });
 
@@ -73,7 +105,7 @@ async function main() {
             status: 'Assigned',
             districtId: dist1.id,
             branchId: branch2.id,
-            officerId: officer3.id,
+            assigneeId: officer3.id,
             lat: 40.7128,
             lng: -74.0060,
             expectedSavings: 120000,

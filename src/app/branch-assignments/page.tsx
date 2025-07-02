@@ -7,17 +7,17 @@ export default async function BranchAssignmentsPage() {
     const leads = await prisma.salesLead.findMany({
         where: {
             OR: [
-                { status: 'Assigned', officerId: null, branchId: { not: null } },
+                { status: 'Assigned', assigneeId: null, branchId: { not: null } },
                 { status: 'PendingClosure' }
             ]
         },
         include: {
-            branch: {
+            branch: true,
+            assignee: {
                 include: {
-                    officers: true
+                    role: true
                 }
             },
-            officer: true,
             updates: {
                 orderBy: {
                     timestamp: 'desc'
@@ -32,7 +32,11 @@ export default async function BranchAssignmentsPage() {
 
     const branches = await prisma.branch.findMany({
         include: {
-            officers: true
+            users: {
+                include: {
+                    role: true
+                }
+            }
         }
     });
 

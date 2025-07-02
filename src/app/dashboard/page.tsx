@@ -12,7 +12,7 @@ export default async function DashboardPage() {
     });
     const districtsData = await prisma.district.findMany();
     const branchesData = await prisma.branch.findMany({
-        include: { officers: true }
+        include: { users: true }
     });
 
     return (

@@ -39,21 +39,22 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Icons } from '@/components/icons';
-import type { SalesLead, Branch, Officer, LeadUpdate } from '@prisma/client';
+import type { SalesLead, Branch, User, LeadUpdate, Role } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
-import { assignOfficer, approveLeadBranch, returnLeadForReworkBranch, logoutAction } from '@/app/actions';
+import { assignUser, approveLeadBranch, returnLeadForReworkBranch, logoutAction } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 
+type ClientUser = User & { role: Role };
 type ClientSalesLead = SalesLead & {
-    branch: (Branch & { officers: Officer[] }) | null;
-    officer: Officer | null;
+    branch: Branch | null;
+    assignee: ClientUser | null;
     updates: LeadUpdate[];
 };
 
 type ClientBranch = Branch & {
-    officers: Officer[];
+    users: ClientUser[];
 };
 
 export default function BranchAssignmentsClient({ leads, branches }: { leads: ClientSalesLead[], branches: ClientBranch[] }) {
@@ -63,26 +64,26 @@ export default function BranchAssignmentsClient({ leads, branches }: { leads: Cl
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<ClientSalesLead | null>(null);
   const [assignmentNote, setAssignmentNote] = useState('');
-  const [selectedOfficerId, setSelectedOfficerId] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState('');
   
   const [isReworkDialogOpen, setIsReworkDialogOpen] = useState(false);
   const [reworkNote, setReworkNote] = useState('');
 
   const openAssignDialog = (lead: ClientSalesLead) => {
     setSelectedLead(lead);
-    setSelectedOfficerId('');
+    setSelectedUserId('');
     setAssignmentNote('');
     setIsAssignDialogOpen(true);
   };
   
   const handleConfirmAssignment = async () => {
-    if (!selectedLead || !selectedOfficerId) {
+    if (!selectedLead || !selectedUserId) {
         toast({ title: "Assignment Error", description: "You must select an officer to assign the lead.", variant: "destructive" });
         return;
     }
     
     try {
-        await assignOfficer(selectedLead.id, selectedOfficerId, assignmentNote);
+        await assignUser(selectedLead.id, selectedUserId, assignmentNote);
         toast({
             title: "Lead Assigned",
             description: "The lead has been successfully assigned to the officer.",
@@ -126,8 +127,8 @@ export default function BranchAssignmentsClient({ leads, branches }: { leads: Cl
     }
   };
 
-  const unassignedLeads = useMemo(() => leads.filter(lead => lead.branchId && !lead.officerId && lead.status === 'Assigned'), [leads]);
-  const pendingApprovalLeads = useMemo(() => leads.filter(lead => lead.officerId && lead.status === 'PendingClosure'), [leads]);
+  const unassignedLeads = useMemo(() => leads.filter(lead => lead.branchId && !lead.assigneeId && lead.status === 'Assigned'), [leads]);
+  const pendingApprovalLeads = useMemo(() => leads.filter(lead => lead.assigneeId && lead.status === 'PendingClosure'), [leads]);
   
   const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
 
@@ -245,7 +246,7 @@ export default function BranchAssignmentsClient({ leads, branches }: { leads: Cl
                             return (
                                 <TableRow key={lead.id}>
                                     <TableCell className="font-medium">{lead.title}</TableCell>
-                                    <TableCell>{lead.officer?.name || 'N/A'}</TableCell>
+                                    <TableCell>{lead.assignee?.name || 'N/A'}</TableCell>
                                     <TableCell className="hidden md:table-cell">{lastUpdate ? format(new Date(lastUpdate.timestamp), "PPP") : 'N/A'}</TableCell>
                                     <TableCell className="text-right space-x-2">
                                         <Button variant="outline" size="sm" onClick={() => openReworkDialog(lead)}>Return</Button>
@@ -295,13 +296,13 @@ export default function BranchAssignmentsClient({ leads, branches }: { leads: Cl
                     
                     <div className="grid gap-2">
                         <Label htmlFor="officer">Assign to Officer</Label>
-                        <Select onValueChange={setSelectedOfficerId} value={selectedOfficerId}>
+                        <Select onValueChange={setSelectedUserId} value={selectedUserId}>
                             <SelectTrigger id="officer" className="w-full">
                                 <SelectValue placeholder="Select an officer" />
                             </SelectTrigger>
                             <SelectContent>
-                                {branches.find(b => b.id === selectedLead.branchId)?.officers.map(officer => (
-                                    <SelectItem key={officer.id} value={officer.id}>{officer.name}</SelectItem>
+                                {branches.find(b => b.id === selectedLead.branchId)?.users.filter(u => u.role.name === 'OFFICER').map(user => (
+                                    <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>

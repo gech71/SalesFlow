@@ -38,7 +38,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Icons } from '@/components/icons';
-import type { SalesLead, District, Branch, Officer } from '@prisma/client';
+import type { SalesLead, District, Branch, User } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
@@ -48,7 +48,7 @@ import { useRouter } from 'next/navigation';
 type ClientSalesLead = SalesLead & {
     district: District | null;
     branch: Branch | null;
-    officer: Officer | null;
+    assignee: User | null;
 };
 
 type ClientDistrict = District & {
@@ -226,7 +226,7 @@ export default function DistrictAssignmentsClient({ leads, districts }: { leads:
                                                 <SelectValue placeholder="Select a branch" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {getBranchesForDistrict(lead.districtId).map(branch => (
+                                                {getBranchesForDistrict(lead.districtId!).map(branch => (
                                                     <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -268,7 +268,7 @@ export default function DistrictAssignmentsClient({ leads, districts }: { leads:
                                     <TableRow key={lead.id}>
                                         <TableCell className="font-medium">{lead.title}</TableCell>
                                         <TableCell className="hidden md:table-cell">{lead.branch?.name}</TableCell>
-                                        <TableCell className="hidden md:table-cell">{lead.officer?.name}</TableCell>
+                                        <TableCell className="hidden md:table-cell">{lead.assignee?.name}</TableCell>
                                         <TableCell className="text-right space-x-2">
                                             <Button variant="outline" size="sm" onClick={() => openReworkDialog(lead)}>Return</Button>
                                             <Button size="sm" onClick={() => handleApproveAndClose(lead.id)}>Approve & Close</Button>

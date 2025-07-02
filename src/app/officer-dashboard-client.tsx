@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Icons } from '@/components/icons';
-import type { SalesLead, LeadUpdate, District, Branch, Officer } from '@prisma/client';
+import type { SalesLead, LeadUpdate, District, Branch, User } from '@prisma/client';
 import { format } from "date-fns";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
 import { Progress } from '@/components/ui/progress';
@@ -30,10 +30,10 @@ type ClientSalesLead = SalesLead & {
     updates: LeadUpdate[];
     district: District | null;
     branch: Branch | null;
-    officer: Officer | null;
+    assignee: User | null;
 };
 
-export default function OfficerDashboardClient({ leads }: { leads: ClientSalesLead[] }) {
+export default function AssignmentsClient({ leads }: { leads: ClientSalesLead[] }) {
   
   const getStatusBadgeVariant = (status: SalesLead['status']): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
@@ -116,9 +116,6 @@ export default function OfficerDashboardClient({ leads }: { leads: ClientSalesLe
                       An overview of all leads assigned to you.
                     </CardDescription>
                 </div>
-                <Link href="/new-lead">
-                  <Button><Icons.plusCircle className="mr-2 h-4 w-4" /> Create New Lead</Button>
-                </Link>
                 </CardHeader>
                 <CardContent>
                 <Table>
@@ -141,8 +138,8 @@ export default function OfficerDashboardClient({ leads }: { leads: ClientSalesLe
                         return (
                             <TableRow key={lead.id}>
                                 <TableCell className="font-medium">{lead.title}</TableCell>
-                                <TableCell><Badge variant={getStatusBadgeVariant(lead.status)}>{lead.status}</Badge></TableCell>
-                                <TableCell className="hidden md:table-cell">{lead.officer?.name || 'N/A'}, {lead.branch?.name || 'N/A'}, {lead.district?.name || 'N/A'}</TableCell>
+                                <TableCell><Badge variant={getStatusBadgeVariant(lead.status as any)}>{lead.status}</Badge></TableCell>
+                                <TableCell className="hidden md:table-cell">{lead.assignee?.name || 'N/A'}, {lead.branch?.name || 'N/A'}, {lead.district?.name || 'N/A'}</TableCell>
                                 <TableCell>
                                     <div className="font-medium">{formatCurrency(lead.expectedSavings)} <span className="text-xs text-muted-foreground">Target</span></div>
                                     <Progress value={achievementPercentage} className="mt-1 h-2" />

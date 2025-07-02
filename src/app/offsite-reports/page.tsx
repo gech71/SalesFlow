@@ -15,7 +15,7 @@ export default async function OffsiteReportsPage() {
             }
         },
         include: {
-            officer: true,
+            assignee: true,
             updates: {
                 where: {
                     reportingLat: {

@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 import { Icons } from '@/components/icons';
-import { type SalesLead, type BranchPlan, type District, type Branch, type LeadUpdate, type PlanEntry, type Officer } from '@prisma/client';
+import { type SalesLead, type BranchPlan, type District, type Branch, type LeadUpdate, type PlanEntry, type User } from '@prisma/client';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -29,7 +29,7 @@ import { logoutAction } from '@/app/actions';
 
 type ClientSalesLead = SalesLead & { updates: LeadUpdate[] };
 type ClientBranchPlan = BranchPlan & { entries: PlanEntry[] };
-type ClientBranch = Branch & { officers: Officer[] };
+type ClientBranch = Branch & { users: User[] };
 
 interface DashboardClientProps {
   leads: ClientSalesLead[];

@@ -14,7 +14,7 @@ export default async function DistrictAssignmentsPage() {
         include: {
             district: true,
             branch: true,
-            officer: true
+            assignee: true
         },
         orderBy: {
             createdAt: 'desc'
