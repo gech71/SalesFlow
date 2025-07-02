@@ -27,6 +27,7 @@ import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, 
 import { Progress } from '@/components/ui/progress';
 import { logoutAction } from '../actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 type ClientSalesLead = SalesLead & {
     updates: LeadUpdate[];
@@ -49,6 +50,20 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
       case 'PendingDistrictApproval': return 'warning';
       case 'Closed': return 'success';
       default: return 'secondary';
+    }
+  };
+
+  const getStatusIcon = (status: SalesLead['status']) => {
+    const iconClass = "h-3.5 w-3.5";
+    switch (status) {
+        case 'Closed': return <Icons.check className={iconClass} />;
+        case 'PendingClosure':
+        case 'PendingDistrictApproval':
+        case 'InProgress': return <Icons.spinner className={cn(iconClass, "animate-spin")} />;
+        case 'Reopened': return <Icons.edit className={iconClass} />;
+        case 'Assigned': return <Icons.clipboardList className={iconClass} />;
+        case 'New': return <Icons.plusCircle className={iconClass} />;
+        default: return null;
     }
   };
 
@@ -173,7 +188,12 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
                         return (
                             <TableRow key={lead.id}>
                                 <TableCell className="font-medium">{lead.title}</TableCell>
-                                <TableCell><Badge variant={getStatusBadgeVariant(lead.status as any)}>{lead.status}</Badge></TableCell>
+                                <TableCell>
+                                    <Badge variant={getStatusBadgeVariant(lead.status as any)}>
+                                        {getStatusIcon(lead.status as any)}
+                                        {lead.status}
+                                    </Badge>
+                                </TableCell>
                                 <TableCell className="hidden md:table-cell">{lead.assignee?.name || 'N/A'}, {lead.branch?.name || 'N/A'}, {lead.district?.name || 'N/A'}</TableCell>
                                 <TableCell>
                                     <div className="font-medium">{formatCurrency(lead.expectedSavings)} <span className="text-xs text-muted-foreground">Target</span></div>

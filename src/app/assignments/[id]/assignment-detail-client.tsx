@@ -37,6 +37,7 @@ import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, 
 import { Progress } from '@/components/ui/progress';
 import { addLeadUpdate, logoutAction } from '@/app/actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 // The client-side type needs to match what the server component constructs
 type ClientSalesLead = SalesLead & {
@@ -189,6 +190,20 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
     }
   };
 
+  const getStatusIcon = (status: SalesLead['status']) => {
+    const iconClass = "h-3.5 w-3.5";
+    switch (status) {
+        case 'Closed': return <Icons.check className={iconClass} />;
+        case 'PendingClosure':
+        case 'PendingDistrictApproval':
+        case 'InProgress': return <Icons.spinner className={cn(iconClass, "animate-spin")} />;
+        case 'Reopened': return <Icons.edit className={iconClass} />;
+        case 'Assigned': return <Icons.clipboardList className={iconClass} />;
+        case 'New': return <Icons.plusCircle className={iconClass} />;
+        default: return null;
+    }
+  };
+
   const formatCurrency = (amount: number | any) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
   }
@@ -309,7 +324,10 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
                         </div>
                         <div>
                             <p className="font-medium">Status</p>
-                            <Badge variant={getStatusBadgeVariant(lead.status as any)}>{lead.status}</Badge>
+                            <Badge variant={getStatusBadgeVariant(lead.status as any)}>
+                                {getStatusIcon(lead.status as any)}
+                                {lead.status}
+                            </Badge>
                         </div>
                         <div className="col-span-2 md:col-span-1">
                             <p className="font-medium">Savings Progress ({achievementPercentage.toFixed(0)}%)</p>
@@ -350,19 +368,21 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
                                                 const distance = getDistanceInKm(Number(lead.lat), Number(lead.lng), update.reportingLat!, update.reportingLng!);
                                                 const isOnSite = distance < distanceThreshold;
                                                 return (
-                                                    <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                                                        <Icons.locateFixed className="h-4 w-4" />
+                                                    <div className="flex items-center gap-2 mt-2 text-xs">
                                                         <a 
                                                             href={`https://www.google.com/maps/search/?api=1&query=${update.reportingLat},${update.reportingLng}`}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="hover:underline"
+                                                            className="flex items-center gap-1.5 text-muted-foreground hover:underline"
                                                         >
-                                                            Reported from location
+                                                            <Icons.locateFixed className="h-4 w-4" />
+                                                            <span>Reported from location</span>
                                                         </a>
                                                         <Badge variant={isOnSite ? 'success' : 'destructive'}>
-                                                            {isOnSite ? "On-site" : "Off-site"} ({distance.toFixed(2)} km away)
+                                                            {isOnSite ? <Icons.check className="h-3.5 w-3.5" /> : <Icons.alertTriangle className="h-3.5 w-3.5" />}
+                                                            {isOnSite ? "On-site" : "Off-site"}
                                                         </Badge>
+                                                        <span className="text-muted-foreground">({distance.toFixed(2)} km away)</span>
                                                     </div>
                                                 )
                                             })()}

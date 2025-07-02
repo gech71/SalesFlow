@@ -23,6 +23,7 @@ import Link from 'next/link';
 import { reviewPlanEntry, logoutAction } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 type ClientBranchPlan = BranchPlan & {
     entries: PlanEntry[];
@@ -86,7 +87,8 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
   }
   
   const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
-  const getStatusBadgeVariant = (status: string) => {
+  
+  const getStatusBadgeVariant = (status: PlanEntry['status']) => {
       switch (status) {
           case 'Approved': return 'success';
           case 'Pending': return 'warning';
@@ -94,6 +96,17 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
           default: return 'secondary';
       }
   };
+
+  const getStatusIcon = (status: PlanEntry['status']) => {
+    const iconClass = "h-3.5 w-3.5";
+    switch (status) {
+        case 'Approved': return <Icons.check className={iconClass} />;
+        case 'Pending': return <Icons.spinner className={cn(iconClass, "animate-spin")} />;
+        case 'Rejected': return <Icons.close className={iconClass} />;
+        default: return null;
+    }
+  };
+
 
   return (
     <SidebarProvider>
@@ -248,7 +261,12 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                                             <TableCell className="md:hidden">{format(new Date(entry.date), "P")}</TableCell>
                                             <TableCell><Badge variant={entry.type === 'collection' ? 'success' : 'secondary'}>{entry.type}</Badge></TableCell>
                                             <TableCell className="font-medium">{formatCurrency(entry.amount)}</TableCell>
-                                            <TableCell><Badge variant={getStatusBadgeVariant(entry.status)}>{entry.status}</Badge></TableCell>
+                                            <TableCell>
+                                                <Badge variant={getStatusBadgeVariant(entry.status)}>
+                                                    {getStatusIcon(entry.status)}
+                                                    {entry.status}
+                                                </Badge>
+                                            </TableCell>
                                             <TableCell className="text-right">
                                                 {entry.status === 'Pending' && permissions.includes('branch_plans:review') && (
                                                     <div className="flex gap-2 justify-end">

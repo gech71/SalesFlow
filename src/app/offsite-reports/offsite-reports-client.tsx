@@ -187,7 +187,10 @@ export default function OffsiteReportsClient({ user, permissions, leads, distanc
                             <TableCell>{lead.assignee?.name || 'N/A'}</TableCell>
                             <TableCell>{format(new Date(update.timestamp), "PPp")}</TableCell>
                             <TableCell>
-                                <Badge variant="destructive">{distance.toFixed(2)} km away</Badge>
+                                <Badge variant="destructive">
+                                    <Icons.alertTriangle className="h-3.5 w-3.5" />
+                                    {distance.toFixed(2)} km away
+                                </Badge>
                             </TableCell>
                             <TableCell className="text-muted-foreground">{update.text}</TableCell>
                             <TableCell>
