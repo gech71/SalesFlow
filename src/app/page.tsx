@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -63,9 +62,9 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-            <div className="flex justify-center items-center gap-2 mb-4">
-                <Icons.workflow className="w-8 h-8 text-primary" />
-                <h1 className="text-2xl font-bold">SalesFlow</h1>
+            <div className="flex justify-center items-center mb-4">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="https://www.2merkato.com/images/stories/NIB_Logo.png" alt="NIB Bank Logo" className="h-20 w-20" />
             </div>
           <CardTitle>Login</CardTitle>
           <CardDescription>Enter your credentials to access your account.</CardDescription>
