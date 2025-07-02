@@ -35,6 +35,16 @@ const newPlanEntrySchema = z.object({
   description: z.string().min(5, "Description must be at least 5 characters."),
 });
 
+const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
+const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "info" => {
+    switch (status) {
+        case 'Approved': return 'success';
+        case 'Pending': return 'warning';
+        case 'Rejected': return 'destructive';
+        default: return 'secondary';
+    }
+};
+
 export default function SubmitEntryClient({ user, permissions, plans, branches, quarters }: { user: User | null, permissions: string[], plans: ClientBranchPlan[], branches: Branch[], quarters: string[] }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -77,16 +87,6 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
     } catch (error) {
         toast({ title: "Error", description: "Failed to submit entry.", variant: "destructive" });
     }
-  };
-  
-  const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
-  const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "info" => {
-      switch (status) {
-          case 'Approved': return 'success';
-          case 'Pending': return 'warning';
-          case 'Rejected': return 'destructive';
-          default: return 'secondary';
-      }
   };
 
   return (
