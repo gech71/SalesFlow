@@ -429,6 +429,16 @@ export async function registerUser(data: z.infer<typeof registerUserSchema>) {
     const { firstName, lastName, email, phoneNumber, password, roleId } = validatedData.data;
 
     try {
+        // First, check if a user already exists in the local database to prevent duplicates.
+        const existingUser = await prisma.user.findFirst({
+            where: { OR: [{ email }, { phoneNumber }] }
+        });
+
+        if (existingUser) {
+            return { success: false, error: "A user with this email or phone number already exists." };
+        }
+
+        // If the user doesn't exist locally, proceed to register them on the external auth server.
         const baseUrl = process.env.AUTH_BASE_URL;
         const authResponse = await fetch(`${baseUrl}/api/Auth/register`, {
             method: 'POST',
@@ -441,14 +451,7 @@ export async function registerUser(data: z.infer<typeof registerUserSchema>) {
             return { success: false, error: errorResult.errors?.[0] || 'Auth server registration failed.' };
         }
         
-        const existingUser = await prisma.user.findFirst({
-            where: { OR: [{ email }, { phoneNumber }] }
-        });
-
-        if (existingUser) {
-            return { success: false, error: "A user with this email or phone number already exists in the local database." };
-        }
-
+        // After successful external registration, create the user in the local database.
         await prisma.user.create({
             data: {
                 email,
