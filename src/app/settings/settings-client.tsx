@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Icons } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator } from '@/components/ui/sidebar';
 import { updateSetting, logoutAction, registerUser, updateUserRole, saveRole, deleteRole, updateUserAssignment } from '@/app/actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -29,6 +29,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import type { User, Role, District, Branch } from '@prisma/client';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 const settingsSchema = z.object({
   threshold: z.coerce.number().min(0, { message: "Distance must be a positive number." }),
@@ -64,7 +65,7 @@ const allPermissions = [
 type ClientUser = User & { role: Role, district: District | null, branch: Branch | null };
 type ClientDistrict = District & { branches: Branch[] };
 
-export default function SettingsClient({ threshold, users, roles, districts }: { threshold: number, users: ClientUser[], roles: Role[], districts: ClientDistrict[] }) {
+export default function SettingsClient({ loggedInUser, threshold, users, roles, districts }: { loggedInUser: User | null, threshold: number, users: ClientUser[], roles: Role[], districts: ClientDistrict[] }) {
   const { toast } = useToast();
   
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
@@ -213,7 +214,21 @@ export default function SettingsClient({ threshold, users, roles, districts }: {
             </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-            <SidebarMenu>
+            <SidebarSeparator />
+            <SidebarMenu className="p-2">
+                <SidebarMenuItem>
+                    <div className="flex w-full items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                            <AvatarFallback>
+                                {loggedInUser?.name?.split(" ").map((n) => n[0]).join("")}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col overflow-hidden">
+                            <span className="truncate text-sm font-medium">{loggedInUser?.name}</span>
+                            <span className="truncate text-xs text-sidebar-foreground/70">{loggedInUser?.email}</span>
+                        </div>
+                    </div>
+                </SidebarMenuItem>
                 <SidebarMenuItem>
                     <form action={logoutAction} className="w-full">
                         <SidebarMenuButton type="submit" className="w-full"><Icons.logout className="mr-2" />Logout</SidebarMenuButton>

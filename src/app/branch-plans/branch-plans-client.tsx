@@ -14,14 +14,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Icons } from '@/components/icons';
-import type { BranchPlan, PlanEntry, Branch } from '@prisma/client';
+import type { BranchPlan, PlanEntry, Branch, User } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator } from '@/components/ui/sidebar';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
 import { reviewPlanEntry, logoutAction } from '@/app/actions';
 import { useRouter } from 'next/navigation';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 type ClientBranchPlan = BranchPlan & {
     entries: PlanEntry[];
@@ -32,7 +33,7 @@ const rejectionSchema = z.object({
   rejectionReason: z.string().min(10, "A reason for rejection is required (min 10 characters)."),
 });
 
-export default function BranchPlansClient({ plans, branches, quarters }: { plans: ClientBranchPlan[], branches: Branch[], quarters: string[] }) {
+export default function BranchPlansClient({ user, plans, branches, quarters }: { user: User | null, plans: ClientBranchPlan[], branches: Branch[], quarters: string[] }) {
   const router = useRouter();
   const { toast } = useToast();
   
@@ -130,7 +131,21 @@ export default function BranchPlansClient({ plans, branches, quarters }: { plans
             </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-            <SidebarMenu>
+            <SidebarSeparator />
+            <SidebarMenu className="p-2">
+                <SidebarMenuItem>
+                    <div className="flex w-full items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                            <AvatarFallback>
+                                {user?.name?.split(" ").map((n) => n[0]).join("")}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col overflow-hidden">
+                            <span className="truncate text-sm font-medium">{user?.name}</span>
+                            <span className="truncate text-xs text-sidebar-foreground/70">{user?.email}</span>
+                        </div>
+                    </div>
+                </SidebarMenuItem>
                 <SidebarMenuItem>
                     <form action={logoutAction} className="w-full">
                         <SidebarMenuButton type="submit" className="w-full">

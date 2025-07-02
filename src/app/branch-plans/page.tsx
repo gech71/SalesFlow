@@ -3,8 +3,13 @@ import { serialize } from '@/lib/utils';
 import prisma from '@/lib/prisma';
 import BranchPlansClient from './branch-plans-client';
 import { quarters } from './data';
+import { cookies } from 'next/headers';
 
 export default async function BranchPlansPage() {
+    const cookieStore = await cookies();
+    const userId = cookieStore.get('userId')?.value;
+    const user = userId ? await prisma.user.findUnique({ where: { id: userId } }) : null;
+
     const plans = await prisma.branchPlan.findMany({
         include: {
             branch: true,
@@ -22,6 +27,6 @@ export default async function BranchPlansPage() {
     const branches = await prisma.branch.findMany();
 
     return (
-        <BranchPlansClient plans={serialize(plans)} branches={serialize(branches)} quarters={quarters} />
+        <BranchPlansClient user={serialize(user)} plans={serialize(plans)} branches={serialize(branches)} quarters={quarters} />
     );
 }

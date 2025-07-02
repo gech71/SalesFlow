@@ -42,9 +42,10 @@ import { Icons } from '@/components/icons';
 import type { SalesLead, Branch, User, LeadUpdate, Role } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator } from '@/components/ui/sidebar';
 import { assignUser, approveLeadBranch, returnLeadForReworkBranch, logoutAction } from '@/app/actions';
 import { useRouter } from 'next/navigation';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 type ClientUser = User & { role: Role };
 type ClientSalesLead = SalesLead & {
@@ -57,7 +58,7 @@ type ClientBranch = Branch & {
     users: ClientUser[];
 };
 
-export default function BranchAssignmentsClient({ leads, branches }: { leads: ClientSalesLead[], branches: ClientBranch[] }) {
+export default function BranchAssignmentsClient({ user, leads, branches }: { user: User | null, leads: ClientSalesLead[], branches: ClientBranch[] }) {
   const router = useRouter();
   const { toast } = useToast();
   
@@ -170,7 +171,21 @@ export default function BranchAssignmentsClient({ leads, branches }: { leads: Cl
             </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-            <SidebarMenu>
+            <SidebarSeparator />
+            <SidebarMenu className="p-2">
+                <SidebarMenuItem>
+                    <div className="flex w-full items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                            <AvatarFallback>
+                                {user?.name?.split(" ").map((n) => n[0]).join("")}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col overflow-hidden">
+                            <span className="truncate text-sm font-medium">{user?.name}</span>
+                            <span className="truncate text-xs text-sidebar-foreground/70">{user?.email}</span>
+                        </div>
+                    </div>
+                </SidebarMenuItem>
                 <SidebarMenuItem>
                     <form action={logoutAction} className="w-full">
                         <SidebarMenuButton type="submit" className="w-full">

@@ -21,10 +21,11 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Icons } from '@/components/icons';
-import { type SalesLead, type LeadUpdate, type User } from '@prisma/client';
+import type { SalesLead, LeadUpdate, User } from '@prisma/client';
 import { format } from "date-fns";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator } from '@/components/ui/sidebar';
 import { logoutAction } from '../actions';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 type ClientSalesLead = SalesLead & {
     updates: LeadUpdate[];
@@ -37,7 +38,7 @@ type OffsiteReport = {
   distance: number;
 };
 
-export default function OffsiteReportsClient({ leads, distanceThreshold }: { leads: ClientSalesLead[], distanceThreshold: number }) {
+export default function OffsiteReportsClient({ user, leads, distanceThreshold }: { user: User | null, leads: ClientSalesLead[], distanceThreshold: number }) {
 
   const getDistanceInKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371; // Radius of the Earth in km
@@ -109,7 +110,21 @@ export default function OffsiteReportsClient({ leads, distanceThreshold }: { lea
             </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-            <SidebarMenu>
+            <SidebarSeparator />
+            <SidebarMenu className="p-2">
+                <SidebarMenuItem>
+                    <div className="flex w-full items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                            <AvatarFallback>
+                                {user?.name?.split(" ").map((n) => n[0]).join("")}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col overflow-hidden">
+                            <span className="truncate text-sm font-medium">{user?.name}</span>
+                            <span className="truncate text-xs text-sidebar-foreground/70">{user?.email}</span>
+                        </div>
+                    </div>
+                </SidebarMenuItem>
                 <SidebarMenuItem>
                     <form action={logoutAction} className="w-full">
                         <SidebarMenuButton type="submit" className="w-full">

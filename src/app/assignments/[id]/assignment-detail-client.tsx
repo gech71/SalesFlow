@@ -33,9 +33,10 @@ import { Icons } from '@/components/icons';
 import { type SalesLead, type LeadUpdate, type User } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator } from '@/components/ui/sidebar';
 import { Progress } from '@/components/ui/progress';
 import { addLeadUpdate, logoutAction } from '@/app/actions';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 // The client-side type needs to match what the server component constructs
 type ClientSalesLead = SalesLead & {
@@ -59,7 +60,7 @@ const updateSchema = z.object({
     generatedSavings: z.coerce.number().min(0, "Savings must be a positive number.").optional(),
 })
 
-export default function AssignmentDetailClient({ lead, distanceThreshold }: { lead: ClientSalesLead, distanceThreshold: number }) {
+export default function AssignmentDetailClient({ user, lead, distanceThreshold }: { user: User | null, lead: ClientSalesLead, distanceThreshold: number }) {
   const router = useRouter();
   const { toast } = useToast();
 
@@ -232,7 +233,21 @@ export default function AssignmentDetailClient({ lead, distanceThreshold }: { le
             </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-            <SidebarMenu>
+            <SidebarSeparator />
+            <SidebarMenu className="p-2">
+                <SidebarMenuItem>
+                    <div className="flex w-full items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                            <AvatarFallback>
+                                {user?.name?.split(" ").map((n) => n[0]).join("")}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col overflow-hidden">
+                            <span className="truncate text-sm font-medium">{user?.name}</span>
+                            <span className="truncate text-xs text-sidebar-foreground/70">{user?.email}</span>
+                        </div>
+                    </div>
+                </SidebarMenuItem>
                 <SidebarMenuItem>
                     <form action={logoutAction} className="w-full">
                         <SidebarMenuButton type="submit" className="w-full">

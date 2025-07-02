@@ -3,8 +3,13 @@ import { serialize } from '@/lib/utils';
 import prisma from '@/lib/prisma';
 import SubmitEntryClient from './submit-entry-client';
 import { quarters } from '../branch-plans/data';
+import { cookies } from 'next/headers';
 
 export default async function SubmitPlanEntryPage() {
+    const cookieStore = await cookies();
+    const userId = cookieStore.get('userId')?.value;
+    const user = userId ? await prisma.user.findUnique({ where: { id: userId } }) : null;
+
     const plans = await prisma.branchPlan.findMany({
         include: {
             branch: true,
@@ -23,6 +28,7 @@ export default async function SubmitPlanEntryPage() {
 
     return (
         <SubmitEntryClient
+            user={serialize(user)}
             plans={serialize(plans)}
             branches={serialize(branches)}
             quarters={quarters}

@@ -2,8 +2,13 @@
 import { serialize } from '@/lib/utils';
 import prisma from '@/lib/prisma';
 import BranchAssignmentsClient from './branch-assignments-client';
+import { cookies } from 'next/headers';
 
 export default async function BranchAssignmentsPage() {
+    const cookieStore = await cookies();
+    const userId = cookieStore.get('userId')?.value;
+    const user = userId ? await prisma.user.findUnique({ where: { id: userId } }) : null;
+
     const leads = await prisma.salesLead.findMany({
         where: {
             OR: [
@@ -41,6 +46,6 @@ export default async function BranchAssignmentsPage() {
     });
 
     return (
-        <BranchAssignmentsClient leads={serialize(leads)} branches={serialize(branches)} />
+        <BranchAssignmentsClient user={serialize(user)} leads={serialize(leads)} branches={serialize(branches)} />
     );
 }

@@ -2,8 +2,13 @@
 import prisma from '@/lib/prisma';
 import SettingsClient from './settings-client';
 import { serialize } from '@/lib/utils';
+import { cookies } from 'next/headers';
 
 export default async function SettingsPage() {
+    const cookieStore = await cookies();
+    const loggedInUserId = cookieStore.get('userId')?.value;
+    const loggedInUser = loggedInUserId ? await prisma.user.findUnique({ where: { id: loggedInUserId } }) : null;
+
     const thresholdSetting = await prisma.setting.findUnique({
         where: { key: 'offsiteDistanceThreshold' }
     });
@@ -31,6 +36,7 @@ export default async function SettingsPage() {
 
     return (
         <SettingsClient 
+            loggedInUser={serialize(loggedInUser)}
             threshold={threshold}
             users={serialize(users)}
             roles={serialize(roles)}

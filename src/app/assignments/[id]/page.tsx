@@ -3,9 +3,14 @@ import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import AssignmentDetailClient from './assignment-detail-client';
 import { serialize } from '@/lib/utils';
+import { cookies } from 'next/headers';
 
 export default async function AssignmentDetailPage({ params }: { params: { id: string } }) {
     const { id } = params;
+
+    const cookieStore = await cookies();
+    const userId = cookieStore.get('userId')?.value;
+    const user = userId ? await prisma.user.findUnique({ where: { id: userId } }) : null;
 
     const lead = await prisma.salesLead.findUnique({
         where: { id },
@@ -29,6 +34,6 @@ export default async function AssignmentDetailPage({ params }: { params: { id: s
     const threshold = thresholdSetting ? parseFloat(thresholdSetting.value) : 1.0;
     
     return (
-        <AssignmentDetailClient lead={serialize(lead)} distanceThreshold={threshold} />
+        <AssignmentDetailClient user={serialize(user)} lead={serialize(lead)} distanceThreshold={threshold} />
     );
 }

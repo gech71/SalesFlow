@@ -40,6 +40,7 @@ export default async function DistrictAssignmentsPage() {
 
     return (
         <DistrictAssignmentsClient 
+            user={serialize(user)}
             leads={serialize(leads)} 
             districts={serialize(districts)}
             permissions={permissions} 

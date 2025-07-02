@@ -21,24 +21,26 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { Icons } from '@/components/icons';
 import { type SalesLead, type BranchPlan, type District, type Branch, type LeadUpdate, type PlanEntry, type User } from '@prisma/client';
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator } from '@/components/ui/sidebar';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { logoutAction } from '@/app/actions';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 type ClientSalesLead = SalesLead & { updates: LeadUpdate[] };
 type ClientBranchPlan = BranchPlan & { entries: PlanEntry[] };
 type ClientBranch = Branch & { users: User[] };
 
 interface DashboardClientProps {
+  user: User | null;
   leads: ClientSalesLead[];
   plans: ClientBranchPlan[];
   districts: District[];
   branches: ClientBranch[];
 }
 
-export default function DashboardClient({ leads, plans, districts, branches }: DashboardClientProps) {
+export default function DashboardClient({ user, leads, plans, districts, branches }: DashboardClientProps) {
   const [selectedDistrict, setSelectedDistrict] = useState('all');
   const [selectedBranch, setSelectedBranch] = useState('all');
 
@@ -185,7 +187,21 @@ export default function DashboardClient({ leads, plans, districts, branches }: D
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-            <SidebarMenu>
+            <SidebarSeparator />
+            <SidebarMenu className="p-2">
+                <SidebarMenuItem>
+                    <div className="flex w-full items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                            <AvatarFallback>
+                                {user?.name?.split(" ").map((n) => n[0]).join("")}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col overflow-hidden">
+                            <span className="truncate text-sm font-medium">{user?.name}</span>
+                            <span className="truncate text-xs text-sidebar-foreground/70">{user?.email}</span>
+                        </div>
+                    </div>
+                </SidebarMenuItem>
                 <SidebarMenuItem>
                     <form action={logoutAction} className="w-full">
                         <SidebarMenuButton type="submit" className="w-full">

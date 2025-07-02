@@ -41,9 +41,10 @@ import { Icons } from '@/components/icons';
 import type { SalesLead, District, Branch, User } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator } from '@/components/ui/sidebar';
 import { assignBranch, approveLeadDistrict, returnLeadForReworkDistrict, logoutAction } from '@/app/actions';
 import { useRouter } from 'next/navigation';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 type ClientSalesLead = SalesLead & {
     district: District | null;
@@ -55,7 +56,7 @@ type ClientDistrict = District & {
     branches: Branch[];
 }
 
-export default function DistrictAssignmentsClient({ leads, districts, permissions }: { leads: ClientSalesLead[], districts: ClientDistrict[], permissions: string[] }) {
+export default function DistrictAssignmentsClient({ user, leads, districts, permissions }: { user: User | null, leads: ClientSalesLead[], districts: ClientDistrict[], permissions: string[] }) {
   const router = useRouter();
   const { toast } = useToast();
   
@@ -166,7 +167,21 @@ export default function DistrictAssignmentsClient({ leads, districts, permission
             </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-            <SidebarMenu>
+            <SidebarSeparator />
+            <SidebarMenu className="p-2">
+                <SidebarMenuItem>
+                    <div className="flex w-full items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                            <AvatarFallback>
+                                {user?.name?.split(" ").map((n) => n[0]).join("")}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col overflow-hidden">
+                            <span className="truncate text-sm font-medium">{user?.name}</span>
+                            <span className="truncate text-xs text-sidebar-foreground/70">{user?.email}</span>
+                        </div>
+                    </div>
+                </SidebarMenuItem>
                 <SidebarMenuItem>
                     <form action={logoutAction} className="w-full">
                         <SidebarMenuButton type="submit" className="w-full">
