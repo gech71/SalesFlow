@@ -51,16 +51,35 @@ const roleSchema = z.object({
   permissions: z.array(z.string()).optional(),
 });
 
-const allPermissions = [
-    { id: 'manage_settings', label: 'Manage Settings' },
-    { id: 'view_all_reports', label: 'View All Reports' },
-    { id: 'create_lead', label: 'Create Lead' },
-    { id: 'assign_branch', label: 'Assign Lead to Branch' },
-    { id: 'approve_district', label: 'Approve Lead (District)' },
-    { id: 'assign_user', label: 'Assign Lead to User' },
-    { id: 'approve_branch', label: 'Approve Lead (Branch)' },
-    { id: 'update_lead', label: 'Update Own Lead' },
+const permissionGroups = [
+  {
+    title: 'General & Settings',
+    permissions: [{ id: 'manage_settings', label: 'Manage users, roles, and system settings' }],
+  },
+  {
+    title: 'Reporting & Dashboards',
+    permissions: [{ id: 'view_all_reports', label: 'View all reports and dashboards' }],
+  },
+  {
+    title: 'Lead Management Workflow',
+    permissions: [
+      { id: 'create_lead', label: 'Create a new lead (District)' },
+      { id: 'assign_branch', label: 'Assign a lead to a Branch (District)' },
+      { id: 'approve_district', label: 'Give final approval to a lead (District)' },
+      { id: 'assign_user', label: 'Assign a lead to an Officer (Branch)' },
+      { id: 'approve_branch', label: 'Approve a lead submission (Branch)' },
+      { id: 'update_lead', label: 'Update an assigned lead (Officer)' },
+    ],
+  },
+  {
+    title: 'Branch Savings Plans',
+    permissions: [
+        { id: 'create_plan_entry', label: 'Submit collection/withdrawal entries (Branch)' },
+        { id: 'review_plan_entry', label: 'Review (approve/reject) plan entries (District)' },
+    ]
+  }
 ];
+
 
 type ClientUser = User & { role: Role, district: District | null, branch: Branch | null };
 type ClientDistrict = District & { branches: Branch[] };
@@ -361,7 +380,7 @@ export default function SettingsClient({ loggedInUser, threshold, users, roles, 
         </div>
       </SidebarInset>
       <Dialog open={isRoleDialogOpen} onOpenChange={setIsRoleDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-2xl">
             <form onSubmit={handleSubmitRole(onRoleSubmit)}>
                 <DialogHeader><DialogTitle>{editingRole ? "Edit Role" : "Create New Role"}</DialogTitle><DialogDescription>Set the details and permissions for this role.</DialogDescription></DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -370,26 +389,44 @@ export default function SettingsClient({ loggedInUser, threshold, users, roles, 
                     <div><Label htmlFor="roleDescription">Description</Label><Textarea id="roleDescription" {...registerRole("description")} /></div>
                     <div>
                         <Label>Permissions</Label>
-                        <Card className="mt-2"><CardContent className="p-4 grid grid-cols-2 gap-4">
-                            <Controller control={controlRole} name="permissions" render={({ field }) => (
-                                <>
-                                    {allPermissions.map(p => (
-                                        <div key={p.id} className="flex items-center space-x-2">
-                                            <Checkbox
-                                                id={`perm-${p.id}`}
-                                                checked={field.value?.includes(p.id)}
-                                                onCheckedChange={(checked) => {
-                                                    return checked
-                                                        ? field.onChange([...(field.value || []), p.id])
-                                                        : field.onChange(field.value?.filter(v => v !== p.id))
-                                                }}
-                                            />
-                                            <label htmlFor={`perm-${p.id}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">{p.label}</label>
-                                        </div>
-                                    ))}
-                                </>
-                            )} />
-                        </CardContent></Card>
+                        <Card className="mt-2 max-h-64 overflow-y-auto">
+                            <CardContent className="p-4 space-y-4">
+                                <Controller
+                                    control={controlRole}
+                                    name="permissions"
+                                    render={({ field }) => (
+                                        <>
+                                            {permissionGroups.map((group) => (
+                                                <div key={group.title} className="space-y-3">
+                                                    <h4 className="font-medium text-sm text-foreground">{group.title}</h4>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 pl-2">
+                                                        {group.permissions.map((p) => (
+                                                            <div key={p.id} className="flex items-center space-x-2">
+                                                                <Checkbox
+                                                                    id={`perm-${p.id}`}
+                                                                    checked={field.value?.includes(p.id)}
+                                                                    onCheckedChange={(checked) => {
+                                                                        return checked
+                                                                            ? field.onChange([...(field.value || []), p.id])
+                                                                            : field.onChange(field.value?.filter((v) => v !== p.id));
+                                                                    }}
+                                                                />
+                                                                <label
+                                                                    htmlFor={`perm-${p.id}`}
+                                                                    className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                                >
+                                                                    {p.label}
+                                                                </label>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </>
+                                    )}
+                                />
+                            </CardContent>
+                        </Card>
                     </div>
                 </div>
                 <DialogFooter><DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose><Button type="submit" disabled={isSubmittingRole}>{isSubmittingRole && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}Save Role</Button></DialogFooter>

@@ -25,9 +25,9 @@ async function main() {
     console.log(`Seeded 1 setting`);
 
     // Seed Roles
-    const adminRole = await prisma.role.create({ data: { name: 'ADMIN', description: 'System Administrator', permissions: ['manage_settings', 'create_lead', 'view_all_reports', 'assign_branch', 'approve_district', 'assign_user', 'approve_branch', 'update_lead'] } });
-    const districtManagerRole = await prisma.role.create({ data: { name: 'DISTRICT_MANAGER', description: 'Manages a district', permissions: ['create_lead', 'assign_branch', 'approve_district'] } });
-    const branchManagerRole = await prisma.role.create({ data: { name: 'BRANCH_MANAGER', description: 'Manages a branch', permissions: ['assign_user', 'approve_branch'] } });
+    const adminRole = await prisma.role.create({ data: { name: 'ADMIN', description: 'System Administrator', permissions: ['manage_settings', 'view_all_reports', 'create_lead', 'assign_branch', 'approve_district', 'assign_user', 'approve_branch', 'update_lead', 'create_plan_entry', 'review_plan_entry'] } });
+    const districtManagerRole = await prisma.role.create({ data: { name: 'DISTRICT_MANAGER', description: 'Manages a district', permissions: ['view_all_reports', 'create_lead', 'assign_branch', 'approve_district', 'review_plan_entry'] } });
+    const branchManagerRole = await prisma.role.create({ data: { name: 'BRANCH_MANAGER', description: 'Manages a branch', permissions: ['assign_user', 'approve_branch', 'create_plan_entry'] } });
     const officerRole = await prisma.role.create({ data: { name: 'OFFICER', description: 'Sales Officer', permissions: ['update_lead'] } });
     console.log('Seeded 4 roles');
 
