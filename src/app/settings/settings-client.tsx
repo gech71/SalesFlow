@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -106,7 +106,7 @@ const permissionGroups = [
 type ClientUser = User & { role: Role, district: District | null, branch: Branch | null };
 type ClientDistrict = District & { branches: Branch[] };
 
-export default function SettingsClient({ loggedInUser, threshold, users, roles, districts }: { loggedInUser: User | null, threshold: number, users: ClientUser[], roles: Role[], districts: ClientDistrict[] }) {
+export default function SettingsClient({ loggedInUser, permissions, threshold, users, roles, districts }: { loggedInUser: User | null, permissions: string[], threshold: number, users: ClientUser[], roles: Role[], districts: ClientDistrict[] }) {
   const { toast } = useToast();
   
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
@@ -125,6 +125,8 @@ export default function SettingsClient({ loggedInUser, threshold, users, roles, 
   const { register: registerRole, handleSubmit: handleSubmitRole, reset: resetRole, control: controlRole, formState: { errors: roleErrors, isSubmitting: isSubmittingRole } } = useForm<z.infer<typeof roleSchema>>({
     resolver: zodResolver(roleSchema),
   });
+  
+  const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
 
   useEffect(() => {
     resetSettings({ threshold });
@@ -244,14 +246,46 @@ export default function SettingsClient({ loggedInUser, threshold, users, roles, 
         <SidebarHeader><div className="flex items-center gap-2 p-2"><Icons.workflow className="w-6 h-6 text-primary" /><h2 className="font-semibold text-lg">SalesFlow</h2></div></SidebarHeader>
         <SidebarContent>
             <SidebarMenu>
-                <SidebarMenuItem><Link href="/dashboard"><SidebarMenuButton><Icons.dashboard className="mr-2" />Dashboard</SidebarMenuButton></Link></SidebarMenuItem>
-                <SidebarMenuItem><Link href="/assignments"><SidebarMenuButton><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link></SidebarMenuItem>
-                <SidebarMenuItem><Link href="/branch-plans"><SidebarMenuButton><Icons.landmark className="mr-2" />Branch Plans</SidebarMenuButton></Link></SidebarMenuItem>
-                <SidebarMenuItem><Link href="/submit-entry"><SidebarMenuButton><Icons.plusCircle className="mr-2" />Submit Entry</SidebarMenuButton></Link></SidebarMenuItem>
-                <SidebarMenuItem><Link href="/district-assignments"><SidebarMenuButton><Icons.building className="mr-2" />District View</SidebarMenuButton></Link></SidebarMenuItem>
-                <SidebarMenuItem><Link href="/branch-assignments"><SidebarMenuButton><Icons.building2 className="mr-2" />Branch View</SidebarMenuButton></Link></SidebarMenuItem>
-                <SidebarMenuItem><Link href="/offsite-reports"><SidebarMenuButton><Icons.alertTriangle className="mr-2" />Off-site Reports</SidebarMenuButton></Link></SidebarMenuItem>
-                <SidebarMenuItem><Link href="/settings"><SidebarMenuButton isActive><Icons.settings className="mr-2" />Settings</SidebarMenuButton></Link></SidebarMenuItem>
+                {permissions.includes('dashboard:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/dashboard"><SidebarMenuButton><Icons.dashboard className="mr-2" />Dashboard</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('assignments:read_own') && (
+                    <SidebarMenuItem>
+                        <Link href="/assignments"><SidebarMenuButton><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('branch_plans:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/branch-plans"><SidebarMenuButton><Icons.landmark className="mr-2" />Branch Plans</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('branch_plans:create_entry') && (
+                    <SidebarMenuItem>
+                        <Link href="/submit-entry"><SidebarMenuButton><Icons.plusCircle className="mr-2" />Submit Entry</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('district_assignments:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/district-assignments"><SidebarMenuButton><Icons.building className="mr-2" />District View</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('branch_assignments:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/branch-assignments"><SidebarMenuButton><Icons.building2 className="mr-2" />Branch View</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('offsite_reports:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/offsite-reports"><SidebarMenuButton><Icons.alertTriangle className="mr-2" />Off-site Reports</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {canViewSettings && (
+                    <SidebarMenuItem>
+                        <Link href="/settings"><SidebarMenuButton isActive><Icons.settings className="mr-2" />Settings</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
             </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
@@ -285,118 +319,124 @@ export default function SettingsClient({ loggedInUser, threshold, users, roles, 
             
             <Tabs defaultValue="users" className="w-full">
                 <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 sm:max-w-2xl">
-                    <TabsTrigger value="users">User Management</TabsTrigger>
-                    <TabsTrigger value="roles">Role Management</TabsTrigger>
-                    <TabsTrigger value="reporting">Reporting</TabsTrigger>
+                    {permissions.includes('settings:manage_users') && <TabsTrigger value="users">User Management</TabsTrigger>}
+                    {permissions.includes('settings:manage_roles') && <TabsTrigger value="roles">Role Management</TabsTrigger>}
+                    {permissions.includes('settings:manage_reporting') && <TabsTrigger value="reporting">Reporting</TabsTrigger>}
                 </TabsList>
                 
-                <TabsContent value="reporting" className="mt-6">
-                    <div className="grid max-w-2xl gap-6">
-                        <Card>
-                            <form onSubmit={handleSubmitSettings(onSettingsSubmit)}>
-                                <CardHeader><CardTitle>Reporting Settings</CardTitle><CardDescription>Manage settings related to lead reporting and validation.</CardDescription></CardHeader>
-                                <CardContent>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="threshold">On-site Distance Threshold (km)</Label>
-                                        <Input id="threshold" type="number" step="0.1" {...registerSettings("threshold")} disabled={isSubmittingSettings} />
-                                        <p className="text-sm text-muted-foreground">Updates submitted further than this distance from the lead's location will be flagged as "Off-site".</p>
-                                        {settingsErrors.threshold && <p className="text-red-500 text-xs mt-1">{settingsErrors.threshold.message}</p>}
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="border-t px-6 py-4">
-                                    <Button type="submit" disabled={isSubmittingSettings}>{isSubmittingSettings && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}Save Settings</Button>
-                                </CardFooter>
-                            </form>
-                        </Card>
-                    </div>
-                </TabsContent>
+                {permissions.includes('settings:manage_reporting') && (
+                    <TabsContent value="reporting" className="mt-6">
+                        <div className="grid max-w-2xl gap-6">
+                            <Card>
+                                <form onSubmit={handleSubmitSettings(onSettingsSubmit)}>
+                                    <CardHeader><CardTitle>Reporting Settings</CardTitle><CardDescription>Manage settings related to lead reporting and validation.</CardDescription></CardHeader>
+                                    <CardContent>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="threshold">On-site Distance Threshold (km)</Label>
+                                            <Input id="threshold" type="number" step="0.1" {...registerSettings("threshold")} disabled={isSubmittingSettings} />
+                                            <p className="text-sm text-muted-foreground">Updates submitted further than this distance from the lead's location will be flagged as "Off-site".</p>
+                                            {settingsErrors.threshold && <p className="text-red-500 text-xs mt-1">{settingsErrors.threshold.message}</p>}
+                                        </div>
+                                    </CardContent>
+                                    <CardFooter className="border-t px-6 py-4">
+                                        <Button type="submit" disabled={isSubmittingSettings}>{isSubmittingSettings && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}Save Settings</Button>
+                                    </CardFooter>
+                                </form>
+                            </Card>
+                        </div>
+                    </TabsContent>
+                )}
 
-                <TabsContent value="users" className="mt-6">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div><CardTitle>Users</CardTitle><CardDescription>Manage user accounts, their roles, and their branch/district assignments.</CardDescription></div>
-                             <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
-                                <DialogTrigger asChild><Button><Icons.plusCircle className="mr-2 h-4 w-4" />Register User</Button></DialogTrigger>
-                                <DialogContent className="sm:max-w-lg">
-                                    <form onSubmit={handleSubmitNewUser(onNewUserSubmit)}>
-                                        <DialogHeader><DialogTitle>Register New User</DialogTitle><DialogDescription>Create a new user account in the authentication service and in this application.</DialogDescription></DialogHeader>
-                                        <div className="grid gap-4 py-4">
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div><Label htmlFor="firstName">First Name</Label><Input id="firstName" {...registerNewUser("firstName")} />{newUserErrors.firstName && <p className="text-destructive text-xs mt-1">{newUserErrors.firstName.message}</p>}</div>
-                                                <div><Label htmlFor="lastName">Last Name</Label><Input id="lastName" {...registerNewUser("lastName")} />{newUserErrors.lastName && <p className="text-destructive text-xs mt-1">{newUserErrors.lastName.message}</p>}</div>
+                {permissions.includes('settings:manage_users') && (
+                    <TabsContent value="users" className="mt-6">
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between">
+                                <div><CardTitle>Users</CardTitle><CardDescription>Manage user accounts, their roles, and their branch/district assignments.</CardDescription></div>
+                                <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
+                                    <DialogTrigger asChild><Button><Icons.plusCircle className="mr-2 h-4 w-4" />Register User</Button></DialogTrigger>
+                                    <DialogContent className="sm:max-w-lg">
+                                        <form onSubmit={handleSubmitNewUser(onNewUserSubmit)}>
+                                            <DialogHeader><DialogTitle>Register New User</DialogTitle><DialogDescription>Create a new user account in the authentication service and in this application.</DialogDescription></DialogHeader>
+                                            <div className="grid gap-4 py-4">
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div><Label htmlFor="firstName">First Name</Label><Input id="firstName" {...registerNewUser("firstName")} />{newUserErrors.firstName && <p className="text-destructive text-xs mt-1">{newUserErrors.firstName.message}</p>}</div>
+                                                    <div><Label htmlFor="lastName">Last Name</Label><Input id="lastName" {...registerNewUser("lastName")} />{newUserErrors.lastName && <p className="text-destructive text-xs mt-1">{newUserErrors.lastName.message}</p>}</div>
+                                                </div>
+                                                <div><Label htmlFor="email">Email</Label><Input id="email" type="email" {...registerNewUser("email")} />{newUserErrors.email && <p className="text-destructive text-xs mt-1">{newUserErrors.email.message}</p>}</div>
+                                                <div><Label htmlFor="phoneNumber">Phone Number</Label><Input id="phoneNumber" {...registerNewUser("phoneNumber")} />{newUserErrors.phoneNumber && <p className="text-destructive text-xs mt-1">{newUserErrors.phoneNumber.message}</p>}</div>
+                                                <div><Label htmlFor="password">Password</Label><Input id="password" type="password" {...registerNewUser("password")} />{newUserErrors.password && <p className="text-destructive text-xs mt-1">{newUserErrors.password.message}</p>}</div>
+                                                <div>
+                                                    <Label htmlFor="roleId">Role</Label>
+                                                    <Controller control={controlNewUser} name="roleId" render={({ field }) => (
+                                                        <Select onValueChange={field.onChange} defaultValue={field.value}><SelectTrigger><SelectValue placeholder="Select a role" /></SelectTrigger>
+                                                            <SelectContent>{roles.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}</SelectContent>
+                                                        </Select>
+                                                    )} />
+                                                    {newUserErrors.roleId && <p className="text-destructive text-xs mt-1">{newUserErrors.roleId.message}</p>}
+                                                </div>
                                             </div>
-                                            <div><Label htmlFor="email">Email</Label><Input id="email" type="email" {...registerNewUser("email")} />{newUserErrors.email && <p className="text-destructive text-xs mt-1">{newUserErrors.email.message}</p>}</div>
-                                            <div><Label htmlFor="phoneNumber">Phone Number</Label><Input id="phoneNumber" {...registerNewUser("phoneNumber")} />{newUserErrors.phoneNumber && <p className="text-destructive text-xs mt-1">{newUserErrors.phoneNumber.message}</p>}</div>
-                                            <div><Label htmlFor="password">Password</Label><Input id="password" type="password" {...registerNewUser("password")} />{newUserErrors.password && <p className="text-destructive text-xs mt-1">{newUserErrors.password.message}</p>}</div>
-                                            <div>
-                                                <Label htmlFor="roleId">Role</Label>
-                                                <Controller control={controlNewUser} name="roleId" render={({ field }) => (
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value}><SelectTrigger><SelectValue placeholder="Select a role" /></SelectTrigger>
+                                            <DialogFooter><DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose><Button type="submit" disabled={isSubmittingNewUser}>{isSubmittingNewUser && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}Register</Button></DialogFooter>
+                                        </form>
+                                    </DialogContent>
+                                </Dialog>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader><TableRow><TableHead>User</TableHead><TableHead className="w-[180px]">Role</TableHead><TableHead className="w-[40%]">Assignment</TableHead></TableRow></TableHeader>
+                                    <TableBody>
+                                        {users.map(user => (
+                                            <TableRow key={user.id}>
+                                                <TableCell>
+                                                    <div className="font-medium">{user.name}</div>
+                                                    <div className="text-xs text-muted-foreground">{user.email}</div>
+                                                    <div className="text-xs text-muted-foreground">{user.phoneNumber}</div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Select defaultValue={user.roleId} onValueChange={(roleId) => handleRoleChange(user.id, roleId)}>
+                                                        <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
                                                         <SelectContent>{roles.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}</SelectContent>
                                                     </Select>
-                                                )} />
-                                                {newUserErrors.roleId && <p className="text-destructive text-xs mt-1">{newUserErrors.roleId.message}</p>}
-                                            </div>
-                                        </div>
-                                        <DialogFooter><DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose><Button type="submit" disabled={isSubmittingNewUser}>{isSubmittingNewUser && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}Register</Button></DialogFooter>
-                                    </form>
-                                </DialogContent>
-                            </Dialog>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader><TableRow><TableHead>User</TableHead><TableHead className="w-[180px]">Role</TableHead><TableHead className="w-[40%]">Assignment</TableHead></TableRow></TableHeader>
-                                <TableBody>
-                                    {users.map(user => (
-                                        <TableRow key={user.id}>
-                                            <TableCell>
-                                                <div className="font-medium">{user.name}</div>
-                                                <div className="text-xs text-muted-foreground">{user.email}</div>
-                                                <div className="text-xs text-muted-foreground">{user.phoneNumber}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Select defaultValue={user.roleId} onValueChange={(roleId) => handleRoleChange(user.id, roleId)}>
-                                                    <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
-                                                    <SelectContent>{roles.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}</SelectContent>
-                                                </Select>
-                                            </TableCell>
-                                            <TableCell>
-                                                {renderAssignmentControls(user)}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
+                                                </TableCell>
+                                                <TableCell>
+                                                    {renderAssignmentControls(user)}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                )}
 
-                <TabsContent value="roles" className="mt-6">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div><CardTitle>Roles</CardTitle><CardDescription>Define roles and their permissions within the application.</CardDescription></div>
-                            <Button onClick={() => openRoleDialog(null)}><Icons.plusCircle className="mr-2 h-4 w-4" />Create Role</Button>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Description</TableHead><TableHead>Permissions</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
-                                <TableBody>
-                                    {roles.map(role => (
-                                        <TableRow key={role.id}>
-                                            <TableCell className="font-medium">{role.name}</TableCell>
-                                            <TableCell className="text-muted-foreground">{role.description}</TableCell>
-                                            <TableCell><div className="flex flex-wrap gap-1">{role.permissions.map(p => <Badge key={p} variant="secondary">{p}</Badge>)}</div></TableCell>
-                                            <TableCell className="text-right space-x-2">
-                                                <Button variant="ghost" size="icon" onClick={() => openRoleDialog(role)}><Icons.edit className="h-4 w-4" /></Button>
-                                                <Button variant="ghost" size="icon" onClick={() => onDeleteRole(role.id)}><Icons.trash className="h-4 w-4" /></Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
+                {permissions.includes('settings:manage_roles') && (
+                    <TabsContent value="roles" className="mt-6">
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between">
+                                <div><CardTitle>Roles</CardTitle><CardDescription>Define roles and their permissions within the application.</CardDescription></div>
+                                <Button onClick={() => openRoleDialog(null)}><Icons.plusCircle className="mr-2 h-4 w-4" />Create Role</Button>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Description</TableHead><TableHead>Permissions</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                                    <TableBody>
+                                        {roles.map(role => (
+                                            <TableRow key={role.id}>
+                                                <TableCell className="font-medium">{role.name}</TableCell>
+                                                <TableCell className="text-muted-foreground">{role.description}</TableCell>
+                                                <TableCell><div className="flex flex-wrap gap-1">{role.permissions.map(p => <Badge key={p} variant="secondary">{p}</Badge>)}</div></TableCell>
+                                                <TableCell className="text-right space-x-2">
+                                                    <Button variant="ghost" size="icon" onClick={() => openRoleDialog(role)}><Icons.edit className="h-4 w-4" /></Button>
+                                                    <Button variant="ghost" size="icon" onClick={() => onDeleteRole(role.id)}><Icons.trash className="h-4 w-4" /></Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                )}
             </Tabs>
           </main>
         </div>

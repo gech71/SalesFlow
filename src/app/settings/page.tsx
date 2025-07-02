@@ -7,7 +7,12 @@ import { cookies } from 'next/headers';
 export default async function SettingsPage() {
     const cookieStore = await cookies();
     const loggedInUserId = cookieStore.get('userId')?.value;
-    const loggedInUser = loggedInUserId ? await prisma.user.findUnique({ where: { id: loggedInUserId } }) : null;
+    const loggedInUser = loggedInUserId ? await prisma.user.findUnique({
+        where: { id: loggedInUserId },
+        include: { role: true }
+    }) : null;
+
+    const permissions = loggedInUser?.role?.permissions ?? [];
 
     const thresholdSetting = await prisma.setting.findUnique({
         where: { key: 'offsiteDistanceThreshold' }
@@ -37,6 +42,7 @@ export default async function SettingsPage() {
     return (
         <SettingsClient 
             loggedInUser={serialize(loggedInUser)}
+            permissions={permissions}
             threshold={threshold}
             users={serialize(users)}
             roles={serialize(roles)}

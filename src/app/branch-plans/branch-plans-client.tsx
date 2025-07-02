@@ -33,7 +33,7 @@ const rejectionSchema = z.object({
   rejectionReason: z.string().min(10, "A reason for rejection is required (min 10 characters)."),
 });
 
-export default function BranchPlansClient({ user, plans, branches, quarters }: { user: User | null, plans: ClientBranchPlan[], branches: Branch[], quarters: string[] }) {
+export default function BranchPlansClient({ user, permissions, plans, branches, quarters }: { user: User | null, permissions: string[], plans: ClientBranchPlan[], branches: Branch[], quarters: string[] }) {
   const router = useRouter();
   const { toast } = useToast();
   
@@ -45,6 +45,8 @@ export default function BranchPlansClient({ user, plans, branches, quarters }: {
   const { register: registerReject, handleSubmit: handleSubmitReject, reset: resetReject, formState: { errors: rejectErrors } } = useForm<z.infer<typeof rejectionSchema>>({
     resolver: zodResolver(rejectionSchema),
   });
+
+  const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
 
   const currentPlan = useMemo(() => {
     return plans.find(p => p.branchId === selectedBranchId && p.quarter === selectedQuarter);
@@ -104,30 +106,46 @@ export default function BranchPlansClient({ user, plans, branches, quarters }: {
         </SidebarHeader>
         <SidebarContent>
             <SidebarMenu>
-                 <SidebarMenuItem>
-                    <Link href="/dashboard"><SidebarMenuButton><Icons.dashboard className="mr-2" />Dashboard</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                    <Link href="/assignments"><SidebarMenuButton><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <Link href="/branch-plans"><SidebarMenuButton isActive><Icons.landmark className="mr-2" />Branch Plans</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <Link href="/submit-entry"><SidebarMenuButton><Icons.plusCircle className="mr-2" />Submit Entry</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                    <Link href="/district-assignments"><SidebarMenuButton><Icons.building className="mr-2" />District View</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <Link href="/branch-assignments"><SidebarMenuButton><Icons.building2 className="mr-2" />Branch View</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                    <Link href="/offsite-reports"><SidebarMenuButton><Icons.alertTriangle className="mr-2" />Off-site Reports</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <Link href="/settings"><SidebarMenuButton><Icons.settings className="mr-2" />Settings</SidebarMenuButton></Link>
-                </SidebarMenuItem>
+                {permissions.includes('dashboard:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/dashboard"><SidebarMenuButton><Icons.dashboard className="mr-2" />Dashboard</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('assignments:read_own') && (
+                    <SidebarMenuItem>
+                        <Link href="/assignments"><SidebarMenuButton><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('branch_plans:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/branch-plans"><SidebarMenuButton isActive><Icons.landmark className="mr-2" />Branch Plans</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('branch_plans:create_entry') && (
+                    <SidebarMenuItem>
+                        <Link href="/submit-entry"><SidebarMenuButton><Icons.plusCircle className="mr-2" />Submit Entry</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('district_assignments:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/district-assignments"><SidebarMenuButton><Icons.building className="mr-2" />District View</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('branch_assignments:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/branch-assignments"><SidebarMenuButton><Icons.building2 className="mr-2" />Branch View</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('offsite_reports:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/offsite-reports"><SidebarMenuButton><Icons.alertTriangle className="mr-2" />Off-site Reports</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {canViewSettings && (
+                    <SidebarMenuItem>
+                        <Link href="/settings"><SidebarMenuButton><Icons.settings className="mr-2" />Settings</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
             </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
@@ -231,7 +249,7 @@ export default function BranchPlansClient({ user, plans, branches, quarters }: {
                                             <TableCell className="font-medium">{formatCurrency(entry.amount)}</TableCell>
                                             <TableCell><Badge variant={getStatusBadgeVariant(entry.status)}>{entry.status}</Badge></TableCell>
                                             <TableCell className="text-right">
-                                                {entry.status === 'Pending' && (
+                                                {entry.status === 'Pending' && permissions.includes('branch_plans:review') && (
                                                     <div className="flex gap-2 justify-end">
                                                         <Button size="sm" variant="outline" onClick={() => openRejectDialog(entry)}>Reject</Button>
                                                         <Button size="sm" onClick={() => handleReview(entry.id, 'Approved')}>Approve</Button>

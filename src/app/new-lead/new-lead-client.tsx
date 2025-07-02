@@ -32,7 +32,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createLead, logoutAction } from '@/app/actions';
 import { District, User } from '@prisma/client';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -47,7 +47,7 @@ const leadSchema = z.object({
   deadline: z.date({ required_error: 'A deadline date is required.' }),
 });
 
-export default function NewLeadClient({ user }: { user: User | null }) {
+export default function NewLeadClient({ user, permissions }: { user: User | null, permissions: string[] }) {
   const { toast } = useToast();
   const router = useRouter();
 
@@ -57,6 +57,8 @@ export default function NewLeadClient({ user }: { user: User | null }) {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedLocationName, setSelectedLocationName] = useState('');
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
+  const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
 
   useEffect(() => {
     // Fetch districts for the select dropdown
@@ -145,30 +147,46 @@ export default function NewLeadClient({ user }: { user: User | null }) {
         </SidebarHeader>
         <SidebarContent>
             <SidebarMenu>
-                <SidebarMenuItem>
-                    <Link href="/dashboard"><SidebarMenuButton><Icons.dashboard className="mr-2" />Dashboard</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                    <Link href="/assignments"><SidebarMenuButton><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <Link href="/branch-plans"><SidebarMenuButton><Icons.landmark className="mr-2" />Branch Plans</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <Link href="/submit-entry"><SidebarMenuButton><Icons.plusCircle className="mr-2" />Submit Entry</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                    <Link href="/district-assignments"><SidebarMenuButton isActive><Icons.building className="mr-2" />District View</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <Link href="/branch-assignments"><SidebarMenuButton><Icons.building2 className="mr-2" />Branch View</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                    <Link href="/offsite-reports"><SidebarMenuButton><Icons.alertTriangle className="mr-2" />Off-site Reports</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <Link href="/settings"><SidebarMenuButton><Icons.settings className="mr-2" />Settings</SidebarMenuButton></Link>
-                </SidebarMenuItem>
+                {permissions.includes('dashboard:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/dashboard"><SidebarMenuButton><Icons.dashboard className="mr-2" />Dashboard</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('assignments:read_own') && (
+                    <SidebarMenuItem>
+                        <Link href="/assignments"><SidebarMenuButton><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('branch_plans:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/branch-plans"><SidebarMenuButton><Icons.landmark className="mr-2" />Branch Plans</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('branch_plans:create_entry') && (
+                    <SidebarMenuItem>
+                        <Link href="/submit-entry"><SidebarMenuButton><Icons.plusCircle className="mr-2" />Submit Entry</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('district_assignments:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/district-assignments"><SidebarMenuButton isActive><Icons.building className="mr-2" />District View</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('branch_assignments:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/branch-assignments"><SidebarMenuButton><Icons.building2 className="mr-2" />Branch View</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('offsite_reports:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/offsite-reports"><SidebarMenuButton><Icons.alertTriangle className="mr-2" />Off-site Reports</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {canViewSettings && (
+                    <SidebarMenuItem>
+                        <Link href="/settings"><SidebarMenuButton><Icons.settings className="mr-2" />Settings</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
             </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>

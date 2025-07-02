@@ -10,7 +10,12 @@ export default async function AssignmentDetailPage({ params }: { params: { id: s
 
     const cookieStore = await cookies();
     const userId = cookieStore.get('userId')?.value;
-    const user = userId ? await prisma.user.findUnique({ where: { id: userId } }) : null;
+    const user = userId ? await prisma.user.findUnique({
+        where: { id: userId },
+        include: { role: true }
+    }) : null;
+    
+    const permissions = user?.role?.permissions ?? [];
 
     const lead = await prisma.salesLead.findUnique({
         where: { id },
@@ -34,6 +39,6 @@ export default async function AssignmentDetailPage({ params }: { params: { id: s
     const threshold = thresholdSetting ? parseFloat(thresholdSetting.value) : 1.0;
     
     return (
-        <AssignmentDetailClient user={serialize(user)} lead={serialize(lead)} distanceThreshold={threshold} />
+        <AssignmentDetailClient user={serialize(user)} permissions={permissions} lead={serialize(lead)} distanceThreshold={threshold} />
     );
 }

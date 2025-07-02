@@ -34,19 +34,22 @@ type ClientBranch = Branch & { users: User[] };
 
 interface DashboardClientProps {
   user: User | null;
+  permissions: string[];
   leads: ClientSalesLead[];
   plans: ClientBranchPlan[];
   districts: District[];
   branches: ClientBranch[];
 }
 
-export default function DashboardClient({ user, leads, plans, districts, branches }: DashboardClientProps) {
+export default function DashboardClient({ user, permissions, leads, plans, districts, branches }: DashboardClientProps) {
   const [selectedDistrict, setSelectedDistrict] = useState('all');
   const [selectedBranch, setSelectedBranch] = useState('all');
 
   useEffect(() => {
     setSelectedBranch('all');
   }, [selectedDistrict]);
+
+  const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
 
   const dashboardStats = useMemo(() => {
     const filteredLeads = leads.filter(lead => {
@@ -160,30 +163,46 @@ export default function DashboardClient({ user, leads, plans, districts, branche
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
-            <SidebarMenuItem>
-                <Link href="/dashboard"><SidebarMenuButton isActive><Icons.dashboard className="mr-2" />Dashboard</SidebarMenuButton></Link>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <Link href="/assignments"><SidebarMenuButton><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
-            </SidebarMenuItem>
-             <SidebarMenuItem>
+            {permissions.includes('dashboard:read') && (
+                <SidebarMenuItem>
+                    <Link href="/dashboard"><SidebarMenuButton isActive><Icons.dashboard className="mr-2" />Dashboard</SidebarMenuButton></Link>
+                </SidebarMenuItem>
+            )}
+            {permissions.includes('assignments:read_own') && (
+                <SidebarMenuItem>
+                <Link href="/assignments"><SidebarMenuButton><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
+                </SidebarMenuItem>
+            )}
+            {permissions.includes('branch_plans:read') && (
+                <SidebarMenuItem>
                 <Link href="/branch-plans"><SidebarMenuButton><Icons.landmark className="mr-2" />Branch Plans</SidebarMenuButton></Link>
             </SidebarMenuItem>
-            <SidebarMenuItem>
+            )}
+            {permissions.includes('branch_plans:create_entry') && (
+                <SidebarMenuItem>
                 <Link href="/submit-entry"><SidebarMenuButton><Icons.plusCircle className="mr-2" />Submit Entry</SidebarMenuButton></Link>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-              <Link href="/district-assignments"><SidebarMenuButton><Icons.building className="mr-2" />District View</SidebarMenuButton></Link>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <Link href="/branch-assignments"><SidebarMenuButton><Icons.building2 className="mr-2" />Branch View</SidebarMenuButton></Link>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
+            )}
+            {permissions.includes('district_assignments:read') && (
+                <SidebarMenuItem>
+                <Link href="/district-assignments"><SidebarMenuButton><Icons.building className="mr-2" />District View</SidebarMenuButton></Link>
+                </SidebarMenuItem>
+            )}
+            {permissions.includes('branch_assignments:read') && (
+                <SidebarMenuItem>
+                <Link href="/branch-assignments"><SidebarMenuButton><Icons.building2 className="mr-2" />Branch View</SidebarMenuButton></Link>
+                </SidebarMenuItem>
+            )}
+            {permissions.includes('offsite_reports:read') && (
+                <SidebarMenuItem>
                 <Link href="/offsite-reports"><SidebarMenuButton><Icons.alertTriangle className="mr-2" />Off-site Reports</SidebarMenuButton></Link>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
+                </SidebarMenuItem>
+            )}
+            {canViewSettings && (
+                <SidebarMenuItem>
                 <Link href="/settings"><SidebarMenuButton><Icons.settings className="mr-2" />Settings</SidebarMenuButton></Link>
-            </SidebarMenuItem>
+                </SidebarMenuItem>
+            )}
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>

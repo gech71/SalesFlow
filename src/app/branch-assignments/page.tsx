@@ -7,7 +7,12 @@ import { cookies } from 'next/headers';
 export default async function BranchAssignmentsPage() {
     const cookieStore = await cookies();
     const userId = cookieStore.get('userId')?.value;
-    const user = userId ? await prisma.user.findUnique({ where: { id: userId } }) : null;
+    const user = userId ? await prisma.user.findUnique({
+        where: { id: userId },
+        include: { role: true }
+    }) : null;
+
+    const permissions = user?.role?.permissions ?? [];
 
     const leads = await prisma.salesLead.findMany({
         where: {
@@ -46,6 +51,6 @@ export default async function BranchAssignmentsPage() {
     });
 
     return (
-        <BranchAssignmentsClient user={serialize(user)} leads={serialize(leads)} branches={serialize(branches)} />
+        <BranchAssignmentsClient user={serialize(user)} permissions={permissions} leads={serialize(leads)} branches={serialize(branches)} />
     );
 }

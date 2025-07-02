@@ -8,7 +8,12 @@ import { cookies } from 'next/headers';
 export default async function BranchPlansPage() {
     const cookieStore = await cookies();
     const userId = cookieStore.get('userId')?.value;
-    const user = userId ? await prisma.user.findUnique({ where: { id: userId } }) : null;
+    const user = userId ? await prisma.user.findUnique({
+        where: { id: userId },
+        include: { role: true }
+    }) : null;
+
+    const permissions = user?.role?.permissions ?? [];
 
     const plans = await prisma.branchPlan.findMany({
         include: {
@@ -27,6 +32,6 @@ export default async function BranchPlansPage() {
     const branches = await prisma.branch.findMany();
 
     return (
-        <BranchPlansClient user={serialize(user)} plans={serialize(plans)} branches={serialize(branches)} quarters={quarters} />
+        <BranchPlansClient user={serialize(user)} permissions={permissions} plans={serialize(plans)} branches={serialize(branches)} quarters={quarters} />
     );
 }

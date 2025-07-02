@@ -65,6 +65,8 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
   const [selectedLead, setSelectedLead] = useState<ClientSalesLead | null>(null);
   const [pendingAssignments, setPendingAssignments] = useState<Record<string, string>>({});
 
+  const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
+
   const handleBranchSelection = (leadId: string, branchId: string) => {
     setPendingAssignments(prev => ({
       ...prev,
@@ -140,30 +142,46 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
         </SidebarHeader>
         <SidebarContent>
             <SidebarMenu>
-                 <SidebarMenuItem>
-                    <Link href="/dashboard"><SidebarMenuButton><Icons.dashboard className="mr-2" />Dashboard</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                    <Link href="/assignments"><SidebarMenuButton><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                    <Link href="/branch-plans"><SidebarMenuButton><Icons.landmark className="mr-2" />Branch Plans</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <Link href="/submit-entry"><SidebarMenuButton><Icons.plusCircle className="mr-2" />Submit Entry</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                    <Link href="/district-assignments"><SidebarMenuButton isActive><Icons.building className="mr-2" />District View</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <Link href="/branch-assignments"><SidebarMenuButton><Icons.building2 className="mr-2" />Branch View</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                    <Link href="/offsite-reports"><SidebarMenuButton><Icons.alertTriangle className="mr-2" />Off-site Reports</SidebarMenuButton></Link>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <Link href="/settings"><SidebarMenuButton><Icons.settings className="mr-2" />Settings</SidebarMenuButton></Link>
-                </SidebarMenuItem>
+                {permissions.includes('dashboard:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/dashboard"><SidebarMenuButton><Icons.dashboard className="mr-2" />Dashboard</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('assignments:read_own') && (
+                    <SidebarMenuItem>
+                        <Link href="/assignments"><SidebarMenuButton><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('branch_plans:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/branch-plans"><SidebarMenuButton><Icons.landmark className="mr-2" />Branch Plans</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('branch_plans:create_entry') && (
+                    <SidebarMenuItem>
+                        <Link href="/submit-entry"><SidebarMenuButton><Icons.plusCircle className="mr-2" />Submit Entry</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('district_assignments:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/district-assignments"><SidebarMenuButton isActive><Icons.building className="mr-2" />District View</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('branch_assignments:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/branch-assignments"><SidebarMenuButton><Icons.building2 className="mr-2" />Branch View</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {permissions.includes('offsite_reports:read') && (
+                    <SidebarMenuItem>
+                        <Link href="/offsite-reports"><SidebarMenuButton><Icons.alertTriangle className="mr-2" />Off-site Reports</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
+                {canViewSettings && (
+                    <SidebarMenuItem>
+                        <Link href="/settings"><SidebarMenuButton><Icons.settings className="mr-2" />Settings</SidebarMenuButton></Link>
+                    </SidebarMenuItem>
+                )}
             </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
@@ -238,6 +256,7 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
                                         <Select
                                             value={pendingAssignments[lead.id] || ''}
                                             onValueChange={(branchId) => handleBranchSelection(lead.id, branchId)}
+                                            disabled={!permissions.includes('district_assignments:assign_branch')}
                                         >
                                             <SelectTrigger className="w-full sm:w-[180px]">
                                                 <SelectValue placeholder="Select a branch" />
@@ -248,7 +267,7 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
                                                 ))}
                                             </SelectContent>
                                         </Select>
-                                        {pendingAssignments[lead.id] && (
+                                        {pendingAssignments[lead.id] && permissions.includes('district_assignments:assign_branch') && (
                                             <Button size="sm" onClick={() => handleAssignBranch(lead.id, pendingAssignments[lead.id])}>Confirm</Button>
                                         )}
                                     </div>
@@ -287,8 +306,12 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
                                         <TableCell className="hidden md:table-cell">{lead.branch?.name}</TableCell>
                                         <TableCell className="hidden md:table-cell">{lead.assignee?.name}</TableCell>
                                         <TableCell className="text-right space-x-2">
-                                            <Button variant="outline" size="sm" onClick={() => openReworkDialog(lead)}>Return</Button>
-                                            <Button size="sm" onClick={() => handleApproveAndClose(lead.id)}>Approve & Close</Button>
+                                            {permissions.includes('district_assignments:approve') && (
+                                              <>
+                                                <Button variant="outline" size="sm" onClick={() => openReworkDialog(lead)}>Return</Button>
+                                                <Button size="sm" onClick={() => handleApproveAndClose(lead.id)}>Approve & Close</Button>
+                                              </>
+                                            )}
                                         </TableCell>
                                     </TableRow>
                                 ))}
