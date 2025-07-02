@@ -409,3 +409,113 @@ export async function refreshTokenAction() {
     return { success: false, error: 'An unexpected error occurred during token refresh.' };
   }
 }
+
+// User and Role Management Actions
+
+const registerUserSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  email: z.string().email('Invalid email address'),
+  phoneNumber: z.string().regex(/^(\+251|0)?[79]\d{8}$/, 'Invalid Ethiopian phone number'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  roleId: z.string().min(1, 'A role must be selected'),
+});
+
+export async function registerUser(data: z.infer<typeof registerUserSchema>) {
+    const validatedData = registerUserSchema.safeParse(data);
+    if (!validatedData.success) {
+        return { success: false, error: "Invalid data provided." };
+    }
+    const { firstName, lastName, email, phoneNumber, password, roleId } = validatedData.data;
+
+    try {
+        const baseUrl = process.env.AUTH_BASE_URL;
+        const authResponse = await fetch(`${baseUrl}/api/Auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ firstName, lastName, email, phoneNumber, password }),
+        });
+
+        if (!authResponse.ok) {
+            const errorResult = await authResponse.json().catch(() => ({ errors: ['Registration failed on auth server.'] }));
+            return { success: false, error: errorResult.errors?.[0] || 'Auth server registration failed.' };
+        }
+        
+        const existingUser = await prisma.user.findFirst({
+            where: { OR: [{ email }, { phoneNumber }] }
+        });
+
+        if (existingUser) {
+            return { success: false, error: "A user with this email or phone number already exists in the local database." };
+        }
+
+        await prisma.user.create({
+            data: {
+                email,
+                name: `${firstName} ${lastName}`,
+                firstName,
+                lastName,
+                phoneNumber,
+                roleId
+            }
+        });
+
+        revalidatePath('/settings');
+        return { success: true };
+
+    } catch (error) {
+        console.error('User registration error:', error);
+        return { success: false, error: 'An unexpected error occurred during user registration.' };
+    }
+}
+
+export async function updateUserRole(userId: string, roleId: string) {
+    await prisma.user.update({
+        where: { id: userId },
+        data: { roleId },
+    });
+    revalidatePath('/settings');
+}
+
+const roleSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(2, 'Role name is required'),
+  description: z.string().optional(),
+  permissions: z.array(z.string()).optional(),
+});
+
+export async function saveRole(data: z.infer<typeof roleSchema>) {
+    const { id, ...roleData } = data;
+    if (id) {
+        await prisma.role.update({
+            where: { id },
+            data: {
+                ...roleData,
+                description: roleData.description || null,
+            },
+        });
+    } else {
+        await prisma.role.create({
+            data: {
+                ...roleData,
+                description: roleData.description || null,
+            },
+        });
+    }
+    revalidatePath('/settings');
+}
+
+export async function deleteRole(roleId: string) {
+    const usersWithRole = await prisma.user.count({
+        where: { roleId },
+    });
+
+    if (usersWithRole > 0) {
+        throw new Error('Cannot delete role as it is currently assigned to users.');
+    }
+
+    await prisma.role.delete({
+        where: { id: roleId },
+    });
+    revalidatePath('/settings');
+}
