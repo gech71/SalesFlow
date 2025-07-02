@@ -86,7 +86,7 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
   }
   
   const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
-  const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "info" => {
+  const getStatusBadgeVariant = (status: string) => {
       switch (status) {
           case 'Approved': return 'success';
           case 'Pending': return 'warning';

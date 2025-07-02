@@ -39,7 +39,7 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
   
   const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
 
-  const getStatusBadgeVariant = (status: SalesLead['status']): "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "info" => {
+  const getStatusBadgeVariant = (status: SalesLead['status']) => {
     switch (status) {
       case 'New': return 'info';
       case 'Assigned': return 'secondary';

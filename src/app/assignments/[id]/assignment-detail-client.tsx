@@ -176,7 +176,7 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
 
   const officerAllowedStatuses: any[] = ['InProgress', 'PendingClosure'];
 
-  const getStatusBadgeVariant = (status: SalesLead['status']): "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "info" => {
+  const getStatusBadgeVariant = (status: SalesLead['status']) => {
     switch (status) {
       case 'New': return 'info';
       case 'Assigned': return 'secondary';
