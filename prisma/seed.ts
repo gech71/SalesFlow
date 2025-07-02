@@ -29,7 +29,8 @@ async function main() {
         name: 'ADMIN', 
         description: 'System Administrator', 
         permissions: [
-            'dashboard:read', 'assignments:read_own', 'assignments:update_own', 
+            'dashboard:read', 
+            'assignments:read_own', 'assignments:update_own', 
             'district_assignments:read', 'district_assignments:create_lead', 'district_assignments:assign_branch', 'district_assignments:approve',
             'branch_assignments:read', 'branch_assignments:assign_officer', 'branch_assignments:approve',
             'branch_plans:read', 'branch_plans:review', 'branch_plans:create_entry',
@@ -95,7 +96,7 @@ async function main() {
 
     // Branch Managers
     const branchManager1 = await prisma.user.create({
-        data: { email: 'bm1@example.com', firstName: 'Clark', lastName: 'Kent', name: 'Clark Kent', roleId: branchManagerRole.id, branchId: branch1.id, districtId: dist1.id, phoneNumber: '0933333333' }
+        data: { email: 'bm1@example.com', firstName: 'Clark', lastName: 'Kent', name: 'Clark Kent', roleId: branchManagerRole.id, branchId: branch1.id, districtId: dist1.id, phoneNumber: '093333333' }
     });
 
     // Officers
@@ -215,3 +216,5 @@ main()
     .finally(async () => {
         await prisma.$disconnect();
     });
+
+    
