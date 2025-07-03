@@ -241,7 +241,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                         <SelectTrigger><SelectValue placeholder="Assign Branch..." /></SelectTrigger>
                         <SelectContent>
                             <SelectItem value="none">Unassigned</SelectItem>
-                            {districts.find(d => d.id === user.districtId)?.branches.map(b => (
+                            {user.districtId && districts.find(d => d.id === user.districtId)?.branches.map(b => (
                                 <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
                             ))}
                         </SelectContent>
@@ -546,3 +546,5 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
     </SidebarProvider>
   );
 }
+
+    
