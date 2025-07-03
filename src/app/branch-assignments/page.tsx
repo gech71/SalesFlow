@@ -3,6 +3,7 @@ import { serialize } from '@/lib/utils';
 import prisma from '@/lib/prisma';
 import BranchAssignmentsClient from './branch-assignments-client';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export default async function BranchAssignmentsPage() {
     const cookieStore = await cookies();
@@ -13,6 +14,9 @@ export default async function BranchAssignmentsPage() {
     }) : null;
 
     const permissions = user?.role?.permissions ?? [];
+    if (!permissions.includes('branch_assignments:read')) {
+        redirect('/forbidden');
+    }
 
     const leads = await prisma.salesLead.findMany({
         where: {

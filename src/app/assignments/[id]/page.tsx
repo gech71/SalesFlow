@@ -1,6 +1,6 @@
 
 import prisma from '@/lib/prisma';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import AssignmentDetailClient from './assignment-detail-client';
 import { serialize } from '@/lib/utils';
 import { cookies } from 'next/headers';
@@ -16,6 +16,9 @@ export default async function AssignmentDetailPage({ params }: { params: { id: s
     }) : null;
     
     const permissions = user?.role?.permissions ?? [];
+    if (!permissions.includes('assignments:read_own')) {
+        redirect('/forbidden');
+    }
 
     const lead = await prisma.salesLead.findUnique({
         where: { id },
@@ -31,6 +34,16 @@ export default async function AssignmentDetailPage({ params }: { params: { id: s
 
     if (!lead) {
         notFound();
+    }
+
+    // Additional check: Ensure the user is actually allowed to see this specific lead
+    const isOwner = lead.assigneeId === userId;
+    const isAdmin = user?.role?.name === 'ADMIN';
+    const isBranchManagerInSameBranch = user?.role?.name === 'BRANCH_MANAGER' && user?.branchId === lead.branchId;
+    const isDistrictManagerInSameDistrict = user?.role?.name === 'DISTRICT_MANAGER' && user?.districtId === lead.districtId;
+
+    if (!isOwner && !isAdmin && !isBranchManagerInSameBranch && !isDistrictManagerInSameDistrict) {
+        redirect('/forbidden');
     }
     
     const thresholdSetting = await prisma.setting.findUnique({

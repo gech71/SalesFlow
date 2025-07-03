@@ -3,6 +3,7 @@ import { serialize } from '@/lib/utils';
 import prisma from '@/lib/prisma';
 import OffsiteReportsClient from './offsite-reports-client';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 const getDistanceInKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     if (lat1 === null || lon1 === null || lat2 === null || lon2 === null) return Infinity;
@@ -26,6 +27,9 @@ export default async function OffsiteReportsPage() {
     }) : null;
     
     const permissions = user?.role?.permissions ?? [];
+    if (!permissions.includes('offsite_reports:read')) {
+        redirect('/forbidden');
+    }
 
     const leadsWithOffsiteUpdates = await prisma.salesLead.findMany({
         where: {

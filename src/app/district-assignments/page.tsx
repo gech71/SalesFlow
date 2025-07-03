@@ -3,6 +3,7 @@ import { serialize } from '@/lib/utils';
 import prisma from '@/lib/prisma';
 import DistrictAssignmentsClient from './district-assignments-client';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export default async function DistrictAssignmentsPage() {
     const cookieStore = await cookies();
@@ -14,6 +15,9 @@ export default async function DistrictAssignmentsPage() {
     }) : null;
 
     const permissions = user?.role?.permissions ?? [];
+    if (!permissions.includes('district_assignments:read')) {
+        redirect('/forbidden');
+    }
 
     const leads = await prisma.salesLead.findMany({
         where: {

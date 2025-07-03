@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 import AssignmentsClient from './assignments-client';
 import { cookies } from 'next/headers';
 import { Prisma } from '@prisma/client';
+import { redirect } from 'next/navigation';
 
 export default async function AssignmentsPage() {
     const cookieStore = await cookies();
@@ -13,13 +14,16 @@ export default async function AssignmentsPage() {
         include: { role: true }
     }) : null;
 
+    const permissions = user?.role?.permissions ?? [];
+    if (!permissions.includes('assignments:read_own')) {
+        redirect('/forbidden');
+    }
+
     if (!user) {
         // Middleware should prevent this, but as a safeguard:
         return <AssignmentsClient user={null} permissions={[]} leads={[]} />;
     }
     
-    const permissions = user.role?.permissions ?? [];
-
     let where: Prisma.SalesLeadWhereInput = {};
 
     switch (user.role?.name) {

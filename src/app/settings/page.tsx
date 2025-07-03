@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import SettingsClient from './settings-client';
 import { serialize } from '@/lib/utils';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export default async function SettingsPage() {
     const cookieStore = await cookies();
@@ -13,6 +14,11 @@ export default async function SettingsPage() {
     }) : null;
 
     const permissions = loggedInUser?.role?.permissions ?? [];
+
+    const canViewSettings = permissions.some(p => p.startsWith('settings:'));
+    if (!canViewSettings) {
+        redirect('/forbidden');
+    }
 
     const thresholdSetting = await prisma.setting.findUnique({
         where: { key: 'offsiteDistanceThreshold' }

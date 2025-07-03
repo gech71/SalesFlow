@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 import SubmitEntryClient from './submit-entry-client';
 import { quarters } from '../branch-plans/data';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export default async function SubmitPlanEntryPage() {
     const cookieStore = await cookies();
@@ -14,6 +15,9 @@ export default async function SubmitPlanEntryPage() {
     }) : null;
 
     const permissions = user?.role?.permissions ?? [];
+    if (!permissions.includes('branch_plans:create_entry')) {
+        redirect('/forbidden');
+    }
 
     const plans = await prisma.branchPlan.findMany({
         include: {

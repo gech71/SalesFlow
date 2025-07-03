@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import DashboardClient from './dashboard-client';
 import { serialize } from '@/lib/utils';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export default async function DashboardPage() {
     const cookieStore = await cookies();
@@ -13,6 +14,10 @@ export default async function DashboardPage() {
     }) : null;
     
     const permissions = user?.role?.permissions ?? [];
+
+    if (!permissions.includes('dashboard:read')) {
+        redirect('/forbidden');
+    }
 
     const leadsData = await prisma.salesLead.findMany({
         include: { updates: true },
