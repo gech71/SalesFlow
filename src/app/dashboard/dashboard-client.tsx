@@ -157,8 +157,8 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
     <SidebarProvider>
       <Sidebar collapsible="icon">
         <SidebarHeader>
-            <Link href="/dashboard" className="flex items-center gap-2 p-2 group-data-[state=collapsed]:justify-center">
-                <img src="https://th.bing.com/th/id/R.f76dabe4fac17634185beac29762498b?rik=VcpX%2Bw6udP0tgA&riu=http%3a%2f%2fwww.ethioxchange.com%2fstorage%2fbanks%2flogo%2f01J73Y8N756BVZ9PPKF60ZYFM0.png&ehk=IB1kPIaDd2GDbC2Ur5HlQKTKS37a6%2bglIr8W58E5PzQ%3d&risl=&pid=ImgRaw&r=0" alt="NIB Sales Logo" className="h-10 w-auto transition-all group-data-[state=collapsed]:h-7" />
+            <Link href="/dashboard" className="flex items-center gap-2 group-data-[state=collapsed]:justify-center">
+                <img src="https://th.bing.com/th/id/R.f76dabe4fac17634185beac29762498b?rik=VcpX%2Bw6udP0tgA&riu=http%3a%2f%2fwww.ethioxchange.com%2fstorage%2fbanks%2flogo%2f01J73Y8N756BVZ9PPKF60ZYFM0.png&ehk=IB1kPIaDd2GDbC2Ur5HlQKTKS37a6%2bglIr8W58E5PzQ%3d&risl=&pid=ImgRaw&r=0" alt="NIB Sales Logo" className="h-10 w-auto transition-all group-data-[state=collapsed]:h-6" />
                 <h2 className="font-semibold text-lg text-primary group-data-[state=collapsed]:hidden">NIB Sales</h2>
             </Link>
         </SidebarHeader>
@@ -166,42 +166,42 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
           <SidebarMenu>
             {permissions.includes('dashboard:read') && (
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Dashboard" isActive><Link href="/dashboard"><Icons.dashboard /><span>Dashboard</span></Link></SidebarMenuButton>
+                    <SidebarMenuButton asChild tooltip="Dashboard" isActive><Link href="/dashboard"><Icons.dashboard /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Dashboard</span></Link></SidebarMenuButton>
                 </SidebarMenuItem>
             )}
             {permissions.includes('assignments:read_own') && (
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="My Assignments"><Link href="/assignments"><Icons.clipboardList /><span>My Assignments</span></Link></SidebarMenuButton>
+                    <SidebarMenuButton asChild tooltip="My Assignments"><Link href="/assignments"><Icons.clipboardList /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">My Assignments</span></Link></SidebarMenuButton>
                 </SidebarMenuItem>
             )}
             {permissions.includes('branch_plans:read') && (
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Branch Plans"><Link href="/branch-plans"><Icons.landmark /><span>Branch Plans</span></Link></SidebarMenuButton>
+                    <SidebarMenuButton asChild tooltip="Branch Plans"><Link href="/branch-plans"><Icons.landmark /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Branch Plans</span></Link></SidebarMenuButton>
             </SidebarMenuItem>
             )}
             {permissions.includes('branch_plans:create_entry') && (
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Submit Entry"><Link href="/submit-entry"><Icons.plusCircle /><span>Submit Entry</span></Link></SidebarMenuButton>
+                    <SidebarMenuButton asChild tooltip="Submit Entry"><Link href="/submit-entry"><Icons.plusCircle /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Submit Entry</span></Link></SidebarMenuButton>
             </SidebarMenuItem>
             )}
             {permissions.includes('district_assignments:read') && (
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="District View"><Link href="/district-assignments"><Icons.building /><span>District View</span></Link></SidebarMenuButton>
+                    <SidebarMenuButton asChild tooltip="District View"><Link href="/district-assignments"><Icons.building /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">District View</span></Link></SidebarMenuButton>
                 </SidebarMenuItem>
             )}
             {permissions.includes('branch_assignments:read') && (
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Branch View"><Link href="/branch-assignments"><Icons.building2 /><span>Branch View</span></Link></SidebarMenuButton>
+                    <SidebarMenuButton asChild tooltip="Branch View"><Link href="/branch-assignments"><Icons.building2 /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Branch View</span></Link></SidebarMenuButton>
                 </SidebarMenuItem>
             )}
             {permissions.includes('offsite_reports:read') && (
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Off-site Reports"><Link href="/offsite-reports"><Icons.alertTriangle /><span>Off-site Reports</span></Link></SidebarMenuButton>
+                    <SidebarMenuButton asChild tooltip="Off-site Reports"><Link href="/offsite-reports"><Icons.alertTriangle /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Off-site Reports</span></Link></SidebarMenuButton>
                 </SidebarMenuItem>
             )}
             {canViewSettings && (
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Settings"><Link href="/settings"><Icons.settings /><span>Settings</span></Link></SidebarMenuButton>
+                    <SidebarMenuButton asChild tooltip="Settings"><Link href="/settings"><Icons.settings /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Settings</span></Link></SidebarMenuButton>
                 </SidebarMenuItem>
             )}
           </SidebarMenu>
