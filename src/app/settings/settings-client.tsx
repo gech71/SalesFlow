@@ -118,6 +118,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
   const [editingRole, setEditingRole] = useState<Role | null>(null);
   const [creatableRolesMap, setCreatableRolesMap] = useState<Record<string, string[]>>({});
   const [isSavingCreatableRoles, setIsSavingCreatableRoles] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
 
   const { register: registerSettings, handleSubmit: handleSubmitSettings, reset: resetSettings, formState: { errors: settingsErrors, isSubmitting: isSubmittingSettings } } = useForm<z.infer<typeof settingsSchema>>({
@@ -304,7 +305,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
       <Sidebar>
         <SidebarHeader>
             <div className="flex items-center gap-2 p-2 justify-center">
-                <img src="https://th.bing.com/th/id/R.f76dabe4fac17634185beac29762498b?rik=VcpX%2bw6udP0tgA&riu=http%3a%2f%2fwww.ethioxchange.com%2fstorage%2fbanks%2flogo%2f01J73Y8N756BVZ9PPKF60ZYFM0.png&ehk=IB1kPIaDd2GDbC2Ur5HlQKTKS37a6%2bglIr8W58E5PzQ%3d&risl=&pid=ImgRaw&r=0" alt="NIB Sales Logo" className="h-10 w-auto" />
+                <img src="https://th.bing.com/th/id/R.f76dabe4fac17634185beac29762498b?rik=VcpX%2Bw6udP0tgA&riu=http%3a%2f%2fwww.ethioxchange.com%2fstorage%2fbanks%2flogo%2f01J73Y8N756BVZ9PPKF60ZYFM0.png&ehk=IB1kPIaDd2GDbC2Ur5HlQKTKS37a6%2bglIr8W58E5PzQ%3d&risl=&pid=ImgRaw&r=0" alt="NIB Sales Logo" className="h-10 w-auto" />
                 <h2 className="font-semibold text-lg text-primary">NIB Sales</h2>
             </div>
         </SidebarHeader>
@@ -446,7 +447,26 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                                                 </div>
                                                 <div><Label htmlFor="email">Email</Label><Input id="email" type="email" {...registerNewUser("email")} />{newUserErrors.email && <p className="text-destructive text-xs mt-1">{newUserErrors.email.message}</p>}</div>
                                                 <div><Label htmlFor="phoneNumber">Phone Number</Label><Input id="phoneNumber" {...registerNewUser("phoneNumber")} />{newUserErrors.phoneNumber && <p className="text-destructive text-xs mt-1">{newUserErrors.phoneNumber.message}</p>}</div>
-                                                <div><Label htmlFor="password">Password</Label><Input id="password" type="password" {...registerNewUser("password")} />{newUserErrors.password && <p className="text-destructive text-xs mt-1">{newUserErrors.password.message}</p>}</div>
+                                                <div>
+                                                  <Label htmlFor="password">Password</Label>
+                                                  <div className="relative">
+                                                      <Input 
+                                                          id="password" 
+                                                          type={showPassword ? 'text' : 'password'} 
+                                                          {...registerNewUser("password")} 
+                                                          className="pr-10"
+                                                      />
+                                                      <button
+                                                          type="button"
+                                                          onClick={() => setShowPassword(!showPassword)}
+                                                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
+                                                          aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                                      >
+                                                          {showPassword ? <Icons.eyeOff className="h-5 w-5" /> : <Icons.eye className="h-5 w-5" />}
+                                                      </button>
+                                                  </div>
+                                                  {newUserErrors.password && <p className="text-destructive text-xs mt-1">{newUserErrors.password.message}</p>}
+                                                </div>
                                                 <div>
                                                     <Label htmlFor="roleId">Role</Label>
                                                     <Controller control={controlNewUser} name="roleId" render={({ field }) => (
@@ -648,4 +668,3 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
     </SidebarProvider>
   );
 }
-

@@ -1,4 +1,4 @@
-import {ArrowLeft, ArrowRight, Check, ChevronsUpDown, Circle, Copy, Edit, ExternalLink, File, HelpCircle, Home, LayoutDashboard, Loader2, Mail, MapPin, MessageSquare, Moon, Plus, PlusCircle, Search, Server, Settings, Share2, Shield, Sun, Trash, User, X, Workflow, Calendar, ClipboardList, Building, Building2, DollarSign, CheckCircle, Target, LocateFixed, AlertTriangle, Landmark, LogOut, CheckCircle2, XCircle, Hourglass, FilePlus2, RefreshCw, ArrowRightCircle, ShieldCheck, ShieldAlert, ArrowDownCircle, ArrowUpCircle, Info} from 'lucide-react';
+import {ArrowLeft, ArrowRight, Check, ChevronsUpDown, Circle, Copy, Edit, ExternalLink, File, HelpCircle, Home, LayoutDashboard, Loader2, Mail, MapPin, MessageSquare, Moon, Plus, PlusCircle, Search, Server, Settings, Share2, Shield, Sun, Trash, User, X, Workflow, Calendar, ClipboardList, Building, Building2, DollarSign, CheckCircle, Target, LocateFixed, AlertTriangle, Landmark, LogOut, CheckCircle2, XCircle, Hourglass, FilePlus2, RefreshCw, ArrowRightCircle, ShieldCheck, ShieldAlert, ArrowDownCircle, ArrowUpCircle, Info, Eye, EyeOff} from 'lucide-react';
 
 const Icons = {
   arrowLeft: ArrowLeft,
@@ -53,6 +53,8 @@ const Icons = {
   arrowDownCircle: ArrowDownCircle,
   arrowUpCircle: ArrowUpCircle,
   info: Info,
+  eye: Eye,
+  eyeOff: EyeOff,
 };
 
 export {Icons};
