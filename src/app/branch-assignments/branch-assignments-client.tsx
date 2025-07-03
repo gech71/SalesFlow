@@ -139,53 +139,53 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar collapsible="icon">
         <SidebarHeader>
             <div className="flex items-center gap-2 p-2 justify-center">
                 <img src="https://th.bing.com/th/id/R.f76dabe4fac17634185beac29762498b?rik=VcpX%2bw6udP0tgA&riu=http%3a%2f%2fwww.ethioxchange.com%2fstorage%2fbanks%2flogo%2f01J73Y8N756BVZ9PPKF60ZYFM0.png&ehk=IB1kPIaDd2GDbC2Ur5HlQKTKS37a6%2bglIr8W58E5PzQ%3d&risl=&pid=ImgRaw&r=0" alt="NIB Sales Logo" className="h-10 w-auto" />
-                <h2 className="font-semibold text-lg text-primary">NIB Sales</h2>
+                <h2 className="font-semibold text-lg text-primary group-data-[state=collapsed]/sidebar-wrapper:hidden">NIB Sales</h2>
             </div>
         </SidebarHeader>
         <SidebarContent>
             <SidebarMenu>
                 {permissions.includes('dashboard:read') && (
                     <SidebarMenuItem>
-                        <Link href="/dashboard"><SidebarMenuButton><Icons.dashboard className="mr-2" />Dashboard</SidebarMenuButton></Link>
+                        <Link href="/dashboard"><SidebarMenuButton tooltip="Dashboard"><Icons.dashboard /><span>Dashboard</span></SidebarMenuButton></Link>
                     </SidebarMenuItem>
                 )}
                 {permissions.includes('assignments:read_own') && (
                     <SidebarMenuItem>
-                        <Link href="/assignments"><SidebarMenuButton><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
+                        <Link href="/assignments"><SidebarMenuButton tooltip="My Assignments"><Icons.clipboardList /><span>My Assignments</span></SidebarMenuButton></Link>
                     </SidebarMenuItem>
                 )}
                 {permissions.includes('branch_plans:read') && (
                     <SidebarMenuItem>
-                        <Link href="/branch-plans"><SidebarMenuButton><Icons.landmark className="mr-2" />Branch Plans</SidebarMenuButton></Link>
+                        <Link href="/branch-plans"><SidebarMenuButton tooltip="Branch Plans"><Icons.landmark /><span>Branch Plans</span></SidebarMenuButton></Link>
                     </SidebarMenuItem>
                 )}
                 {permissions.includes('branch_plans:create_entry') && (
                     <SidebarMenuItem>
-                        <Link href="/submit-entry"><SidebarMenuButton><Icons.plusCircle className="mr-2" />Submit Entry</SidebarMenuButton></Link>
+                        <Link href="/submit-entry"><SidebarMenuButton tooltip="Submit Entry"><Icons.plusCircle /><span>Submit Entry</span></SidebarMenuButton></Link>
                     </SidebarMenuItem>
                 )}
                 {permissions.includes('district_assignments:read') && (
                     <SidebarMenuItem>
-                        <Link href="/district-assignments"><SidebarMenuButton><Icons.building className="mr-2" />District View</SidebarMenuButton></Link>
+                        <Link href="/district-assignments"><SidebarMenuButton tooltip="District View"><Icons.building /><span>District View</span></SidebarMenuButton></Link>
                     </SidebarMenuItem>
                 )}
                 {permissions.includes('branch_assignments:read') && (
                     <SidebarMenuItem>
-                        <Link href="/branch-assignments"><SidebarMenuButton isActive><Icons.building2 className="mr-2" />Branch View</SidebarMenuButton></Link>
+                        <Link href="/branch-assignments"><SidebarMenuButton tooltip="Branch View" isActive><Icons.building2 /><span>Branch View</span></SidebarMenuButton></Link>
                     </SidebarMenuItem>
                 )}
                 {permissions.includes('offsite_reports:read') && (
                     <SidebarMenuItem>
-                        <Link href="/offsite-reports"><SidebarMenuButton><Icons.alertTriangle className="mr-2" />Off-site Reports</SidebarMenuButton></Link>
+                        <Link href="/offsite-reports"><SidebarMenuButton tooltip="Off-site Reports"><Icons.alertTriangle /><span>Off-site Reports</span></SidebarMenuButton></Link>
                     </SidebarMenuItem>
                 )}
                 {canViewSettings && (
                     <SidebarMenuItem>
-                        <Link href="/settings"><SidebarMenuButton><Icons.settings className="mr-2" />Settings</SidebarMenuButton></Link>
+                        <Link href="/settings"><SidebarMenuButton tooltip="Settings"><Icons.settings /><span>Settings</span></SidebarMenuButton></Link>
                     </SidebarMenuItem>
                 )}
             </SidebarMenu>
@@ -200,7 +200,7 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
                                 {user?.name?.split(" ").map((n) => n[0]).join("")}
                             </AvatarFallback>
                         </Avatar>
-                        <div className="flex flex-col overflow-hidden">
+                        <div className="flex flex-col overflow-hidden group-data-[state=collapsed]/sidebar-wrapper:hidden">
                             <span className="truncate text-sm font-medium">{user?.name}</span>
                             <span className="truncate text-xs text-sidebar-foreground/70">{user?.email}</span>
                         </div>
@@ -208,9 +208,9 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                     <form action={logoutAction} className="w-full">
-                        <SidebarMenuButton type="submit" className="w-full">
-                            <Icons.logout className="mr-2" />
-                            Logout
+                        <SidebarMenuButton type="submit" className="w-full" tooltip="Logout">
+                            <Icons.logout />
+                            <span>Logout</span>
                         </SidebarMenuButton>
                     </form>
                 </SidebarMenuItem>
