@@ -126,3 +126,37 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  .honeycomb-cell {
+    fill: hsl(var(--primary) / 0.1);
+    stroke: hsl(var(--primary) / 0.15);
+    stroke-width: 1;
+    transition: fill 0.3s ease;
+  }
+
+  .dark .honeycomb-cell {
+    fill: hsl(var(--primary) / 0.05);
+    stroke: hsl(var(--primary) / 0.1);
+  }
+
+  .honeycomb-cell:hover {
+    fill: hsl(var(--primary) / 0.3);
+  }
+
+  .dark .honeycomb-cell:hover {
+    fill: hsl(var(--primary) / 0.2);
+  }
+}

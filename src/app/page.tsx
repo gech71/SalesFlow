@@ -19,6 +19,7 @@ import { Icons } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
 import { loginAction } from './actions';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { HoneycombBackground } from '@/components/honeycomb-background';
 
 const loginSchema = z.object({
   phoneNumber: z.string().regex(/^(\+251|0)?[79]\d{8}$/, { message: "Please enter a valid Ethiopian phone number, e.g., 0912345678 or +251912345678." }),
@@ -61,11 +62,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
-      <div className="absolute top-4 right-4">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden p-4">
+      <HoneycombBackground />
+      <div className="absolute top-4 right-4 z-10">
         <ThemeToggle />
       </div>
-      <Card className="w-full max-w-sm">
+      <Card className="w-full max-w-sm z-10 bg-background/80 backdrop-blur-md border-border/50 shadow-2xl">
         <CardHeader className="text-center">
             <div className="flex flex-col items-center justify-center gap-2 mb-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
