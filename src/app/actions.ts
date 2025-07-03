@@ -428,6 +428,34 @@ export async function registerUser(data: z.infer<typeof registerUserSchema>) {
     }
     const { firstName, lastName, email, phoneNumber, password, roleId } = validatedData.data;
 
+    const cookieStore = await cookies();
+    const loggedInUserId = cookieStore.get('userId')?.value;
+
+    if (!loggedInUserId) {
+      return { success: false, error: "You must be logged in to perform this action." };
+    }
+    
+    const loggedInUser = await prisma.user.findUnique({
+      where: { id: loggedInUserId },
+      include: { role: true },
+    });
+    
+    if (!loggedInUser) {
+      return { success: false, error: "Your user account could not be found." };
+    }
+
+    const targetRole = await prisma.role.findUnique({
+      where: { id: roleId },
+    });
+
+    if (!targetRole) {
+      return { success: false, error: "The selected role does not exist." };
+    }
+    
+    if (!loggedInUser.role.creatableRoles.includes(targetRole.name)) {
+      return { success: false, error: `You do not have permission to create users with the role '${targetRole.name}'.` };
+    }
+
     try {
         // First, call the external auth server to register the user.
         const baseUrl = process.env.AUTH_BASE_URL;
@@ -551,5 +579,26 @@ export async function deleteRole(roleId: string) {
     await prisma.role.delete({
         where: { id: roleId },
     });
+    revalidatePath('/settings');
+}
+
+
+const creatableRolesSchema = z.record(z.string(), z.array(z.string()));
+
+export async function updateCreatableRoles(data: z.infer<typeof creatableRolesSchema>) {
+    const validatedData = creatableRolesSchema.parse(data);
+
+    const updatePromises = Object.entries(validatedData).map(([roleId, creatableRoleNames]) => {
+        return prisma.role.update({
+            where: { id: roleId },
+            data: {
+                creatableRoles: {
+                    set: creatableRoleNames,
+                },
+            },
+        });
+    });
+
+    await prisma.$transaction(updatePromises);
     revalidatePath('/settings');
 }

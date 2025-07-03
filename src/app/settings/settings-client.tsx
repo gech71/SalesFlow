@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -19,7 +20,7 @@ import { Label } from '@/components/ui/label';
 import { Icons } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator, SidebarTrigger } from '@/components/ui/sidebar';
-import { updateSetting, logoutAction, registerUser, updateUserRole, saveRole, deleteRole, updateUserAssignment } from '@/app/actions';
+import { updateSetting, logoutAction, registerUser, updateUserRole, saveRole, deleteRole, updateUserAssignment, updateCreatableRoles } from '@/app/actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
@@ -99,20 +100,25 @@ const permissionGroups = [
             { id: 'settings:manage_users', label: 'Manage users and their assignments' },
             { id: 'settings:manage_roles', label: 'Manage roles and permissions' },
             { id: 'settings:manage_reporting', label: 'Manage reporting settings (e.g., distance threshold)' },
+            { id: 'settings:manage_creation', label: 'Manage user creation permissions by role' },
         ],
     },
 ];
 
 
 type ClientUser = User & { role: Role, district: District | null, branch: Branch | null };
+type ClientRole = Role & { creatableRoles: string[] };
 type ClientDistrict = District & { branches: Branch[] };
 
-export default function SettingsClient({ loggedInUser, permissions, threshold, users, roles, districts }: { loggedInUser: User | null, permissions: string[], threshold: number, users: ClientUser[], roles: Role[], districts: ClientDistrict[] }) {
+export default function SettingsClient({ loggedInUser, permissions, threshold, users, roles, districts }: { loggedInUser: User | null, permissions: string[], threshold: number, users: ClientUser[], roles: ClientRole[], districts: ClientDistrict[] }) {
   const { toast } = useToast();
   
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
   const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
+  const [creatableRolesMap, setCreatableRolesMap] = useState<Record<string, string[]>>({});
+  const [isSavingCreatableRoles, setIsSavingCreatableRoles] = useState(false);
+
 
   const { register: registerSettings, handleSubmit: handleSubmitSettings, reset: resetSettings, formState: { errors: settingsErrors, isSubmitting: isSubmittingSettings } } = useForm<z.infer<typeof settingsSchema>>({
     resolver: zodResolver(settingsSchema),
@@ -132,6 +138,14 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
   useEffect(() => {
     resetSettings({ threshold });
   }, [threshold, resetSettings]);
+
+  useEffect(() => {
+    const initialMap = roles.reduce((acc, role) => {
+        acc[role.id] = role.creatableRoles || [];
+        return acc;
+    }, {} as Record<string, string[]>);
+    setCreatableRolesMap(initialMap);
+  }, [roles]);
 
   const onSettingsSubmit = async (data: z.infer<typeof settingsSchema>) => {
     try {
@@ -202,6 +216,29 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
       }
     }
   }
+  
+  const handleCreatableRoleChange = (roleId: string, creatableRoleName: string, isChecked: boolean) => {
+      setCreatableRolesMap(prev => {
+          const currentCreatable = prev[roleId] || [];
+          const newCreatable = isChecked
+              ? [...new Set([...currentCreatable, creatableRoleName])]
+              : currentCreatable.filter(name => name !== creatableRoleName);
+          return { ...prev, [roleId]: newCreatable };
+      });
+  };
+
+  const handleSaveCreatableRoles = async () => {
+      setIsSavingCreatableRoles(true);
+      try {
+          await updateCreatableRoles(creatableRolesMap);
+          toast({ title: "Permissions Saved", description: "Role creation permissions have been updated." });
+      } catch (error) {
+          toast({ title: "Error", description: "Failed to save permissions.", variant: "destructive" });
+      } finally {
+          setIsSavingCreatableRoles(false);
+      }
+  };
+
 
   const renderAssignmentControls = (user: ClientUser) => {
     const roleName = roles.find(r => r.id === user.roleId)?.name;
@@ -354,9 +391,10 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
             </Breadcrumb>
             
             <Tabs defaultValue="users" className="w-full">
-                <TabsList className="mx-auto grid w-full grid-cols-1 sm:grid-cols-3 sm:max-w-2xl">
+                <TabsList className="mx-auto grid w-full grid-cols-1 sm:grid-cols-4 sm:max-w-3xl">
                     {permissions.includes('settings:manage_users') && <TabsTrigger value="users">User Management</TabsTrigger>}
-                    {permissions.includes('settings:manage_roles') && <TabsTrigger value="roles">Role Management</TabsTrigger>}
+                    {permissions.includes('settings:manage_roles') && <TabsTrigger value="roles">Role Permissions</TabsTrigger>}
+                    {permissions.includes('settings:manage_creation') && <TabsTrigger value="creation">Creation Permissions</TabsTrigger>}
                     {permissions.includes('settings:manage_reporting') && <TabsTrigger value="reporting">Reporting</TabsTrigger>}
                 </TabsList>
                 
@@ -449,7 +487,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                     <TabsContent value="roles" className="mt-6">
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between">
-                                <div><CardTitle>Roles</CardTitle><CardDescription>Define roles and their permissions within the application.</CardDescription></div>
+                                <div><CardTitle>Role Permissions</CardTitle><CardDescription>Define roles and their functional permissions within the application.</CardDescription></div>
                                 <Button onClick={() => openRoleDialog(null)}><Icons.plusCircle className="mr-2 h-4 w-4" />Create Role</Button>
                             </CardHeader>
                             <CardContent>
@@ -473,6 +511,44 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                         </Card>
                     </TabsContent>
                 )}
+                
+                {permissions.includes('settings:manage_creation') && (
+                    <TabsContent value="creation" className="mt-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Role Creation Permissions</CardTitle>
+                                <CardDescription>Configure which roles are allowed to create other user roles.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                {roles.map(role => (
+                                    <div key={role.id}>
+                                        <h4 className="font-semibold">{role.name}</h4>
+                                        <p className="text-sm text-muted-foreground">Can create the following roles:</p>
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-2">
+                                            {roles.map(creatableRole => (
+                                                <div key={creatableRole.id} className="flex items-center space-x-2">
+                                                    <Checkbox
+                                                        id={`perm-${role.id}-${creatableRole.id}`}
+                                                        checked={creatableRolesMap[role.id]?.includes(creatableRole.name)}
+                                                        onCheckedChange={(checked) => handleCreatableRoleChange(role.id, creatableRole.name, !!checked)}
+                                                    />
+                                                    <Label htmlFor={`perm-${role.id}-${creatableRole.id}`}>{creatableRole.name}</Label>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </CardContent>
+                            <CardFooter className="border-t px-6 py-4">
+                                <Button onClick={handleSaveCreatableRoles} disabled={isSavingCreatableRoles}>
+                                    {isSavingCreatableRoles && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+                                    Save Creation Permissions
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </TabsContent>
+                )}
+
             </Tabs>
           </main>
         </div>
