@@ -211,6 +211,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                 <Select defaultValue={user.districtId || ''} onValueChange={(districtId) => handleAssignmentChange(user.id, districtId, undefined)}>
                     <SelectTrigger><SelectValue placeholder="Assign District..." /></SelectTrigger>
                     <SelectContent>
+                        <SelectItem value="">Unassigned</SelectItem>
                         {districts.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
                     </SelectContent>
                 </Select>
@@ -222,12 +223,14 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                     <Select defaultValue={user.districtId || ''} onValueChange={(districtId) => handleAssignmentChange(user.id, districtId, undefined)}>
                         <SelectTrigger><SelectValue placeholder="Assign District..." /></SelectTrigger>
                         <SelectContent>
+                            <SelectItem value="">Unassigned</SelectItem>
                             {districts.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
                     <Select defaultValue={user.branchId || ''} onValueChange={(branchId) => handleAssignmentChange(user.id, user.districtId, branchId)} disabled={!user.districtId}>
                         <SelectTrigger><SelectValue placeholder="Assign Branch..." /></SelectTrigger>
                         <SelectContent>
+                            <SelectItem value="">Unassigned</SelectItem>
                             {districts.find(d => d.id === user.districtId)?.branches.map(b => (
                                 <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
                             ))}
