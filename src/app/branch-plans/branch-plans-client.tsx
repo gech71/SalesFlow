@@ -17,7 +17,7 @@ import { Icons } from '@/components/icons';
 import type { BranchPlan, PlanEntry, Branch, User } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator, SidebarTrigger } from '@/components/ui/sidebar';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
 import { reviewPlanEntry, logoutAction } from '@/app/actions';
@@ -209,7 +209,10 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <h1 className="text-lg font-semibold md:text-2xl">Branch Savings Plan Review</h1>
+              <div className="flex items-center gap-2">
+                <SidebarTrigger className="md:hidden" />
+                <h1 className="text-lg font-semibold md:text-2xl">Branch Savings Plan Review</h1>
+              </div>
               <div className="flex items-center gap-4">
                   <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
                       <Select value={selectedBranchId} onValueChange={setSelectedBranchId}>

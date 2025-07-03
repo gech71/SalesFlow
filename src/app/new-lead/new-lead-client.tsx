@@ -25,7 +25,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Icons } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator, SidebarTrigger } from '@/components/ui/sidebar';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -222,7 +222,10 @@ export default function NewLeadClient({ user, permissions }: { user: User | null
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center">
-                <h1 className="text-lg font-semibold md:text-2xl flex-1">Create New Sales Lead</h1>
+                <div className="flex items-center gap-2 flex-1">
+                    <SidebarTrigger className="md:hidden" />
+                    <h1 className="text-lg font-semibold md:text-2xl">Create New Sales Lead</h1>
+                </div>
                 <ThemeToggle />
             </div>
             <Breadcrumb className="hidden md:flex">
@@ -266,7 +269,7 @@ export default function NewLeadClient({ user, permissions }: { user: User | null
                             {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
                         </div>
 
-                        <div className="grid md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="districtId">District</Label>
                                 <Controller
@@ -285,7 +288,7 @@ export default function NewLeadClient({ user, permissions }: { user: User | null
                             </div>
                         </div>
 
-                        <div className="grid md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="expectedSavings">Savings Target</Label>
                                 <Input id="expectedSavings" type="number" {...methods.register('expectedSavings')} />

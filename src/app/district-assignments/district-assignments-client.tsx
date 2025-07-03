@@ -41,7 +41,7 @@ import { Icons } from '@/components/icons';
 import type { SalesLead, District, Branch, User } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator, SidebarTrigger } from '@/components/ui/sidebar';
 import { assignBranch, approveLeadDistrict, returnLeadForReworkDistrict, logoutAction } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -217,7 +217,10 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center justify-between">
-                <h1 className="text-lg font-semibold md:text-2xl">District View</h1>
+                <div className="flex items-center gap-2">
+                    <SidebarTrigger className="md:hidden" />
+                    <h1 className="text-lg font-semibold md:text-2xl">District View</h1>
+                </div>
                 <div className="flex items-center gap-4">
                     {permissions.includes('district_assignments:create_lead') && (
                     <Link href="/new-lead">
@@ -268,7 +271,7 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
                                 <TableCell className="hidden md:table-cell">{format(new Date(lead.createdAt), "PPP")}</TableCell>
                                 <TableCell className="hidden lg:table-cell">{lead.deadline ? format(new Date(lead.deadline), "PPP") : 'N/A'}</TableCell>
                                 <TableCell>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                                         <Select
                                             value={pendingAssignments[lead.id] || ''}
                                             onValueChange={(branchId) => handleBranchSelection(lead.id, branchId)}

@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Icons } from '@/components/icons';
 import type { SalesLead, LeadUpdate, District, Branch, User } from '@prisma/client';
 import { format } from "date-fns";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator, SidebarTrigger } from '@/components/ui/sidebar';
 import { Progress } from '@/components/ui/progress';
 import { logoutAction } from '../actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -154,7 +154,10 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center">
-                <h1 className="text-lg font-semibold md:text-2xl flex-1">My Assignments</h1>
+                <div className="flex items-center gap-2 flex-1">
+                    <SidebarTrigger className="md:hidden" />
+                    <h1 className="text-lg font-semibold md:text-2xl">My Assignments</h1>
+                </div>
                 <ThemeToggle />
             </div>
             <Breadcrumb className="hidden md:flex">

@@ -21,7 +21,7 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { Icons } from '@/components/icons';
 import { type SalesLead, type BranchPlan, type District, type Branch, type LeadUpdate, type PlanEntry, type User } from '@prisma/client';
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator, SidebarTrigger } from '@/components/ui/sidebar';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -238,7 +238,10 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <h1 className="text-lg font-semibold md:text-2xl">Sales Dashboard</h1>
+              <div className="flex items-center gap-2">
+                <SidebarTrigger className="md:hidden" />
+                <h1 className="text-lg font-semibold md:text-2xl">Sales Dashboard</h1>
+              </div>
                <div className="flex items-center gap-4">
                     <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
                         <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
@@ -262,7 +265,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                                     .filter(b => selectedDistrict === 'all' || b.districtId === selectedDistrict)
                                     .map(b => (
                                         <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
-                                ))}
+                                    ))}
                             </SelectContent>
                         </Select>
                     </div>

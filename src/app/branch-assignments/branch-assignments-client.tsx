@@ -42,7 +42,7 @@ import { Icons } from '@/components/icons';
 import type { SalesLead, Branch, User, LeadUpdate, Role } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator, SidebarTrigger } from '@/components/ui/sidebar';
 import { assignUser, approveLeadBranch, returnLeadForReworkBranch, logoutAction } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -221,7 +221,10 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center">
-                <h1 className="text-lg font-semibold md:text-2xl flex-1">Branch View</h1>
+                <div className="flex items-center gap-2 flex-1">
+                    <SidebarTrigger className="md:hidden" />
+                    <h1 className="text-lg font-semibold md:text-2xl">Branch View</h1>
+                </div>
                 <ThemeToggle />
             </div>
             <Breadcrumb className="hidden md:flex">
