@@ -383,14 +383,18 @@ SidebarHeader.displayName = "SidebarHeader"
 const SidebarFooter = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div">
->(({ className, ...props }, ref) => {
+>(({ className, children, ...props }, ref) => {
   return (
     <div
       ref={ref}
       data-sidebar="footer"
-      className={cn("mt-auto flex flex-col gap-2 p-2", className)}
+      className={cn("mt-auto p-2", className)}
       {...props}
-    />
+    >
+      <div className="flex flex-col gap-2 rounded-lg bg-sidebar-footer-background">
+          {children}
+      </div>
+    </div>
   )
 })
 SidebarFooter.displayName = "SidebarFooter"
