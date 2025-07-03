@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -259,7 +258,7 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
                         <TableBody>
                         {unassignedLeads.map((lead) => (
                             <TableRow key={lead.id}>
-                                <TableCell className="font-medium">{lead.title}</TableCell>
+                                <TableCell className="font-medium truncate max-w-sm">{lead.title}</TableCell>
                                 <TableCell className="hidden md:table-cell">{lead.branch?.name}</TableCell>
                                 <TableCell className="hidden lg:table-cell">{lead.deadline ? format(new Date(lead.deadline), "PPP") : 'N/A'}</TableCell>
                                 <TableCell className="text-right">
@@ -297,7 +296,7 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
                             const lastUpdate = lead.updates?.[0];
                             return (
                                 <TableRow key={lead.id}>
-                                    <TableCell className="font-medium">{lead.title}</TableCell>
+                                    <TableCell className="font-medium truncate max-w-sm">{lead.title}</TableCell>
                                     <TableCell>{lead.assignee?.name || 'N/A'}</TableCell>
                                     <TableCell className="hidden md:table-cell">{lastUpdate ? format(new Date(lastUpdate.timestamp), "PPP") : 'N/A'}</TableCell>
                                     <TableCell className="text-right space-x-2">
@@ -331,8 +330,8 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
             {selectedLead && (
                 <div className="space-y-4 py-2">
                     <div className="space-y-2 rounded-md border bg-muted/50 p-4">
-                        <h4 className="font-semibold">{selectedLead.title}</h4>
-                        <p className="text-sm text-muted-foreground">{selectedLead.description}</p>
+                        <h4 className="font-semibold truncate">{selectedLead.title}</h4>
+                        <p className="text-sm text-muted-foreground break-words">{selectedLead.description}</p>
                         <Separator/>
                         <div className="grid grid-cols-2 gap-2 text-sm">
                             <div>
@@ -407,7 +406,3 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
     </SidebarProvider>
   );
 }
-
-    
-
-    

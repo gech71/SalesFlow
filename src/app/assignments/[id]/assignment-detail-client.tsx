@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -381,7 +380,7 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
                                     {lead.updates.map((update, index) => (
                                         <div key={index} className="text-sm">
                                             <p className="font-medium">{update.author} <span className="text-muted-foreground text-xs">on {format(new Date(update.timestamp), "PPp")}</span></p>
-                                            <p className="text-muted-foreground">{update.text}</p>
+                                            <p className="text-muted-foreground break-words">{update.text}</p>
                                             {update.generatedSavings && (
                                                 <p className="text-sm text-primary font-medium mt-1">
                                                     + {formatCurrency(update.generatedSavings)}
@@ -485,7 +484,3 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
     </SidebarProvider>
   );
 }
-
-    
-
-    

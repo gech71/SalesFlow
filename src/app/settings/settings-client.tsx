@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -490,9 +489,9 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                                         {users.map(user => (
                                             <TableRow key={user.id}>
                                                 <TableCell>
-                                                    <div className="font-medium">{user.name}</div>
-                                                    <div className="text-xs text-muted-foreground">{user.email}</div>
-                                                    <div className="text-xs text-muted-foreground">{user.phoneNumber}</div>
+                                                    <div className="font-medium truncate">{user.name}</div>
+                                                    <div className="text-xs text-muted-foreground truncate">{user.email}</div>
+                                                    <div className="text-xs text-muted-foreground truncate">{user.phoneNumber}</div>
                                                 </TableCell>
                                                 <TableCell>
                                                     <Select
@@ -531,8 +530,8 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                                     <TableBody>
                                         {roles.map(role => (
                                             <TableRow key={role.id}>
-                                                <TableCell className="font-medium">{role.name}</TableCell>
-                                                <TableCell className="text-muted-foreground">{role.description}</TableCell>
+                                                <TableCell className="font-medium truncate">{role.name}</TableCell>
+                                                <TableCell className="text-muted-foreground truncate">{role.description}</TableCell>
                                                 <TableCell><div className="flex flex-wrap gap-1">{role.permissions.map(p => <Badge key={p} variant="secondary">{p}</Badge>)}</div></TableCell>
                                                 <TableCell className="text-right space-x-2">
                                                     <Button variant="ghost" size="icon" onClick={() => openRoleDialog(role)}><Icons.edit className="h-4 w-4" /></Button>
@@ -675,7 +674,3 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
     </SidebarProvider>
   );
 }
-
-    
-
-    

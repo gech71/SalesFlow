@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -164,7 +163,7 @@ export default function OffsiteReportsClient({ user, permissions, reports }: { u
                     <TableBody>
                     {reports.map(({ lead, update, distance }) => (
                         <TableRow key={`${lead.id}-${update.id}`}>
-                            <TableCell className="font-medium">{lead.title}</TableCell>
+                            <TableCell className="font-medium truncate max-w-xs">{lead.title}</TableCell>
                             <TableCell>{lead.assignee?.name || 'N/A'}</TableCell>
                             <TableCell>{format(new Date(update.timestamp), "PPp")}</TableCell>
                             <TableCell>
@@ -173,7 +172,7 @@ export default function OffsiteReportsClient({ user, permissions, reports }: { u
                                   <span>{distance.toFixed(2)} km away</span>
                                 </Badge>
                             </TableCell>
-                            <TableCell className="text-muted-foreground hidden md:table-cell">{update.text}</TableCell>
+                            <TableCell className="text-muted-foreground hidden md:table-cell truncate">{update.text}</TableCell>
                             <TableCell>
                                 <Link href={`/assignments/${lead.id}`}>
                                     <Button variant="outline" size="sm">View Lead</Button>
@@ -196,7 +195,3 @@ export default function OffsiteReportsClient({ user, permissions, reports }: { u
     </SidebarProvider>
   );
 }
-
-    
-
-    

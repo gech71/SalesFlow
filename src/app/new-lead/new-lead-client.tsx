@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm, Controller, FormProvider } from 'react-hook-form';
@@ -354,7 +353,7 @@ export default function NewLeadClient({ user, permissions }: { user: User | null
                                                     <Button
                                                         type="button"
                                                         variant="ghost"
-                                                        className="w-full h-auto text-left justify-start py-2 px-2"
+                                                        className="w-full h-auto text-left justify-start py-2 px-2 truncate"
                                                         onClick={() => handleSelectLocation(result)}
                                                     >
                                                         {result.display_name}
@@ -368,7 +367,7 @@ export default function NewLeadClient({ user, permissions }: { user: User | null
                             {selectedLocationName && !searchResults.length && (
                                 <div className="mt-2 text-sm text-muted-foreground p-3 border rounded-md bg-muted/50">
                                     <p className="font-medium text-foreground">Selected Location:</p>
-                                    <p>{selectedLocationName}</p>
+                                    <p className="break-words">{selectedLocationName}</p>
                                 </div>
                             )}
                         </div>
@@ -385,7 +384,3 @@ export default function NewLeadClient({ user, permissions }: { user: User | null
     </SidebarProvider>
   );
 }
-
-    
-
-    

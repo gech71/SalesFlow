@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -202,9 +201,9 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
                         const achievementPercentage = Number(lead.expectedSavings) > 0 ? Math.min(100, (totalGeneratedSavings / Number(lead.expectedSavings)) * 100) : 0;
                         return (
                             <TableRow key={lead.id}>
-                                <TableCell className="font-medium">{lead.title}</TableCell>
+                                <TableCell className="font-medium truncate max-w-xs">{lead.title}</TableCell>
                                 <TableCell><StatusBadge status={lead.status as any} /></TableCell>
-                                <TableCell className="hidden md:table-cell">{lead.assignee?.name || 'N/A'}, {lead.branch?.name || 'N/A'}, {lead.district?.name || 'N/A'}</TableCell>
+                                <TableCell className="hidden md:table-cell truncate">{lead.assignee?.name || 'N/A'}, {lead.branch?.name || 'N/A'}, {lead.district?.name || 'N/A'}</TableCell>
                                 <TableCell>
                                     <div className="font-medium">{formatCurrency(lead.expectedSavings)} <span className="text-xs text-muted-foreground">Target</span></div>
                                     <Progress value={achievementPercentage} className="mt-1 h-2" />
@@ -240,7 +239,3 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
     </SidebarProvider>
   );
 }
-
-    
-
-    

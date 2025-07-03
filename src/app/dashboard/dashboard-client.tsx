@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -278,7 +277,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Leads</CardTitle>
+                        <CardTitle>Total Leads</CardTitle>
                         <Icons.clipboardList className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -288,7 +287,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Expected Savings</CardTitle>
+                        <CardTitle>Total Expected Savings</CardTitle>
                         <Icons.dollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -298,7 +297,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Generated Savings</CardTitle>
+                        <CardTitle>Total Generated Savings</CardTitle>
                         <Icons.checkCircle className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -308,7 +307,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Lead Achievement Rate</CardTitle>
+                        <CardTitle>Lead Achievement Rate</CardTitle>
                         <Icons.target className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -356,7 +355,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                               <TableBody>
                                   {dashboardStats.branchPlanPerformance.map((p) => (
                                       <TableRow key={p.id}>
-                                          <TableCell className="font-medium">{p.branchName}</TableCell>
+                                          <TableCell className="font-medium truncate max-w-32">{p.branchName}</TableCell>
                                            <TableCell>{p.quarter}</TableCell>
                                           <TableCell className="hidden sm:table-cell">{formatCurrency(p.target)}</TableCell>
                                           <TableCell className="hidden sm:table-cell">{formatCurrency(p.netSavings)}</TableCell>
@@ -397,7 +396,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                               <TableBody>
                                   {dashboardStats.performanceByDistrict.map((p) => (
                                       <TableRow key={p.id}>
-                                          <TableCell className="font-medium">{p.name}</TableCell>
+                                          <TableCell className="font-medium truncate max-w-32">{p.name}</TableCell>
                                           <TableCell className="text-right hidden sm:table-cell">{formatCurrency(p.expected)}</TableCell>
                                           <TableCell className="text-right hidden sm:table-cell">{formatCurrency(p.generated)}</TableCell>
                                           <TableCell>
@@ -429,8 +428,8 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                               <TableBody>
                                   {dashboardStats.performanceByBranch.map((p) => (
                                       <TableRow key={p.id}>
-                                          <TableCell className="font-medium">{p.name}</TableCell>
-                                          <TableCell className="hidden sm:table-cell">{p.district}</TableCell>
+                                          <TableCell className="font-medium truncate max-w-32">{p.name}</TableCell>
+                                          <TableCell className="hidden sm:table-cell truncate max-w-32">{p.district}</TableCell>
                                           <TableCell>
                                               <div className="flex items-center gap-2">
                                                   <Progress value={p.achievement} className="h-2 w-16" />
@@ -450,7 +449,3 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
     </SidebarProvider>
   );
 }
-
-    
-
-    

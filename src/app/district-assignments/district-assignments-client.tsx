@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -264,7 +263,7 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
                         <TableBody>
                         {unassignedLeads.map((lead) => (
                             <TableRow key={lead.id}>
-                                <TableCell className="font-medium">{lead.title}</TableCell>
+                                <TableCell className="font-medium truncate max-w-sm">{lead.title}</TableCell>
                                 <TableCell className="hidden md:table-cell">{lead.district?.name}</TableCell>
                                 <TableCell className="hidden md:table-cell">{format(new Date(lead.createdAt), "PPP")}</TableCell>
                                 <TableCell className="hidden lg:table-cell">{lead.deadline ? format(new Date(lead.deadline), "PPP") : 'N/A'}</TableCell>
@@ -319,7 +318,7 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
                             <TableBody>
                                 {pendingApprovalLeads.map(lead => (
                                     <TableRow key={lead.id}>
-                                        <TableCell className="font-medium">{lead.title}</TableCell>
+                                        <TableCell className="font-medium truncate max-w-sm">{lead.title}</TableCell>
                                         <TableCell className="hidden md:table-cell">{lead.branch?.name}</TableCell>
                                         <TableCell className="hidden md:table-cell">{lead.assignee?.name}</TableCell>
                                         <TableCell className="text-right space-x-2">
@@ -373,7 +372,3 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
     </SidebarProvider>
   );
 }
-
-    
-
-    
