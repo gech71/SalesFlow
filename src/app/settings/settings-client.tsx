@@ -106,11 +106,11 @@ const permissionGroups = [
 ];
 
 
-type ClientUser = User & { role: Role, district: District | null, branch: Branch | null };
 type ClientRole = Role & { creatableRoles: string[] };
+type ClientUser = User & { role: ClientRole, district: District | null, branch: Branch | null };
 type ClientDistrict = District & { branches: Branch[] };
 
-export default function SettingsClient({ loggedInUser, permissions, threshold, users, roles, districts }: { loggedInUser: User | null, permissions: string[], threshold: number, users: ClientUser[], roles: ClientRole[], districts: ClientDistrict[] }) {
+export default function SettingsClient({ loggedInUser, permissions, threshold, users, roles, districts }: { loggedInUser: ClientUser | null, permissions: string[], threshold: number, users: ClientUser[], roles: ClientRole[], districts: ClientDistrict[] }) {
   const { toast } = useToast();
   
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
@@ -134,6 +134,14 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
   });
   
   const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
+
+  const creatableRolesForCurrentUser = useMemo(() => {
+    if (!loggedInUser || !loggedInUser.role || !loggedInUser.role.creatableRoles) {
+        return [];
+    }
+    const creatableRoleNames = loggedInUser.role.creatableRoles;
+    return roles.filter(role => creatableRoleNames.includes(role.name));
+  }, [loggedInUser, roles]);
 
   useEffect(() => {
     resetSettings({ threshold });
@@ -443,7 +451,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                                                     <Label htmlFor="roleId">Role</Label>
                                                     <Controller control={controlNewUser} name="roleId" render={({ field }) => (
                                                         <Select onValueChange={field.onChange} defaultValue={field.value}><SelectTrigger><SelectValue placeholder="Select a role" /></SelectTrigger>
-                                                            <SelectContent>{roles.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}</SelectContent>
+                                                            <SelectContent>{creatableRolesForCurrentUser.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}</SelectContent>
                                                         </Select>
                                                     )} />
                                                     {newUserErrors.roleId && <p className="text-destructive text-xs mt-1">{newUserErrors.roleId.message}</p>}
@@ -640,3 +648,4 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
     </SidebarProvider>
   );
 }
+
