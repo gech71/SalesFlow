@@ -20,6 +20,14 @@ const SalesLeadStatusEnum = z.enum([
 const PlanEntryTypeEnum = z.enum(['collection', 'withdrawal']);
 const PlanEntryStatusEnum = z.enum(['Pending', 'Approved', 'Rejected']);
 
+// Helper to get current quarter string
+function getCurrentQuarter(): string {
+  const date = new Date();
+  const quarter = Math.floor(date.getMonth() / 3) + 1;
+  const year = date.getFullYear();
+  return `Q${quarter} ${year}`;
+}
+
 // Schema for creating a new lead
 const newLeadSchema = z.object({
   title: z.string().min(3),
@@ -142,24 +150,66 @@ export async function returnLeadForReworkBranch(leadId: string, note: string) {
 
 // Action for a District Manager to assign a lead to a branch
 export async function assignBranch(leadId: string, branchId: string) {
-  const branch = await prisma.branch.findUnique({ where: { id: branchId }});
+  const lead = await prisma.salesLead.findUnique({ where: { id: leadId } });
+  if (!lead) throw new Error("Sales lead not found");
+
+  const branch = await prisma.branch.findUnique({ where: { id: branchId } });
   if (!branch) throw new Error("Branch not found");
 
-  await prisma.salesLead.update({
-    where: { id: leadId },
-    data: {
-      branchId,
-      status: 'Assigned',
-      updates: {
-        create: {
-          text: `Assigned to ${branch.name}.`,
-          author: 'District Manager',
+  // Use a transaction to ensure both updates succeed or fail together
+  await prisma.$transaction(async (tx) => {
+    // 1. Update the sales lead
+    await tx.salesLead.update({
+      where: { id: leadId },
+      data: {
+        branchId,
+        status: 'Assigned',
+        updates: {
+          create: {
+            text: `Assigned to ${branch.name}.`,
+            author: 'District Manager',
+          },
         },
       },
-    },
+    });
+
+    // 2. Update the branch plan's savings target if expectedSavings is set
+    if (lead.expectedSavings && Number(lead.expectedSavings) > 0) {
+      const currentQuarter = getCurrentQuarter();
+      const existingPlan = await tx.branchPlan.findFirst({
+        where: {
+          branchId: branchId,
+          quarter: currentQuarter,
+        },
+      });
+
+      if (existingPlan) {
+        // If a plan exists, increment its target
+        await tx.branchPlan.update({
+          where: { id: existingPlan.id },
+          data: {
+            savingsTarget: {
+              increment: lead.expectedSavings,
+            },
+          },
+        });
+      } else {
+        // If no plan exists, create a new one with the lead's expected savings as the initial target
+        await tx.branchPlan.create({
+          data: {
+            branchId: branchId,
+            quarter: currentQuarter,
+            savingsTarget: lead.expectedSavings,
+          },
+        });
+      }
+    }
   });
+
   revalidatePath('/district-assignments');
   revalidatePath('/branch-assignments');
+  revalidatePath('/dashboard');
+  revalidatePath('/branch-plans');
 }
 
 // Action for a District Manager to give final approval and close a lead
