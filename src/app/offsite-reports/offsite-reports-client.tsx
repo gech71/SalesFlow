@@ -27,60 +27,23 @@ import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, 
 import { logoutAction } from '../actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
-type ClientSalesLead = SalesLead & {
-    updates: LeadUpdate[];
-    assignee: User | null;
-};
-
 type OffsiteReport = {
-  lead: ClientSalesLead;
+  lead: SalesLead;
   update: LeadUpdate;
   distance: number;
 };
 
-export default function OffsiteReportsClient({ user, permissions, leads, distanceThreshold }: { user: User | null, permissions: string[], leads: ClientSalesLead[], distanceThreshold: number }) {
+export default function OffsiteReportsClient({ user, permissions, reports }: { user: User | null, permissions: string[], reports: OffsiteReport[] }) {
 
   const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
-
-  const getDistanceInKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-    const R = 6371; // Radius of the Earth in km
-    const dLat = (lat2 - lat1) * (Math.PI / 180);
-    const dLon = (lon2 - lon1) * (Math.PI / 180);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
-
-  const offsiteReports = useMemo((): OffsiteReport[] => {
-    const reports: OffsiteReport[] = [];
-    leads.forEach(lead => {
-      lead.updates.forEach(update => {
-        if (update.reportingLat && update.reportingLng && lead.lat && lead.lng) {
-            const distance = getDistanceInKm(
-                Number(lead.lat),
-                Number(lead.lng),
-                update.reportingLat,
-                update.reportingLng
-            );
-            if (distance > distanceThreshold) {
-                reports.push({ lead, update, distance });
-            }
-        }
-      });
-    });
-    return reports.sort((a, b) => new Date(b.update.timestamp).getTime() - new Date(a.update.timestamp).getTime());
-  }, [leads, distanceThreshold]);
 
   return (
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-            <div className="flex items-center gap-2 p-2">
-                <Icons.workflow className="w-6 h-6 text-primary" />
-                <h2 className="font-semibold text-lg">SalesFlow</h2>
+            <div className="flex items-center gap-2 p-2 justify-center">
+                <img src="https://th.bing.com/th/id/R.f76dabe4fac17634185beac29762498b?rik=VcpX%2bw6udP0tgA&riu=http%3a%2f%2fwww.ethioxchange.com%2fstorage%2fbanks%2flogo%2f01J73Y8N756BVZ9PPKF60ZYFM0.png&ehk=IB1kPIaDd2GDbC2Ur5HlQKTKS37a6%2bglIr8W58E5PzQ%3d&risl=&pid=ImgRaw&r=0" alt="NIB Sales Logo" className="h-10 w-auto" />
+                <h2 className="font-semibold text-lg text-primary">NIB Sales</h2>
             </div>
         </SidebarHeader>
         <SidebarContent>
@@ -180,10 +143,10 @@ export default function OffsiteReportsClient({ user, permissions, leads, distanc
                     </TableRow>
                     </TableHeader>
                     <TableBody>
-                    {offsiteReports.map(({ lead, update, distance }) => (
+                    {reports.map(({ lead, update, distance }) => (
                         <TableRow key={`${lead.id}-${update.id}`}>
                             <TableCell className="font-medium">{lead.title}</TableCell>
-                            <TableCell>{lead.assignee?.name || 'N/A'}</TableCell>
+                            <TableCell>{(lead as any).assignee?.name || 'N/A'}</TableCell>
                             <TableCell>{format(new Date(update.timestamp), "PPp")}</TableCell>
                             <TableCell>
                                 <Badge variant="warning">
@@ -201,7 +164,7 @@ export default function OffsiteReportsClient({ user, permissions, leads, distanc
                     ))}
                     </TableBody>
                 </Table>
-                 {offsiteReports.length === 0 && (
+                 {reports.length === 0 && (
                     <div className="text-center p-8 text-muted-foreground">
                         No off-site reports found based on the current threshold.
                     </div>

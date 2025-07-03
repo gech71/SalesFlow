@@ -156,10 +156,10 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-          <div className="flex items-center gap-2 p-2">
-            <Icons.workflow className="w-6 h-6 text-primary" />
-            <h2 className="font-semibold text-lg">SalesFlow</h2>
-          </div>
+            <div className="flex items-center gap-2 p-2 justify-center">
+                <img src="https://th.bing.com/th/id/R.f76dabe4fac17634185beac29762498b?rik=VcpX%2bw6udP0tgA&riu=http%3a%2f%2fwww.ethioxchange.com%2fstorage%2fbanks%2flogo%2f01J73Y8N756BVZ9PPKF60ZYFM0.png&ehk=IB1kPIaDd2GDbC2Ur5HlQKTKS37a6%2bglIr8W58E5PzQ%3d&risl=&pid=ImgRaw&r=0" alt="NIB Sales Logo" className="h-10 w-auto" />
+                <h2 className="font-semibold text-lg text-primary">NIB Sales</h2>
+            </div>
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
