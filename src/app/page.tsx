@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -19,7 +20,6 @@ import { Icons } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
 import { loginAction } from './actions';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { HoneycombBackground } from '@/components/honeycomb-background';
 
 const loginSchema = z.object({
   phoneNumber: z.string().regex(/^(\+251|0)?[79]\d{8}$/, { message: "Please enter a valid Ethiopian phone number, e.g., 0912345678 or +251912345678." }),
@@ -63,7 +63,6 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden p-4">
-      <HoneycombBackground />
       <div className="absolute top-4 right-4 z-10">
         <ThemeToggle />
       </div>
@@ -120,3 +119,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    

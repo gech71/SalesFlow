@@ -139,53 +139,53 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar collapsible="icon">
         <SidebarHeader>
-            <Link href="/dashboard" className="flex items-center gap-2 p-2">
-                <img src="https://th.bing.com/th/id/R.f76dabe4fac17634185beac29762498b?rik=VcpX%2bw6udP0tgA&riu=http%3a%2f%2fwww.ethioxchange.com%2fstorage%2fbanks%2flogo%2f01J73Y8N756BVZ9PPKF60ZYFM0.png&ehk=IB1kPIaDd2GDbC2Ur5HlQKTKS37a6%2bglIr8W58E5PzQ%3d&risl=&pid=ImgRaw&r=0" alt="NIB Sales Logo" className="h-10 w-auto" />
-                <h2 className="font-semibold text-lg text-primary">NIB Sales</h2>
+            <Link href="/dashboard" className="flex items-center gap-2 p-2 group-data-[state=collapsed]/sidebar-wrapper:justify-center">
+                <img src="https://th.bing.com/th/id/R.f76dabe4fac17634185beac29762498b?rik=VcpX%2Bw6udP0tgA&riu=http%3a%2f%2fwww.ethioxchange.com%2fstorage%2fbanks%2flogo%2f01J73Y8N756BVZ9PPKF60ZYFM0.png&ehk=IB1kPIaDd2GDbC2Ur5HlQKTKS37a6%2bglIr8W58E5PzQ%3d&risl=&pid=ImgRaw&r=0" alt="NIB Sales Logo" className="h-10 w-auto transition-all group-data-[state=collapsed]/sidebar-wrapper:h-8" />
+                <h2 className="font-semibold text-lg text-primary group-data-[state=collapsed]/sidebar-wrapper:hidden">NIB Sales</h2>
             </Link>
         </SidebarHeader>
         <SidebarContent>
             <SidebarMenu>
                 {permissions.includes('dashboard:read') && (
                     <SidebarMenuItem>
-                        <Link href="/dashboard"><SidebarMenuButton><Icons.dashboard className="mr-2" />Dashboard</SidebarMenuButton></Link>
+                        <SidebarMenuButton asChild tooltip="Dashboard"><Link href="/dashboard"><Icons.dashboard /><span>Dashboard</span></Link></SidebarMenuButton>
                     </SidebarMenuItem>
                 )}
                 {permissions.includes('assignments:read_own') && (
                     <SidebarMenuItem>
-                        <Link href="/assignments"><SidebarMenuButton><Icons.clipboardList className="mr-2" />My Assignments</SidebarMenuButton></Link>
+                        <SidebarMenuButton asChild tooltip="My Assignments"><Link href="/assignments"><Icons.clipboardList /><span>My Assignments</span></Link></SidebarMenuButton>
                     </SidebarMenuItem>
                 )}
                 {permissions.includes('branch_plans:read') && (
                     <SidebarMenuItem>
-                        <Link href="/branch-plans"><SidebarMenuButton><Icons.landmark className="mr-2" />Branch Plans</SidebarMenuButton></Link>
+                        <SidebarMenuButton asChild tooltip="Branch Plans"><Link href="/branch-plans"><Icons.landmark /><span>Branch Plans</span></Link></SidebarMenuButton>
                     </SidebarMenuItem>
                 )}
                 {permissions.includes('branch_plans:create_entry') && (
                     <SidebarMenuItem>
-                        <Link href="/submit-entry"><SidebarMenuButton><Icons.plusCircle className="mr-2" />Submit Entry</SidebarMenuButton></Link>
+                        <SidebarMenuButton asChild tooltip="Submit Entry"><Link href="/submit-entry"><Icons.plusCircle /><span>Submit Entry</span></Link></SidebarMenuButton>
                     </SidebarMenuItem>
                 )}
                 {permissions.includes('district_assignments:read') && (
                     <SidebarMenuItem>
-                        <Link href="/district-assignments"><SidebarMenuButton><Icons.building className="mr-2" />District View</SidebarMenuButton></Link>
+                        <SidebarMenuButton asChild tooltip="District View"><Link href="/district-assignments"><Icons.building /><span>District View</span></Link></SidebarMenuButton>
                     </SidebarMenuItem>
                 )}
                 {permissions.includes('branch_assignments:read') && (
                     <SidebarMenuItem>
-                        <Link href="/branch-assignments"><SidebarMenuButton isActive><Icons.building2 className="mr-2" />Branch View</SidebarMenuButton></Link>
+                        <SidebarMenuButton asChild tooltip="Branch View" isActive><Link href="/branch-assignments"><Icons.building2 /><span>Branch View</span></Link></SidebarMenuButton>
                     </SidebarMenuItem>
                 )}
                 {permissions.includes('offsite_reports:read') && (
                     <SidebarMenuItem>
-                        <Link href="/offsite-reports"><SidebarMenuButton><Icons.alertTriangle className="mr-2" />Off-site Reports</SidebarMenuButton></Link>
+                        <SidebarMenuButton asChild tooltip="Off-site Reports"><Link href="/offsite-reports"><Icons.alertTriangle /><span>Off-site Reports</span></Link></SidebarMenuButton>
                     </SidebarMenuItem>
                 )}
                 {canViewSettings && (
                     <SidebarMenuItem>
-                        <Link href="/settings"><SidebarMenuButton><Icons.settings className="mr-2" />Settings</SidebarMenuButton></Link>
+                        <SidebarMenuButton asChild tooltip="Settings"><Link href="/settings"><Icons.settings /><span>Settings</span></Link></SidebarMenuButton>
                     </SidebarMenuItem>
                 )}
             </SidebarMenu>
@@ -194,13 +194,13 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
             <SidebarSeparator />
             <SidebarMenu className="p-2">
                 <SidebarMenuItem>
-                    <div className="flex w-full items-center gap-3">
+                    <div className="flex w-full items-center gap-3 group-data-[state=collapsed]/sidebar-wrapper:justify-center">
                         <Avatar className="h-8 w-8">
                             <AvatarFallback>
                                 {user?.name?.split(" ").map((n) => n[0]).join("")}
                             </AvatarFallback>
                         </Avatar>
-                        <div className="flex flex-col overflow-hidden">
+                        <div className="flex flex-col overflow-hidden group-data-[state=collapsed]/sidebar-wrapper:hidden">
                             <span className="truncate text-sm font-medium">{user?.name}</span>
                             <span className="truncate text-xs text-sidebar-foreground/70">{user?.email}</span>
                         </div>
@@ -208,9 +208,9 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                     <form action={logoutAction} className="w-full">
-                        <SidebarMenuButton type="submit" className="w-full">
-                            <Icons.logout className="mr-2" />
-                            Logout
+                        <SidebarMenuButton type="submit" className="w-full" tooltip="Logout">
+                            <Icons.logout />
+                            <span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Logout</span>
                         </SidebarMenuButton>
                     </form>
                 </SidebarMenuItem>
@@ -218,14 +218,14 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <div className="flex min-h-screen w-full flex-col bg-muted/40">
+        <div className="flex min-h-screen w-full flex-col">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-            <div className="flex items-center">
-                <div className="flex items-center gap-2 flex-1">
-                    <SidebarTrigger className="md:hidden" />
-                    <h1 className="text-lg font-semibold md:text-2xl">Branch View</h1>
+            <div className="flex items-center gap-4">
+                <SidebarTrigger />
+                <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">Branch View</h1>
+                <div className="ml-auto">
+                    <ThemeToggle />
                 </div>
-                <ThemeToggle />
             </div>
             <Breadcrumb className="hidden md:flex">
                 <BreadcrumbList>
@@ -407,3 +407,5 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
     </SidebarProvider>
   );
 }
+
+    

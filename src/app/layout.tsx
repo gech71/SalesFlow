@@ -4,6 +4,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import AuthRefresher from '@/components/auth-refresher';
 import { ThemeProvider } from '@/components/theme-provider';
+import { HoneycombBackground } from '@/components/honeycomb-background';
 
 export const metadata: Metadata = {
   title: 'Sales Lead Management',
@@ -32,6 +33,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
+            <HoneycombBackground />
             <AuthRefresher />
             {children}
             <Toaster />
@@ -40,3 +42,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    
