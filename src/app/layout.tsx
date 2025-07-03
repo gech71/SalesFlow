@@ -1,5 +1,5 @@
 
-import type {Metadata} from 'next';
+import type {Metadata, Viewport} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import AuthRefresher from '@/components/auth-refresher';
@@ -13,8 +13,11 @@ export const metadata: Metadata = {
     icon: 'https://play-lh.googleusercontent.com/bXqMt9ROsGd0H9vPhib5hG-0NB-EJcAwZy6UUDhvlP-ykE595IMQtzr14R6IRWtJiGTh=w600-h300-pc0xffffff-pd',
     apple: 'https://play-lh.googleusercontent.com/bXqMt9ROsGd0H9vPhib5hG-0NB-EJcAwZy6UUDhvlP-ykE595IMQtzr14R6IRWtJiGTh=w180-h180-pc0xffffff-pd'
   },
-  themeColor: '#F3B000',
 };
+
+export const viewport: Viewport = {
+  themeColor: '#F3B000',
+}
 
 export default function RootLayout({
   children,
