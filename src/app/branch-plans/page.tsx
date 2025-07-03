@@ -2,7 +2,7 @@
 import { serialize } from '@/lib/utils';
 import prisma from '@/lib/prisma';
 import BranchPlansClient from './branch-plans-client';
-import { quarters } from './data';
+import { quarters, getCurrentQuarter } from './data';
 import { cookies } from 'next/headers';
 
 export default async function BranchPlansPage() {
@@ -30,8 +30,17 @@ export default async function BranchPlansPage() {
     });
 
     const branches = await prisma.branch.findMany();
+    
+    const currentQuarter = getCurrentQuarter();
 
     return (
-        <BranchPlansClient user={serialize(user)} permissions={permissions} plans={serialize(plans)} branches={serialize(branches)} quarters={quarters} />
+        <BranchPlansClient 
+            user={serialize(user)} 
+            permissions={permissions} 
+            plans={serialize(plans)} 
+            branches={serialize(branches)} 
+            quarters={quarters} 
+            defaultQuarter={currentQuarter}
+        />
     );
 }

@@ -73,12 +73,12 @@ const PlanTypeBadge = ({ type }: { type: PlanEntry['type'] }) => {
     );
 };
 
-export default function BranchPlansClient({ user, permissions, plans, branches, quarters }: { user: User | null, permissions: string[], plans: ClientBranchPlan[], branches: Branch[], quarters: string[] }) {
+export default function BranchPlansClient({ user, permissions, plans, branches, quarters, defaultQuarter }: { user: User | null, permissions: string[], plans: ClientBranchPlan[], branches: Branch[], quarters: string[], defaultQuarter: string }) {
   const router = useRouter();
   const { toast } = useToast();
   
   const [selectedBranchId, setSelectedBranchId] = useState(branches[0]?.id || '');
-  const [selectedQuarter, setSelectedQuarter] = useState(quarters[0] || '');
+  const [selectedQuarter, setSelectedQuarter] = useState(defaultQuarter || quarters[0] || '');
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<PlanEntry | null>(null);
 

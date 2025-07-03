@@ -3,6 +3,14 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+// Helper to get current quarter string
+function getCurrentQuarter(): string {
+  const date = new Date();
+  const quarter = Math.floor(date.getMonth() / 3) + 1;
+  const year = date.getFullYear();
+  return `Q${quarter} ${year}`;
+}
+
 async function main() {
     console.log(`Start seeding ...`);
 
@@ -172,10 +180,12 @@ async function main() {
     console.log(`Seeded 3 sales leads and their updates.`);
 
     // Seed Branch Plans
+    const currentQuarter = getCurrentQuarter();
+    
     const plan1 = await prisma.branchPlan.create({
         data: {
             branchId: branch1.id,
-            quarter: 'Q3 2024',
+            quarter: currentQuarter,
             savingsTarget: 250000,
         }
     });
@@ -191,7 +201,7 @@ async function main() {
     const plan2 = await prisma.branchPlan.create({
         data: {
             branchId: branch2.id,
-            quarter: 'Q3 2024',
+            quarter: currentQuarter,
             savingsTarget: 300000,
         }
     });
@@ -203,11 +213,11 @@ async function main() {
     await prisma.branchPlan.create({
         data: {
             branchId: branch3.id,
-            quarter: 'Q3 2024',
+            quarter: currentQuarter,
             savingsTarget: 180000
         }
     });
-    console.log(`Seeded 3 branch plans and their entries.`);
+    console.log(`Seeded 3 branch plans and their entries for ${currentQuarter}.`);
 
     console.log(`Seeding finished.`);
 }
@@ -222,3 +232,4 @@ main()
     });
 
     
+
