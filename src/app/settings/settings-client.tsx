@@ -30,6 +30,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import type { User, Role, District, Branch } from '@prisma/client';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
 
 const settingsSchema = z.object({
   threshold: z.coerce.number().min(0, { message: "Distance must be a positive number." }),
@@ -323,9 +324,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                     </div>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                    <form action={logoutAction} className="w-full">
-                        <SidebarMenuButton type="submit" className="w-full"><Icons.logout className="mr-2" />Logout</SidebarMenuButton>
-                    </form>
+                    <form action={logoutAction} className="w-full"><SidebarMenuButton type="submit" className="w-full"><Icons.logout className="mr-2" />Logout</SidebarMenuButton></form>
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarFooter>
@@ -334,6 +333,19 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center"><h1 className="text-lg font-semibold md:text-2xl">Settings</h1></div>
+             <Breadcrumb className="hidden md:flex">
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                            <Link href="/dashboard">Dashboard</Link>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>Settings</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
             
             <Tabs defaultValue="users" className="w-full">
                 <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 sm:max-w-2xl">
@@ -546,5 +558,3 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
     </SidebarProvider>
   );
 }
-
-    

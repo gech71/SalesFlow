@@ -27,6 +27,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { logoutAction } from '@/app/actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbPage } from '@/components/ui/breadcrumb';
 
 type ClientSalesLead = SalesLead & { updates: LeadUpdate[] };
 type ClientBranchPlan = BranchPlan & { entries: PlanEntry[] };
@@ -264,6 +265,13 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                     </Select>
                 </div>
             </div>
+             <Breadcrumb className="hidden md:flex">
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

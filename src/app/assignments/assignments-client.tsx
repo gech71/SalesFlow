@@ -28,6 +28,7 @@ import { Progress } from '@/components/ui/progress';
 import { logoutAction } from '../actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
 
 type ClientSalesLead = SalesLead & {
     updates: LeadUpdate[];
@@ -154,6 +155,19 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
             <div className="flex items-center">
                 <h1 className="text-lg font-semibold md:text-2xl">My Assignments</h1>
             </div>
+            <Breadcrumb className="hidden md:flex">
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                            <Link href="/dashboard">Dashboard</Link>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>My Assignments</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                 <div>

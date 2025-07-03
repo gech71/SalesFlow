@@ -36,6 +36,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { createLead, logoutAction } from '@/app/actions';
 import { District, User } from '@prisma/client';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
 
 const leadSchema = z.object({
   title: z.string().min(3, { message: 'Title must be at least 3 characters long.' }),
@@ -222,6 +223,25 @@ export default function NewLeadClient({ user, permissions }: { user: User | null
             <div className="flex items-center">
                 <h1 className="text-lg font-semibold md:text-2xl">Create New Sales Lead</h1>
             </div>
+            <Breadcrumb className="hidden md:flex">
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                            <Link href="/dashboard">Dashboard</Link>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                     <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                            <Link href="/district-assignments">District View</Link>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>Create New Lead</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
             <Card>
                 <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(onSubmit)}>
