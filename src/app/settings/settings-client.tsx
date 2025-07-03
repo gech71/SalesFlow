@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -355,7 +354,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
             </Breadcrumb>
             
             <Tabs defaultValue="users" className="w-full">
-                <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 sm:max-w-2xl">
+                <TabsList className="mx-auto grid w-full grid-cols-1 sm:grid-cols-3 sm:max-w-2xl">
                     {permissions.includes('settings:manage_users') && <TabsTrigger value="users">User Management</TabsTrigger>}
                     {permissions.includes('settings:manage_roles') && <TabsTrigger value="roles">Role Management</TabsTrigger>}
                     {permissions.includes('settings:manage_reporting') && <TabsTrigger value="reporting">Reporting</TabsTrigger>}
