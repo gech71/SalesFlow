@@ -1,19 +1,20 @@
+
 {
-    "name": "LeadTrack Pro",
-    "short_name": "LeadTrack",
-    "description": "Sales Lead Management for NIB International Bank",
+    "name": "Sales Lead Management",
+    "short_name": "NIB Sales",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#FFFFFF",
     "theme_color": "#F3B000",
+    "description": "Sales Lead Management for NIB International Bank",
     "icons": [
         {
-            "src": "https://play-lh.googleusercontent.com/bXqMt9ROsGd0H9vPhib5hG-0NB-EJcAwZy6UUDhvlP-ykE595IMQtzr14R6IRWtJiGTh=w192-h192-pc0xffffff-pd",
+            "src": "https://play-lh.googleusercontent.com/bXqMt9ROsGd0H9vPhib5hG-0NB-EJcAwZy6UUDhvlP-ykE595IMQtzr14R6IRWtJiGTh=w180-h180-pc0xffffff-pd",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "https://play-lh.googleusercontent.com/bXqMt9ROsGd0H9vPhib5hG-0NB-EJcAwZy6UUDhvlP-ykE595IMQtzr14R6IRWtJiGTh=w512-h512-pc0xffffff-pd",
+            "src": "https://play-lh.googleusercontent.com/bXqMt9ROsGd0H9vPhib5hG-0NB-EJcAwZy6UUDhvlP-ykE595IMQtzr14R6IRWtJiGTh=w600-h300-pc0xffffff-pd",
             "sizes": "512x512",
             "type": "image/png"
         }
