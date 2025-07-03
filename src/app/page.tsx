@@ -67,11 +67,11 @@ export default function LoginPage() {
       </div>
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-            <div className="flex justify-center items-center mb-4">
+            <div className="flex flex-col items-center justify-center gap-2 mb-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="https://play-lh.googleusercontent.com/bXqMt9ROsGd0H9vPhib5hG-0NB-EJcAwZy6UUDhvlP-ykE595IMQtzr14R6IRWtJiGTh=w600-h300-pc0xffffff-pd" alt="NIB International Bank Logo" className="h-20 w-auto" />
+                <img src="https://play-lh.googleusercontent.com/bXqMt9ROsGd0H9vPhib5hG-0NB-EJcAwZy6UUDhvlP-ykE595IMQtzr14R6IRWtJiGTh=w600-h300-pc0xffffff-pd" alt="NIB International Bank Logo" className="h-16 w-auto" />
+                <CardTitle className="text-primary">Nib Sales</CardTitle>
             </div>
-          <CardTitle>Login</CardTitle>
           <CardDescription>Enter your credentials to access your account.</CardDescription>
         </CardHeader>
         <CardContent>
