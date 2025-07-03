@@ -31,6 +31,7 @@ import { Badge } from '@/components/ui/badge';
 import type { User, Role, District, Branch } from '@prisma/client';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 const settingsSchema = z.object({
   threshold: z.coerce.number().min(0, { message: "Distance must be a positive number." }),
@@ -332,7 +333,10 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
       <SidebarInset>
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-            <div className="flex items-center"><h1 className="text-lg font-semibold md:text-2xl">Settings</h1></div>
+            <div className="flex items-center">
+              <h1 className="text-lg font-semibold md:text-2xl flex-1">Settings</h1>
+              <ThemeToggle />
+            </div>
              <Breadcrumb className="hidden md:flex">
                 <BreadcrumbList>
                     <BreadcrumbItem>

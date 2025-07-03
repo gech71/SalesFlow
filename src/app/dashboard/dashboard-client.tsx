@@ -28,6 +28,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { logoutAction } from '@/app/actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbPage } from '@/components/ui/breadcrumb';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 type ClientSalesLead = SalesLead & { updates: LeadUpdate[] };
 type ClientBranchPlan = BranchPlan & { entries: PlanEntry[] };
@@ -238,31 +239,34 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
               <h1 className="text-lg font-semibold md:text-2xl">Sales Dashboard</h1>
-               <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
-                    <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
-                        <SelectTrigger className="w-full sm:w-[180px]">
-                            <SelectValue placeholder="Filter by District" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Districts</SelectItem>
-                            {districts.map(d => (
-                                <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <Select value={selectedBranch} onValueChange={setSelectedBranch}>
-                        <SelectTrigger className="w-full sm:w-[180px]">
-                            <SelectValue placeholder="Filter by Branch" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Branches</SelectItem>
-                            {branches
-                                .filter(b => selectedDistrict === 'all' || b.districtId === selectedDistrict)
-                                .map(b => (
-                                    <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+               <div className="flex items-center gap-4">
+                    <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
+                        <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
+                            <SelectTrigger className="w-full sm:w-[180px]">
+                                <SelectValue placeholder="Filter by District" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Districts</SelectItem>
+                                {districts.map(d => (
+                                    <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <Select value={selectedBranch} onValueChange={setSelectedBranch}>
+                            <SelectTrigger className="w-full sm:w-[180px]">
+                                <SelectValue placeholder="Filter by Branch" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Branches</SelectItem>
+                                {branches
+                                    .filter(b => selectedDistrict === 'all' || b.districtId === selectedDistrict)
+                                    .map(b => (
+                                        <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <ThemeToggle />
                 </div>
             </div>
              <Breadcrumb className="hidden md:flex">

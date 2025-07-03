@@ -29,6 +29,7 @@ import { logoutAction } from '../actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 type ClientSalesLead = SalesLead & {
     updates: LeadUpdate[];
@@ -153,7 +154,8 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center">
-                <h1 className="text-lg font-semibold md:text-2xl">My Assignments</h1>
+                <h1 className="text-lg font-semibold md:text-2xl flex-1">My Assignments</h1>
+                <ThemeToggle />
             </div>
             <Breadcrumb className="hidden md:flex">
                 <BreadcrumbList>

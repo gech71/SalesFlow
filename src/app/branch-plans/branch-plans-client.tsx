@@ -25,6 +25,7 @@ import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 type ClientBranchPlan = BranchPlan & {
     entries: PlanEntry[];
@@ -209,19 +210,22 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
               <h1 className="text-lg font-semibold md:text-2xl">Branch Savings Plan Review</h1>
-              <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
-                  <Select value={selectedBranchId} onValueChange={setSelectedBranchId}>
-                      <SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Select Branch" /></SelectTrigger>
-                      <SelectContent>
-                          {branches.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}
-                      </SelectContent>
-                  </Select>
-                  <Select value={selectedQuarter} onValueChange={setSelectedQuarter}>
-                      <SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Select Quarter" /></SelectTrigger>
-                      <SelectContent>
-                          {quarters.map(q => <SelectItem key={q} value={q}>{q}</SelectItem>)}
-                      </SelectContent>
-                  </Select>
+              <div className="flex items-center gap-4">
+                  <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
+                      <Select value={selectedBranchId} onValueChange={setSelectedBranchId}>
+                          <SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Select Branch" /></SelectTrigger>
+                          <SelectContent>
+                              {branches.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}
+                          </SelectContent>
+                      </Select>
+                      <Select value={selectedQuarter} onValueChange={setSelectedQuarter}>
+                          <SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Select Quarter" /></SelectTrigger>
+                          <SelectContent>
+                              {quarters.map(q => <SelectItem key={q} value={q}>{q}</SelectItem>)}
+                          </SelectContent>
+                      </Select>
+                  </div>
+                  <ThemeToggle />
               </div>
             </div>
             <Breadcrumb className="hidden md:flex">

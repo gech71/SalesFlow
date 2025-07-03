@@ -18,6 +18,7 @@ import { Label } from '@/components/ui/label';
 import { Icons } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
 import { loginAction } from './actions';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 const loginSchema = z.object({
   phoneNumber: z.string().regex(/^(\+251|0)?[79]\d{8}$/, { message: "Please enter a valid Ethiopian phone number, e.g., 0912345678 or +251912345678." }),
@@ -60,6 +61,9 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
             <div className="flex justify-center items-center mb-4">

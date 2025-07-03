@@ -46,6 +46,7 @@ import { assignBranch, approveLeadDistrict, returnLeadForReworkDistrict, logoutA
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 type ClientSalesLead = SalesLead & {
     district: District | null;
@@ -217,11 +218,14 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center justify-between">
                 <h1 className="text-lg font-semibold md:text-2xl">District View</h1>
-                 {permissions.includes('district_assignments:create_lead') && (
-                  <Link href="/new-lead">
-                    <Button><Icons.plusCircle className="mr-2 h-4 w-4" /> Create New Lead</Button>
-                  </Link>
-                )}
+                <div className="flex items-center gap-4">
+                    {permissions.includes('district_assignments:create_lead') && (
+                    <Link href="/new-lead">
+                        <Button><Icons.plusCircle className="mr-2 h-4 w-4" /> Create New Lead</Button>
+                    </Link>
+                    )}
+                    <ThemeToggle />
+                </div>
             </div>
             <Breadcrumb className="hidden md:flex">
                 <BreadcrumbList>

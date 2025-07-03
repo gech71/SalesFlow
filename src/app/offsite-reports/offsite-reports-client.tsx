@@ -27,6 +27,7 @@ import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, 
 import { logoutAction } from '../actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 type OffsiteReport = {
   lead: SalesLead & { assignee: User | null };
@@ -122,7 +123,8 @@ export default function OffsiteReportsClient({ user, permissions, reports }: { u
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center">
-                <h1 className="text-lg font-semibold md:text-2xl">Off-site Reports</h1>
+                <h1 className="text-lg font-semibold md:text-2xl flex-1">Off-site Reports</h1>
+                <ThemeToggle />
             </div>
             <Breadcrumb className="hidden md:flex">
                 <BreadcrumbList>

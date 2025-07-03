@@ -16,6 +16,7 @@ const Icons = {
   home: Home,
   dashboard: LayoutDashboard,
   light: Sun,
+  moon: Moon,
   loader: Loader2,
   mail: Mail,
   messageSquare: MessageSquare,

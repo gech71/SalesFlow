@@ -47,6 +47,7 @@ import { assignUser, approveLeadBranch, returnLeadForReworkBranch, logoutAction 
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 type ClientUser = User & { role: Role };
 type ClientSalesLead = SalesLead & {
@@ -220,7 +221,8 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center">
-                <h1 className="text-lg font-semibold md:text-2xl">Branch View</h1>
+                <h1 className="text-lg font-semibold md:text-2xl flex-1">Branch View</h1>
+                <ThemeToggle />
             </div>
             <Breadcrumb className="hidden md:flex">
                 <BreadcrumbList>

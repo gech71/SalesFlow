@@ -39,6 +39,7 @@ import { addLeadUpdate, logoutAction } from '@/app/actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 // The client-side type needs to match what the server component constructs
 type ClientSalesLead = SalesLead & {
@@ -315,6 +316,9 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
                 <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
                     Lead Details
                 </h1>
+                <div className="ml-auto">
+                  <ThemeToggle />
+                </div>
             </div>
              <Breadcrumb className="hidden md:flex">
                 <BreadcrumbList>
