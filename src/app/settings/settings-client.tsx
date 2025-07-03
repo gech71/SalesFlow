@@ -494,9 +494,15 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                                                     <div className="text-xs text-muted-foreground">{user.phoneNumber}</div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Select defaultValue={user.roleId} onValueChange={(roleId) => handleRoleChange(user.id, roleId)}>
+                                                    <Select
+                                                        defaultValue={user.roleId}
+                                                        onValueChange={(roleId) => handleRoleChange(user.id, roleId)}
+                                                        disabled={user.id === loggedInUser?.id}
+                                                    >
                                                         <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
-                                                        <SelectContent>{roles.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}</SelectContent>
+                                                        <SelectContent>
+                                                            {creatableRolesForCurrentUser.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
+                                                        </SelectContent>
                                                     </Select>
                                                 </TableCell>
                                                 <TableCell>
