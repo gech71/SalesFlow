@@ -28,7 +28,7 @@ import { logoutAction } from '../actions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 type OffsiteReport = {
-  lead: SalesLead;
+  lead: SalesLead & { assignee: User | null };
   update: LeadUpdate;
   distance: number;
 };
@@ -146,7 +146,7 @@ export default function OffsiteReportsClient({ user, permissions, reports }: { u
                     {reports.map(({ lead, update, distance }) => (
                         <TableRow key={`${lead.id}-${update.id}`}>
                             <TableCell className="font-medium">{lead.title}</TableCell>
-                            <TableCell>{(lead as any).assignee?.name || 'N/A'}</TableCell>
+                            <TableCell>{lead.assignee?.name || 'N/A'}</TableCell>
                             <TableCell>{format(new Date(update.timestamp), "PPp")}</TableCell>
                             <TableCell>
                                 <Badge variant="warning">
