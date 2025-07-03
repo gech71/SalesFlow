@@ -37,7 +37,7 @@ type ClientSalesLead = SalesLead & {
 };
 
 const formatCurrency = (amount: number | any) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'ETB' }).format(Number(amount));
 }
 
 const StatusBadge = ({ status }: { status: SalesLead['status'] }) => {

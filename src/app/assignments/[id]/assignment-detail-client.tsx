@@ -74,7 +74,7 @@ const getDistanceInKm = (lat1: number, lon1: number, lat2: number, lon2: number)
 };
 
 const formatCurrency = (amount: number | any) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'ETB' }).format(Number(amount));
 }
 
 const StatusBadge = ({ status }: { status: SalesLead['status'] }) => {

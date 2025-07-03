@@ -34,7 +34,7 @@ const rejectionSchema = z.object({
   rejectionReason: z.string().min(10, "A reason for rejection is required (min 10 characters)."),
 });
 
-const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
+const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'ETB' }).format(Number(amount));
 
 const PlanStatusBadge = ({ status }: { status: PlanEntry['status'] }) => {
     const config = useMemo(() => {

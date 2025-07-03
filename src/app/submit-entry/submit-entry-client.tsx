@@ -36,7 +36,7 @@ const newPlanEntrySchema = z.object({
   description: z.string().min(5, "Description must be at least 5 characters."),
 });
 
-const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
+const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'ETB' }).format(Number(amount));
 
 const PlanStatusBadge = ({ status }: { status: PlanEntry['status'] }) => {
     const config = useMemo(() => {

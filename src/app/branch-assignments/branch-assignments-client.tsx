@@ -133,7 +133,7 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
   const unassignedLeads = useMemo(() => leads.filter(lead => lead.branchId && !lead.assigneeId && lead.status === 'Assigned'), [leads]);
   const pendingApprovalLeads = useMemo(() => leads.filter(lead => lead.assigneeId && lead.status === 'PendingClosure'), [leads]);
   
-  const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount));
+  const formatCurrency = (amount: number | any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'ETB' }).format(Number(amount));
 
   return (
     <SidebarProvider>
