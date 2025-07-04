@@ -187,7 +187,7 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
         </SidebarContent>
         <SidebarFooter>
             <SidebarSeparator />
-            <SidebarMenu className="rounded-md bg-sidebar-footer-background p-2">
+            <SidebarMenu className="rounded-md bg-sidebar-footer-background p-2 text-destructive-foreground">
                 <SidebarMenuItem>
                     <div className="flex w-full items-center gap-3 group-data-[state=collapsed]/sidebar-wrapper:justify-center">
                         <Avatar className="h-8 w-8">

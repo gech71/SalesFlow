@@ -175,7 +175,7 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
         </SidebarContent>
         <SidebarFooter>
             <SidebarSeparator />
-            <SidebarMenu className="rounded-md bg-sidebar-footer-background p-2">
+            <SidebarMenu className="rounded-md bg-sidebar-footer-background p-2 text-destructive-foreground">
                 <SidebarMenuItem>
                     <div className="flex w-full items-center gap-3 group-data-[state=collapsed]/sidebar-wrapper:justify-center">
                         <Avatar className="h-8 w-8">
@@ -334,8 +334,7 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
                                     </Table>
                                     {(!currentPlan || currentPlan.entries.length === 0) && <div className="text-center p-8 text-muted-foreground">No entries submitted yet.</div>}
                                 </CardContent>
-                            </Card>
-                        </div>
+                            </div>
                     </div>
                 </div>
             )}
