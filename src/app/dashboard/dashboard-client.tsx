@@ -278,41 +278,49 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle>Total Leads</CardTitle>
-                        <Icons.clipboardList className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-sm font-medium">Total Leads</CardTitle>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary-text">
+                            <Icons.clipboardList className="h-6 w-6" />
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-xl sm:text-2xl font-bold">{dashboardStats.totalLeads}</div>
+                        <div className="text-2xl font-bold">{dashboardStats.totalLeads}</div>
                         <p className="text-xs text-muted-foreground">All active and closed leads</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle>Total Expected Savings</CardTitle>
-                        <Icons.dollarSign className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-sm font-medium">Total Expected Savings</CardTitle>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary-text">
+                            <Icons.dollarSign className="h-6 w-6" />
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-xl sm:text-2xl font-bold">{formatCurrency(dashboardStats.totalExpectedSavings)}</div>
+                        <div className="text-2xl font-bold">{formatCurrency(dashboardStats.totalExpectedSavings)}</div>
                         <p className="text-xs text-muted-foreground">Planned savings from all leads</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle>Total Generated Savings</CardTitle>
-                        <Icons.checkCircle className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-sm font-medium">Total Generated Savings</CardTitle>
+                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/20 text-success-text">
+                            <Icons.checkCircle className="h-6 w-6" />
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-xl sm:text-2xl font-bold">{formatCurrency(dashboardStats.totalGeneratedSavings)}</div>
+                        <div className="text-2xl font-bold">{formatCurrency(dashboardStats.totalGeneratedSavings)}</div>
                         <p className="text-xs text-muted-foreground">Actual savings collected so far</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle>Lead Achievement Rate</CardTitle>
-                        <Icons.target className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-sm font-medium">Lead Achievement Rate</CardTitle>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-info/20 text-info-text">
+                            <Icons.target className="h-6 w-6" />
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-xl sm:text-2xl font-bold">{dashboardStats.overallAchievement.toFixed(1)}%</div>
+                        <div className="text-2xl font-bold">{dashboardStats.overallAchievement.toFixed(1)}%</div>
                         <p className="text-xs text-muted-foreground">Generated vs. Expected savings</p>
                     </CardContent>
                 </Card>
