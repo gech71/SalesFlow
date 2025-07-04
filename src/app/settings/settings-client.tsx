@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -32,7 +31,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import type { User, Role, District, Branch } from '@prisma/client';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
-import { ThemeToggle } from '@/components/theme-toggle';
 import AppSidebar from '@/components/app-sidebar';
 import { cn } from '@/lib/utils';
 
@@ -358,9 +356,6 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
             <div className="flex items-center gap-4">
                 <SidebarTrigger />
                 <h1 className="flex-1 text-xl font-semibold tracking-tight">Settings</h1>
-                <div className="ml-auto">
-                    <ThemeToggle />
-                </div>
             </div>
              <Breadcrumb className="hidden md:flex">
                 <BreadcrumbList>

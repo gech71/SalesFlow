@@ -45,7 +45,6 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/s
 import { assignUser, approveLeadBranch, returnLeadForReworkBranch } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
-import { ThemeToggle } from '@/components/theme-toggle';
 import AppSidebar from '@/components/app-sidebar';
 
 type ClientUser = User & { role: Role };
@@ -143,9 +142,6 @@ export default function BranchAssignmentsClient({ user, permissions, leads, bran
             <div className="flex items-center gap-4">
                 <SidebarTrigger />
                 <h1 className="flex-1 text-xl font-semibold tracking-tight">Branch View</h1>
-                <div className="ml-auto">
-                    <ThemeToggle />
-                </div>
             </div>
             <Breadcrumb className="hidden md:flex">
                 <BreadcrumbList>

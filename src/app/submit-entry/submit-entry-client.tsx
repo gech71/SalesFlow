@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -23,7 +22,6 @@ import { Progress } from '@/components/ui/progress';
 import { createPlanEntry } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
-import { ThemeToggle } from '@/components/theme-toggle';
 import AppSidebar from '@/components/app-sidebar';
 
 type ClientBranchPlan = BranchPlan & {
@@ -143,7 +141,6 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
                           {quarters.map(q => <SelectItem key={q} value={q}>{q}</SelectItem>)}
                       </SelectContent>
                   </Select>
-                  <ThemeToggle />
               </div>
             </div>
              <Breadcrumb className="hidden md:flex">

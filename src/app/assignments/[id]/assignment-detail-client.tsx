@@ -37,7 +37,6 @@ import { Progress } from '@/components/ui/progress';
 import { addLeadUpdate } from '@/app/actions';
 import { cn } from '@/lib/utils';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
-import { ThemeToggle } from '@/components/theme-toggle';
 import AppSidebar from '@/components/app-sidebar';
 
 // The client-side type needs to match what the server component constructs
@@ -239,9 +238,6 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
                 <h1 className="flex-1 text-xl font-semibold tracking-tight">
                     Lead Details
                 </h1>
-                <div className="ml-auto">
-                  <ThemeToggle />
-                </div>
             </div>
              <Breadcrumb className="hidden md:flex">
                 <BreadcrumbList>

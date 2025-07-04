@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -28,7 +27,6 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/s
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
-import { ThemeToggle } from '@/components/theme-toggle';
 import AppSidebar from '@/components/app-sidebar';
 
 type ClientSalesLead = SalesLead & {
@@ -79,9 +77,6 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
             <div className="flex items-center gap-4">
                 <SidebarTrigger />
                 <h1 className="flex-1 text-xl font-semibold tracking-tight">My Assignments</h1>
-                <div className="ml-auto">
-                    <ThemeToggle />
-                </div>
             </div>
             <Breadcrumb className="hidden md:flex">
                 <BreadcrumbList>

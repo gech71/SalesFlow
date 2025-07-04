@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -64,7 +63,6 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/s
 import { assignBranch, approveLeadDistrict, returnLeadForReworkDistrict, updateLead, deleteLead } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
-import { ThemeToggle } from '@/components/theme-toggle';
 import AppSidebar from '@/components/app-sidebar';
 import { cn } from '@/lib/utils';
 
@@ -218,7 +216,6 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
                         <Button><Icons.plusCircle className="mr-2 h-4 w-4" /> Create New Lead</Button>
                     </Link>
                     )}
-                    <ThemeToggle />
                 </div>
             </div>
             <Breadcrumb className="hidden md:flex">

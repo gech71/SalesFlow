@@ -25,7 +25,6 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbPage } from '@/components/ui/breadcrumb';
-import { ThemeToggle } from '@/components/theme-toggle';
 import AppSidebar from '@/components/app-sidebar';
 
 type ClientSalesLead = SalesLead & { updates: LeadUpdate[] };
@@ -187,7 +186,6 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                                 ))}
                         </SelectContent>
                     </Select>
-                    <ThemeToggle />
                 </div>
             </div>
              <Breadcrumb className="hidden md:flex">

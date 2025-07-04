@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -26,7 +25,6 @@ import type { SalesLead, LeadUpdate, User, Role } from '@prisma/client';
 import { format } from "date-fns";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
-import { ThemeToggle } from '@/components/theme-toggle';
 import AppSidebar from '@/components/app-sidebar';
 
 type OffsiteReport = {
@@ -48,9 +46,6 @@ export default function OffsiteReportsClient({ user, permissions, reports }: { u
             <div className="flex items-center gap-4">
                 <SidebarTrigger />
                 <h1 className="flex-1 text-xl font-semibold tracking-tight">Off-site Reports</h1>
-                <div className="ml-auto">
-                    <ThemeToggle />
-                </div>
             </div>
             <Breadcrumb className="hidden md:flex">
                 <BreadcrumbList>
