@@ -278,7 +278,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Leads</CardTitle>
+                        <CardTitle className="text-sm font-bold">Total Leads</CardTitle>
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary-text">
                             <Icons.clipboardList className="h-6 w-6" />
                         </div>
@@ -290,7 +290,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Expected Savings</CardTitle>
+                        <CardTitle className="text-sm font-bold">Total Expected Savings</CardTitle>
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary-text">
                             <Icons.dollarSign className="h-6 w-6" />
                         </div>
@@ -302,7 +302,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Generated Savings</CardTitle>
+                        <CardTitle className="text-sm font-bold">Total Generated Savings</CardTitle>
                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/20 text-success-text">
                             <Icons.checkCircle className="h-6 w-6" />
                         </div>
@@ -314,7 +314,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Lead Achievement Rate</CardTitle>
+                        <CardTitle className="text-sm font-bold">Lead Achievement Rate</CardTitle>
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-info/20 text-info-text">
                             <Icons.target className="h-6 w-6" />
                         </div>
