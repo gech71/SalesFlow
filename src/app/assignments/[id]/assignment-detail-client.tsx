@@ -280,7 +280,7 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
         </SidebarContent>
         <SidebarFooter>
             <SidebarSeparator />
-            <SidebarMenu className="rounded-md bg-sidebar-footer-background p-2 text-destructive-foreground">
+            <SidebarMenu className="rounded-md p-2">
                 <SidebarMenuItem>
                     <div className="flex w-full items-center gap-3 group-data-[state=collapsed]/sidebar-wrapper:justify-center">
                         <Avatar className="h-8 w-8">
