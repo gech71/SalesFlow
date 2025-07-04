@@ -127,10 +127,10 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
 
   return (
     <SidebarProvider>
-      <Sidebar collapsible="icon">
+      <Sidebar collapsible="icon" className="bg-sidebar/90">
         <SidebarHeader>
             <Link href="/dashboard" className="flex items-center gap-2 group-data-[state=collapsed]:justify-center">
-                <img src="https://th.bing.com/th/id/R.f76dabe4fac17634185beac29762498b?rik=VcpX%2Bw6udP0tgA&riu=http%3a%2f%2fwww.ethioxchange.com%2fstorage%2fbanks%2flogo%2f01J73Y8N756BVZ9PPKF60ZYFM0.png&ehk=IB1kPIaDd2GDbC2Ur5HlQKTKS37a6%2bglIr8W58E5PzQ%3d&risl=&pid=ImgRaw&r=0" alt="NIB Sales Logo" className="h-10 w-auto transition-all group-data-[state=collapsed]:h-6" />
+                <img src="https://fireworks.proxy.prod.deepmind.com/files/5462f6b8-6a3f-429f-adc3-4348cd916847" alt="NIB Sales Logo" className="h-10 w-auto transition-all group-data-[state=collapsed]:h-6" />
                 <h2 className="font-semibold text-lg text-primary group-data-[state=collapsed]:hidden">NIB Sales</h2>
             </Link>
         </SidebarHeader>
@@ -180,7 +180,7 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
         </SidebarContent>
         <SidebarFooter>
             <SidebarSeparator />
-            <SidebarMenu className="rounded-md p-2">
+            <SidebarMenu>
                 <SidebarMenuItem>
                     <div className="flex w-full items-center gap-3 group-data-[state=collapsed]/sidebar-wrapper:justify-center">
                         <Avatar className="h-8 w-8">
@@ -250,29 +250,113 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                 </Card>
             ) : (
                 <div className="grid gap-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Plan Summary: {currentPlan.quarter}</CardTitle>
-                            <CardDescription>An overview of the savings plan for {currentPlan.branch.name}.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-sm">
-                                <div><p className="font-medium">Savings Target</p><p className="text-xl sm:text-2xl font-bold">{formatCurrency(currentPlan.savingsTarget)}</p></div>
-                                <div><p className="font-medium">Approved Collections</p><p className="text-xl sm:text-2xl font-bold text-green-600">{formatCurrency(planStats.totalCollections)}</p></div>
-                                <div><p className="font-medium">Approved Withdrawals</p><p className="text-xl sm:text-2xl font-bold text-red-600">{formatCurrency(planStats.totalWithdrawals)}</p></div>
-                                <div><p className="font-medium">Net Savings</p><p className="text-xl sm:text-2xl font-bold text-primary">{formatCurrency(planStats.netSavings)}</p></div>
-                            </div>
-                            <div>
-                                <Label>Achievement Progress ({planStats.achievement.toFixed(1)}%)</Label>
-                                <Progress value={planStats.achievement} className="h-3 mt-1" />
-                            </div>
-                        </CardContent>
-                    </Card>
+                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-xs font-bold sm:text-xs">SAVINGS TARGET</CardTitle>
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-info/20 text-info-text">
+                                    <Icons.target className="h-6 w-6" />
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-xl font-bold">{formatCurrency(currentPlan.savingsTarget)}</div>
+                                <p className="text-xs text-muted-foreground">Quarterly goal for {currentPlan.branch.name}</p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-xs font-bold sm:text-xs">APPROVED COLLECTIONS</CardTitle>
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/20 text-success-text">
+                                    <Icons.arrowDownCircle className="h-6 w-6" />
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-xl font-bold">{formatCurrency(planStats.totalCollections)}</div>
+                                <p className="text-xs text-muted-foreground">Total funds collected</p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-xs font-bold sm:text-xs">APPROVED WITHDRAWALS</CardTitle>
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-warning/20 text-warning-text">
+                                    <Icons.arrowUpCircle className="h-6 w-6" />
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-xl font-bold">{formatCurrency(planStats.totalWithdrawals)}</div>
+                                <p className="text-xs text-muted-foreground">Total funds withdrawn</p>
+                            </CardContent>
+                        </Card>
+                         <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-xs font-bold sm:text-xs">NET SAVINGS</CardTitle>
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary-text">
+                                    <Icons.dollarSign className="h-6 w-6" />
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-xl font-bold">{formatCurrency(planStats.netSavings)}</div>
+                                <p className="text-xs text-muted-foreground">Net performance against target</p>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+                        <Card className="md:col-span-3">
+                            <CardHeader>
+                                <CardTitle>Achievement Progress</CardTitle>
+                                <CardDescription>
+                                    Progress towards the quarterly savings target for {currentPlan.branch.name}.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex items-center gap-4">
+                                <Progress value={planStats.achievement} className="h-3 flex-1" />
+                                <span className="text-xl font-bold">{planStats.achievement.toFixed(1)}%</span>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="md:col-span-2">
+                            <CardHeader>
+                                <CardTitle>Plan Submissions Review</CardTitle>
+                                <CardDescription>Review pending entries from the branch.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Type</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead className="text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {currentPlan.entries.filter(e => e.status === 'Pending').map(entry => (
+                                            <TableRow key={entry.id}>
+                                                <TableCell><PlanTypeBadge type={entry.type as any} /></TableCell>
+                                                <TableCell><PlanStatusBadge status={entry.status as any} /></TableCell>
+                                                <TableCell className="text-right">
+                                                    {entry.status === 'Pending' && permissions.includes('branch_plans:review') && (
+                                                        <div className="flex gap-2 justify-end">
+                                                            <Button size="sm" variant="outline" onClick={() => openRejectDialog(entry)}>Reject</Button>
+                                                            <Button size="sm" onClick={() => handleReview(entry.id, 'Approved')}>Approve</Button>
+                                                        </div>
+                                                    )}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                                {currentPlan.entries.filter(e => e.status === 'Pending').length === 0 && <div className="text-center py-4 text-muted-foreground text-sm">No entries to review.</div>}
+                            </CardContent>
+                        </Card>
+                    </div>
 
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Plan Submissions Review</CardTitle>
-                            <CardDescription>Review pending entries submitted by the branch. Approved/rejected entries are shown for history.</CardDescription>
+                         <CardHeader>
+                            <CardTitle>Submission History</CardTitle>
+                            <CardDescription>Approved and rejected entries for the selected plan.</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <Table>
@@ -282,30 +366,23 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                                         <TableHead>Type</TableHead>
                                         <TableHead>Amount</TableHead>
                                         <TableHead>Status</TableHead>
-                                        <TableHead className="text-right">Actions</TableHead>
+                                        <TableHead className="hidden md:table-cell">Description</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {currentPlan.entries.map(entry => (
+                                    {currentPlan.entries.filter(e => e.status !== 'Pending').map(entry => (
                                         <TableRow key={entry.id}>
                                             <TableCell className="hidden md:table-cell">{format(new Date(entry.date), "PPP")}</TableCell>
                                             <TableCell className="md:hidden">{format(new Date(entry.date), "P")}</TableCell>
                                             <TableCell><PlanTypeBadge type={entry.type as any} /></TableCell>
                                             <TableCell className="font-medium">{formatCurrency(entry.amount)}</TableCell>
                                             <TableCell><PlanStatusBadge status={entry.status as any} /></TableCell>
-                                            <TableCell className="text-right">
-                                                {entry.status === 'Pending' && permissions.includes('branch_plans:review') && (
-                                                    <div className="flex gap-2 justify-end">
-                                                        <Button size="sm" variant="outline" onClick={() => openRejectDialog(entry)}>Reject</Button>
-                                                        <Button size="sm" onClick={() => handleReview(entry.id, 'Approved')}>Approve</Button>
-                                                    </div>
-                                                )}
-                                            </TableCell>
+                                            <TableCell className="hidden md:table-cell text-muted-foreground truncate">{entry.description}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
-                            {currentPlan.entries.length === 0 && <div className="text-center p-8 text-muted-foreground">No entries submitted yet.</div>}
+                            {currentPlan.entries.filter(e => e.status !== 'Pending').length === 0 && <div className="text-center p-8 text-muted-foreground">No submission history yet.</div>}
                         </CardContent>
                     </Card>
                 </div>
@@ -337,7 +414,3 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
     </SidebarProvider>
   );
 }
-
-    
-
-    
