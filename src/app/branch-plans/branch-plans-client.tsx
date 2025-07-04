@@ -133,7 +133,7 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <SidebarTrigger />
-                <h1 className="flex-1 shrink-0 text-xl font-semibold tracking-tight sm:grow-0">Branch Savings Plan Review</h1>
+                <h1 className="flex-1 text-xl font-semibold tracking-tight">Branch Savings Plan Review</h1>
               </div>
               <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
                   <Select value={selectedBranchId} onValueChange={setSelectedBranchId}>
@@ -183,7 +183,7 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-xl font-bold">{formatCurrency(currentPlan.savingsTarget)}</div>
+                            <div className="text-lg font-bold">{formatCurrency(currentPlan.savingsTarget)}</div>
                             <p className="text-xs text-muted-foreground">Quarterly goal for {currentPlan.branch.name}</p>
                           </CardContent>
                         </Card>
@@ -195,7 +195,7 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-xl font-bold">{formatCurrency(planStats.totalCollections)}</div>
+                            <div className="text-lg font-bold">{formatCurrency(planStats.totalCollections)}</div>
                             <p className="text-xs text-muted-foreground">Total funds collected</p>
                           </CardContent>
                         </Card>
@@ -207,7 +207,7 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-xl font-bold">{formatCurrency(planStats.totalWithdrawals)}</div>
+                            <div className="text-lg font-bold">{formatCurrency(planStats.totalWithdrawals)}</div>
                             <p className="text-xs text-muted-foreground">Total funds withdrawn</p>
                           </CardContent>
                         </Card>
@@ -219,7 +219,7 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-xl font-bold">{formatCurrency(planStats.netSavings)}</div>
+                            <div className="text-lg font-bold">{formatCurrency(planStats.netSavings)}</div>
                             <p className="text-xs text-muted-foreground">Net performance against target</p>
                           </CardContent>
                         </Card>
@@ -236,7 +236,7 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                             <CardContent>
                                 <div className="flex items-center gap-4">
                                 <Progress value={planStats.achievement} className="h-3 flex-1" />
-                                <span className="text-xl font-bold">{planStats.achievement.toFixed(1)}%</span>
+                                <span className="text-lg font-bold">{planStats.achievement.toFixed(1)}%</span>
                                 </div>
                             </CardContent>
                         </Card>
