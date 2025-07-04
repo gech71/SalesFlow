@@ -61,7 +61,7 @@ body {
     --sidebar-accent-foreground: 34 31% 18%;
     --sidebar-border: 43 89% 85%;
     --sidebar-ring: 38 92% 50%;
-    --sidebar-footer-background: 28 80% 41%;
+    --sidebar-footer-background: 28 58% 37%;
   }
  
   .dark {
@@ -116,7 +116,7 @@ body {
     --sidebar-accent-foreground: 48 100% 98%;
     --sidebar-border: 34 21% 27%;
     --sidebar-ring: 38 92% 56%;
-    --sidebar-footer-background: 28 80% 41%;
+    --sidebar-footer-background: 28 58% 37%;
   }
 }
 
