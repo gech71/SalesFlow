@@ -305,7 +305,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center gap-4">
                 <SidebarTrigger />
-                <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">Settings</h1>
+                <h1 className="flex-1 shrink-0 text-xl font-semibold tracking-tight sm:grow-0">Settings</h1>
                 <div className="ml-auto">
                     <ThemeToggle />
                 </div>
@@ -366,7 +366,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                                         <form onSubmit={handleSubmitNewUser(onNewUserSubmit)}>
                                             <DialogHeader><DialogTitle>Register New User</DialogTitle><DialogDescription>Create a new user account in the authentication service and in this application.</DialogDescription></DialogHeader>
                                             <div className="grid gap-4 py-4">
-                                                <div className="grid grid-cols-2 gap-4">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                     <div><Label htmlFor="firstName">First Name</Label><Input id="firstName" {...registerNewUser("firstName")} />{newUserErrors.firstName && <p className="text-destructive text-xs mt-1">{newUserErrors.firstName.message}</p>}</div>
                                                     <div><Label htmlFor="lastName">Last Name</Label><Input id="lastName" {...registerNewUser("lastName")} />{newUserErrors.lastName && <p className="text-destructive text-xs mt-1">{newUserErrors.lastName.message}</p>}</div>
                                                 </div>
@@ -409,7 +409,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                             </CardHeader>
                             <CardContent>
                                 <Table>
-                                    <TableHeader><TableRow><TableHead>User</TableHead><TableHead className="w-[180px]">Role</TableHead><TableHead className="w-[40%]">Assignment</TableHead></TableRow></TableHeader>
+                                    <TableHeader><TableRow><TableHead>User</TableHead><TableHead className="md:w-[180px]">Role</TableHead><TableHead className="md:w-[40%]">Assignment</TableHead></TableRow></TableHeader>
                                     <TableBody>
                                         {users.map(user => (
                                             <TableRow key={user.id}>

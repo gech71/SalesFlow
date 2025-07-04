@@ -130,10 +130,12 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
       <SidebarInset>
         <div className="flex min-h-screen w-full flex-col">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-            <div className="flex items-center gap-4">
-              <SidebarTrigger />
-              <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">Branch Savings Plan Review</h1>
-              <div className="ml-auto flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <SidebarTrigger />
+                <h1 className="flex-1 shrink-0 text-xl font-semibold tracking-tight sm:grow-0">Branch Savings Plan Review</h1>
+              </div>
+              <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
                   <Select value={selectedBranchId} onValueChange={setSelectedBranchId}>
                       <SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Select Branch" /></SelectTrigger>
                       <SelectContent>

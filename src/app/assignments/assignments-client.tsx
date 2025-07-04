@@ -76,7 +76,7 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center gap-4">
                 <SidebarTrigger />
-                <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">My Assignments</h1>
+                <h1 className="flex-1 shrink-0 text-xl font-semibold tracking-tight sm:grow-0">My Assignments</h1>
                 <div className="ml-auto">
                     <ThemeToggle />
                 </div>
@@ -95,7 +95,7 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
                 </BreadcrumbList>
             </Breadcrumb>
             <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
+                <CardHeader className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <CardTitle>Manage Your Leads</CardTitle>
                     <CardDescription>
