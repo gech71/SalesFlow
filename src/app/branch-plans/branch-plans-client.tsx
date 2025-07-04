@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -172,52 +173,52 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                 </Card>
             ) : (
                 <div className="grid gap-6">
-                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         <Card>
                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-xs font-bold sm:text-xs whitespace-normal">SAVINGS TARGET</CardTitle>
+                            <CardTitle className="text-sm font-medium whitespace-normal">SAVINGS TARGET</CardTitle>
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-info/20 text-info-text">
                               <Icons.target className="h-6 w-6" />
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-lg font-bold break-words">{formatCurrency(currentPlan.savingsTarget)}</div>
+                            <div className="text-2xl font-bold break-words">{formatCurrency(currentPlan.savingsTarget)}</div>
                             <p className="text-xs text-muted-foreground break-words">Quarterly goal for {currentPlan.branch.name}</p>
                           </CardContent>
                         </Card>
                         <Card>
                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-xs font-bold sm:text-xs whitespace-normal">APPROVED COLLECTIONS</CardTitle>
+                            <CardTitle className="text-sm font-medium whitespace-normal">APPROVED COLLECTIONS</CardTitle>
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-success/20 text-success-text">
                               <Icons.arrowDownCircle className="h-6 w-6" />
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-lg font-bold break-words">{formatCurrency(planStats.totalCollections)}</div>
+                            <div className="text-2xl font-bold break-words">{formatCurrency(planStats.totalCollections)}</div>
                             <p className="text-xs text-muted-foreground break-words">Total funds collected</p>
                           </CardContent>
                         </Card>
                         <Card>
                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-xs font-bold sm:text-xs whitespace-normal">APPROVED WITHDRAWALS</CardTitle>
+                            <CardTitle className="text-sm font-medium whitespace-normal">APPROVED WITHDRAWALS</CardTitle>
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-warning/20 text-warning-text">
                               <Icons.arrowUpCircle className="h-6 w-6" />
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-lg font-bold break-words">{formatCurrency(planStats.totalWithdrawals)}</div>
+                            <div className="text-2xl font-bold break-words">{formatCurrency(planStats.totalWithdrawals)}</div>
                             <p className="text-xs text-muted-foreground break-words">Total funds withdrawn</p>
                           </CardContent>
                         </Card>
                         <Card>
                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-xs font-bold sm:text-xs whitespace-normal">NET SAVINGS</CardTitle>
+                            <CardTitle className="text-sm font-medium whitespace-normal">NET SAVINGS</CardTitle>
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary-text">
                               <Icons.dollarSign className="h-6 w-6" />
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-lg font-bold break-words">{formatCurrency(planStats.netSavings)}</div>
+                            <div className="text-2xl font-bold break-words">{formatCurrency(planStats.netSavings)}</div>
                             <p className="text-xs text-muted-foreground break-words">Net performance against target</p>
                           </CardContent>
                         </Card>

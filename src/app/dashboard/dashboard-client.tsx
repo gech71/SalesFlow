@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -195,53 +196,53 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-bold sm:text-xs">Total Leads</CardTitle>
+                        <CardTitle className="text-sm font-medium whitespace-normal">Total Leads</CardTitle>
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary-text">
                             <Icons.clipboardList className="h-6 w-6" />
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-lg font-bold">{dashboardStats.totalLeads}</div>
-                        <p className="text-xs text-muted-foreground">All active and closed leads</p>
+                        <div className="text-2xl font-bold break-words">{dashboardStats.totalLeads}</div>
+                        <p className="text-xs text-muted-foreground break-words">All active and closed leads</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-bold sm:text-xs">Total Expected Savings</CardTitle>
+                        <CardTitle className="text-sm font-medium whitespace-normal">Total Expected Savings</CardTitle>
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary-text">
                             <Icons.dollarSign className="h-6 w-6" />
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-lg font-bold">{formatCurrency(dashboardStats.totalExpectedSavings)}</div>
-                        <p className="text-xs text-muted-foreground">Planned savings from all leads</p>
+                        <div className="text-2xl font-bold break-words">{formatCurrency(dashboardStats.totalExpectedSavings)}</div>
+                        <p className="text-xs text-muted-foreground break-words">Planned savings from all leads</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-bold sm:text-xs">Total Generated Savings</CardTitle>
+                        <CardTitle className="text-sm font-medium whitespace-normal">Total Generated Savings</CardTitle>
                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/20 text-success-text">
                             <Icons.checkCircle className="h-6 w-6" />
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-lg font-bold">{formatCurrency(dashboardStats.totalGeneratedSavings)}</div>
-                        <p className="text-xs text-muted-foreground">Actual savings collected so far</p>
+                        <div className="text-2xl font-bold break-words">{formatCurrency(dashboardStats.totalGeneratedSavings)}</div>
+                        <p className="text-xs text-muted-foreground break-words">Actual savings collected so far</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-bold sm:text-xs">Lead Achievement Rate</CardTitle>
+                        <CardTitle className="text-sm font-medium whitespace-normal">Lead Achievement Rate</CardTitle>
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-info/20 text-info-text">
                             <Icons.target className="h-6 w-6" />
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-lg font-bold">{dashboardStats.overallAchievement.toFixed(1)}%</div>
-                        <p className="text-xs text-muted-foreground">Generated vs. Expected savings</p>
+                        <div className="text-2xl font-bold break-words">{dashboardStats.overallAchievement.toFixed(1)}%</div>
+                        <p className="text-xs text-muted-foreground break-words">Generated vs. Expected savings</p>
                     </CardContent>
                 </Card>
             </div>
