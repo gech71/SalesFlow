@@ -252,10 +252,10 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-sm">
-                                <div><p className="font-medium">Savings Target</p><p className="text-2xl font-bold">{formatCurrency(currentPlan.savingsTarget)}</p></div>
-                                <div><p className="font-medium">Approved Collections</p><p className="text-2xl font-bold text-green-600">{formatCurrency(planStats.totalCollections)}</p></div>
-                                <div><p className="font-medium">Approved Withdrawals</p><p className="text-2xl font-bold text-red-600">{formatCurrency(planStats.totalWithdrawals)}</p></div>
-                                <div><p className="font-medium">Net Savings</p><p className="text-2xl font-bold text-primary">{formatCurrency(planStats.netSavings)}</p></div>
+                                <div><p className="font-medium">Savings Target</p><p className="text-xl sm:text-2xl font-bold">{formatCurrency(currentPlan.savingsTarget)}</p></div>
+                                <div><p className="font-medium">Approved Collections</p><p className="text-xl sm:text-2xl font-bold text-green-600">{formatCurrency(planStats.totalCollections)}</p></div>
+                                <div><p className="font-medium">Approved Withdrawals</p><p className="text-xl sm:text-2xl font-bold text-red-600">{formatCurrency(planStats.totalWithdrawals)}</p></div>
+                                <div><p className="font-medium">Net Savings</p><p className="text-xl sm:text-2xl font-bold text-primary">{formatCurrency(planStats.netSavings)}</p></div>
                             </div>
                             <div>
                                 <Label>Achievement Progress ({planStats.achievement.toFixed(1)}%)</Label>
