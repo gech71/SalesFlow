@@ -266,26 +266,26 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <Separator />
-                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                        <div>
-                            <p className="font-medium">Assignee</p>
-                            <p className="text-muted-foreground">{lead.assignee?.name || 'Unassigned'}</p>
+                     <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
+                        <div className="space-y-1">
+                            <p className="text-sm font-medium text-muted-foreground">Assignee</p>
+                            <p className="text-base">{lead.assignee?.name || 'Unassigned'}</p>
                         </div>
-                        <div>
-                            <p className="font-medium">Deadline</p>
-                            <p className="text-muted-foreground">{lead.deadline ? format(new Date(lead.deadline), "PPP") : 'N/A'}</p>
+                        <div className="space-y-1">
+                            <p className="text-sm font-medium text-muted-foreground">Deadline</p>
+                            <p className="text-base">{lead.deadline ? format(new Date(lead.deadline), "PPP") : 'N/A'}</p>
                         </div>
-                        <div>
-                            <p className="font-medium">Status</p>
+                        <div className="space-y-1">
+                            <p className="text-sm font-medium text-muted-foreground">Status</p>
                             <StatusBadge status={lead.status as any} />
                         </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <p className="font-medium">Savings Progress ({achievementPercentage.toFixed(0)}%)</p>
-                            <Progress value={achievementPercentage} className="my-1 h-2" />
-                            <div className="flex justify-between text-xs font-medium">
-                                <span className="text-primary">{formatCurrency(totalGeneratedSavings)}</span>
-                                <span className="text-muted-foreground">/ {formatCurrency(lead.expectedSavings)}</span>
+                        <div className="space-y-1 sm:col-span-2">
+                            <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1 text-sm mb-1">
+                                <span className="font-medium text-muted-foreground">Savings Progress</span>
+                                <span className="font-semibold">{formatCurrency(totalGeneratedSavings)} / {formatCurrency(lead.expectedSavings)}</span>
                             </div>
+                            <Progress value={achievementPercentage} className="h-2" />
+                            <div className="text-xs text-muted-foreground mt-1 text-right">{achievementPercentage.toFixed(0)}% of target</div>
                         </div>
                     </div>
                     <Separator />

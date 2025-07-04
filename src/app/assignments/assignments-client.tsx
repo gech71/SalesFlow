@@ -161,29 +161,34 @@ export default function AssignmentsClient({ user, permissions, leads }: { user: 
                           <Card key={lead.id} className="w-full">
                             <CardHeader>
                               <div className="flex justify-between items-start gap-4">
-                                <CardTitle className="text-base">{lead.title}</CardTitle>
-                                <StatusBadge status={lead.status as any} />
+                                <CardTitle className="text-base font-semibold leading-snug whitespace-normal break-words">
+                                  {lead.title}
+                                </CardTitle>
+                                <div className="flex-shrink-0">
+                                  <StatusBadge status={lead.status as any} />
+                                </div>
                               </div>
-                              <CardDescription className="pt-2">
-                                  Assigned to: {lead.assignee?.name || 'N/A'}
+                              <CardDescription className="pt-2 text-xs">
+                                Assigned to: {lead.assignee?.name || 'N/A'}
                               </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4 text-sm">
                                 <div>
-                                    <div className="flex justify-between items-baseline text-sm">
+                                    <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1 text-sm mb-1">
                                         <span className="text-muted-foreground">Progress</span>
                                         <span className="font-semibold">{formatCurrency(totalGeneratedSavings)} / {formatCurrency(lead.expectedSavings)}</span>
                                     </div>
                                     <Progress value={achievementPercentage} className="mt-1 h-2" />
-                                    <div className="text-xs text-muted-foreground mt-1">{achievementPercentage.toFixed(0)}% achieved</div>
+                                    <div className="text-xs text-muted-foreground mt-1 text-right">{achievementPercentage.toFixed(0)}% achieved</div>
                                 </div>
-                                <div className="text-muted-foreground">
-                                    <span className="font-medium text-foreground">Deadline:</span> {lead.deadline ? format(new Date(lead.deadline), "PPP") : 'N/A'}
+                                <div className="flex items-baseline justify-between text-sm text-muted-foreground">
+                                    <span className="font-medium text-foreground">Deadline:</span> 
+                                    <span className="text-right">{lead.deadline ? format(new Date(lead.deadline), "PPP") : 'N/A'}</span>
                                 </div>
                             </CardContent>
                             <CardFooter>
                               <Link href={`/assignments/${lead.id}`} className="w-full">
-                                  <Button variant="outline" size="sm" className="w-full">View Details</Button>
+                                  <Button variant="outline" className="w-full">View Details</Button>
                               </Link>
                             </CardFooter>
                           </Card>
