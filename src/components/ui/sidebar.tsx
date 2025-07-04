@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetTitle,
 } from "@/components/ui/sheet"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -225,6 +226,7 @@ const Sidebar = React.forwardRef<
             side={side}
           >
             <SheetTitle className="sr-only">Sidebar Menu</SheetTitle>
+            <SheetDescription className="sr-only">A list of navigation links for the application.</SheetDescription>
             <div className="flex h-svh w-full flex-col">{children}</div>
           </SheetContent>
         </Sheet>

@@ -21,7 +21,7 @@ import { Progress } from '@/components/ui/progress';
 import { Icons } from '@/components/icons';
 import { type SalesLead, type BranchPlan, type District, type Branch, type LeadUpdate, type PlanEntry, type User, type Role } from '@prisma/client';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbPage } from '@/components/ui/breadcrumb';
@@ -255,15 +255,13 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                     </CardHeader>
                     <CardContent>
                         <ChartContainer config={{count: {label: 'Count', color: 'hsl(var(--chart-1))'}}} className="h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={dashboardStats.statusChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                    <CartesianGrid vertical={false} />
-                                    <XAxis dataKey="status" tickLine={false} axisLine={false} />
-                                    <YAxis />
-                                    <Tooltip content={<ChartTooltipContent />} />
-                                    <Bar dataKey="count" fill="var(--color-count)" radius={4} />
-                                </BarChart>
-                            </ResponsiveContainer>
+                            <BarChart data={dashboardStats.statusChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid vertical={false} />
+                                <XAxis dataKey="status" tickLine={false} axisLine={false} />
+                                <YAxis />
+                                <Tooltip content={<ChartTooltipContent />} />
+                                <Bar dataKey="count" fill="var(--color-count)" radius={4} />
+                            </BarChart>
                         </ChartContainer>
                     </CardContent>
                 </Card>
