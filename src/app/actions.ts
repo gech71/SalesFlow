@@ -51,6 +51,54 @@ export async function createLead(formData: z.infer<typeof newLeadSchema>) {
   revalidatePath('/assignments');
 }
 
+// Schema for updating a lead
+const updateLeadSchema = z.object({
+  id: z.string(),
+  title: z.string().min(3, { message: 'Title must be at least 3 characters long.' }),
+  description: z.string().min(10, { message: 'Description must be at least 10 characters long.' }),
+  districtId: z.string().min(1, { message: 'Please select a district.' }),
+  expectedSavings: z.coerce.number().min(0, "Expected savings must be a positive number."),
+  deadline: z.date({ required_error: 'A deadline date is required.' }),
+});
+
+export async function updateLead(formData: z.infer<typeof updateLeadSchema>) {
+    const validatedData = updateLeadSchema.parse(formData);
+    const { id, ...dataToUpdate } = validatedData;
+    
+    const lead = await prisma.salesLead.findUnique({ where: { id } });
+    if (!lead || lead.status !== 'New') {
+        throw new Error("Only leads with status 'New' can be edited.");
+    }
+    
+    await prisma.salesLead.update({
+        where: { id },
+        data: dataToUpdate,
+    });
+    
+    revalidatePath('/district-assignments');
+}
+
+// Action to delete a lead
+export async function deleteLead(leadId: string) {
+    const lead = await prisma.salesLead.findUnique({
+        where: { id: leadId },
+    });
+
+    if (!lead) {
+        throw new Error('Lead not found.');
+    }
+
+    if (lead.status !== 'New') {
+        throw new Error('Only leads with a "New" status can be deleted.');
+    }
+
+    await prisma.salesLead.delete({
+        where: { id: leadId },
+    });
+
+    revalidatePath('/district-assignments');
+}
+
 // Schema for adding a lead update
 const updateSchema = z.object({
   leadId: z.string(),

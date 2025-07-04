@@ -1,7 +1,11 @@
+
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -33,19 +37,36 @@ import {
   DialogFooter,
   DialogClose,
   DialogDescription,
+  DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Icons } from '@/components/icons';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { SalesLead, District, Branch, User, Role } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { assignBranch, approveLeadDistrict, returnLeadForReworkDistrict } from '@/app/actions';
+import { assignBranch, approveLeadDistrict, returnLeadForReworkDistrict, updateLead, deleteLead } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
 import { ThemeToggle } from '@/components/theme-toggle';
 import AppSidebar from '@/components/app-sidebar';
+import { cn } from '@/lib/utils';
 
 type ClientSalesLead = SalesLead & {
     district: District | null;
@@ -59,14 +80,46 @@ type ClientDistrict = District & {
 
 type ClientUser = User & { role: Role | null };
 
+const updateLeadSchema = z.object({
+  id: z.string(),
+  title: z.string().min(3, { message: 'Title must be at least 3 characters long.' }),
+  description: z.string().min(10, { message: 'Description must be at least 10 characters long.' }),
+  districtId: z.string().min(1, { message: 'Please select a district.' }),
+  expectedSavings: z.coerce.number().min(0, "Expected savings must be a positive number."),
+  deadline: z.date({ required_error: 'A deadline date is required.' }),
+});
+
+
 export default function DistrictAssignmentsClient({ user, leads, districts, permissions }: { user: ClientUser | null, leads: ClientSalesLead[], districts: ClientDistrict[], permissions: string[] }) {
   const router = useRouter();
   const { toast } = useToast();
   
   const [isReworkDialogOpen, setIsReworkDialogOpen] = useState(false);
   const [reworkNote, setReworkNote] = useState('');
+  
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<ClientSalesLead | null>(null);
+
   const [pendingAssignments, setPendingAssignments] = useState<Record<string, string>>({});
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  
+  const editLeadForm = useForm<z.infer<typeof updateLeadSchema>>({
+    resolver: zodResolver(updateLeadSchema),
+  });
+
+  useEffect(() => {
+    if (selectedLead && isEditDialogOpen) {
+        editLeadForm.reset({
+            id: selectedLead.id,
+            title: selectedLead.title,
+            description: selectedLead.description,
+            districtId: selectedLead.districtId ?? undefined,
+            expectedSavings: Number(selectedLead.expectedSavings),
+            deadline: selectedLead.deadline ? new Date(selectedLead.deadline) : new Date(),
+        });
+    }
+  }, [selectedLead, isEditDialogOpen, editLeadForm]);
 
   const handleBranchSelection = (leadId: string, branchId: string) => {
     setPendingAssignments(prev => ({
@@ -87,7 +140,6 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
             delete newState[leadId];
             return newState;
         });
-        router.refresh();
     } catch (error) {
         toast({ title: "Error", description: "Failed to assign lead.", variant: "destructive" });
     }
@@ -97,7 +149,6 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
     try {
         await approveLeadDistrict(leadId);
         toast({ title: "Lead Closed", description: "The lead has been successfully closed." });
-        router.refresh();
     } catch (error) {
         toast({ title: "Error", description: "Failed to close lead.", variant: "destructive" });
     }
@@ -119,10 +170,30 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
         await returnLeadForReworkDistrict(selectedLead.id, reworkNote);
         toast({ title: "Lead Returned", description: "The lead has been returned for rework." });
         setIsReworkDialogOpen(false);
-        router.refresh();
     } catch (error) {
         toast({ title: "Error", description: "Failed to return lead.", variant: "destructive" });
     }
+  };
+  
+  const onEditSubmit = async (data: z.infer<typeof updateLeadSchema>) => {
+    try {
+        await updateLead(data);
+        toast({ title: "Lead Updated", description: "Lead details saved successfully." });
+        setIsEditDialogOpen(false);
+    } catch (error: any) {
+        toast({ title: "Update Failed", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const onDeleteConfirm = async () => {
+      if (!selectedLead) return;
+      try {
+          await deleteLead(selectedLead.id);
+          toast({ title: "Lead Deleted", description: "The lead has been permanently removed." });
+          setIsDeleteDialogOpen(false);
+      } catch (error: any) {
+          toast({ title: "Deletion Failed", description: error.message, variant: "destructive" });
+      }
   };
 
   const unassignedLeads = useMemo(() => leads.filter(lead => lead.districtId && !lead.branchId), [leads]);
@@ -178,9 +249,9 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
                         <TableRow>
                             <TableHead>Lead Title</TableHead>
                             <TableHead className="hidden md:table-cell">District</TableHead>
-                            <TableHead className="hidden md:table-cell">Created At</TableHead>
                             <TableHead className="hidden lg:table-cell">Deadline</TableHead>
                             <TableHead>Assign to Branch</TableHead>
+                            <TableHead className="w-[80px] text-right">Actions</TableHead>
                         </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -188,7 +259,6 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
                             <TableRow key={lead.id}>
                                 <TableCell className="font-medium truncate max-w-sm">{lead.title}</TableCell>
                                 <TableCell className="hidden md:table-cell">{lead.district?.name}</TableCell>
-                                <TableCell className="hidden md:table-cell">{format(new Date(lead.createdAt), "PPP")}</TableCell>
                                 <TableCell className="hidden lg:table-cell">{lead.deadline ? format(new Date(lead.deadline), "PPP") : 'N/A'}</TableCell>
                                 <TableCell>
                                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -210,6 +280,17 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
                                             <Button size="sm" onClick={() => handleAssignBranch(lead.id, pendingAssignments[lead.id])}>Confirm</Button>
                                         )}
                                     </div>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="icon"><Icons.moreHorizontal /></Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      {permissions.includes('district_assignments:edit_lead') && <DropdownMenuItem onSelect={() => { setSelectedLead(lead); setIsEditDialogOpen(true); }}><Icons.edit /> Edit Lead</DropdownMenuItem>}
+                                      {permissions.includes('district_assignments:delete_lead') && <DropdownMenuItem onSelect={() => { setSelectedLead(lead); setIsDeleteDialogOpen(true); }} className="text-destructive focus:text-destructive"><Icons.trash /> Delete Lead</DropdownMenuItem>}
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -292,6 +373,103 @@ export default function DistrictAssignmentsClient({ user, leads, districts, perm
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+            <form onSubmit={editLeadForm.handleSubmit(onEditSubmit)}>
+                <DialogHeader>
+                    <DialogTitle>Edit Lead</DialogTitle>
+                    <DialogDescription>Update the details for this sales lead.</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <input type="hidden" {...editLeadForm.register('id')} />
+                    <div className="grid gap-2">
+                        <Label htmlFor="edit-title">Title</Label>
+                        <Input id="edit-title" {...editLeadForm.register('title')} />
+                        {editLeadForm.formState.errors.title && <p className="text-red-500 text-xs mt-1">{editLeadForm.formState.errors.title.message}</p>}
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="edit-description">Description</Label>
+                        <Textarea id="edit-description" {...editLeadForm.register('description')} />
+                        {editLeadForm.formState.errors.description && <p className="text-red-500 text-xs mt-1">{editLeadForm.formState.errors.description.message}</p>}
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="edit-districtId">District</Label>
+                            <Controller
+                                control={editLeadForm.control}
+                                name="districtId"
+                                render={({ field }) => (
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <SelectTrigger><SelectValue placeholder="Select a district" /></SelectTrigger>
+                                        <SelectContent>
+                                            {districts.map(d => (<SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>))}
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                            {editLeadForm.formState.errors.districtId && <p className="text-red-500 text-xs mt-1">{editLeadForm.formState.errors.districtId.message}</p>}
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="edit-expectedSavings">Savings Target</Label>
+                            <Input id="edit-expectedSavings" type="number" {...editLeadForm.register('expectedSavings')} />
+                            {editLeadForm.formState.errors.expectedSavings && <p className="text-red-500 text-xs mt-1">{editLeadForm.formState.errors.expectedSavings.message}</p>}
+                        </div>
+                    </div>
+                    <div className="grid gap-2">
+                        <Label>Deadline</Label>
+                        <Controller
+                            control={editLeadForm.control}
+                            name="deadline"
+                            render={({ field }) => (
+                                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant={"outline"}
+                                            className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}
+                                        >
+                                            <Icons.calendar className="mr-2 h-4 w-4" />
+                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0">
+                                        <Calendar
+                                            mode="single"
+                                            selected={field.value}
+                                            onSelect={(date) => { if (date) field.onChange(date); setIsCalendarOpen(false); }}
+                                            disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            )}
+                        />
+                        {editLeadForm.formState.errors.deadline && <p className="text-red-500 text-xs mt-1">{editLeadForm.formState.errors.deadline.message}</p>}
+                    </div>
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+                    <Button type="submit" disabled={editLeadForm.formState.isSubmitting}>
+                        {editLeadForm.formState.isSubmitting && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+                        Save Changes
+                    </Button>
+                </DialogFooter>
+            </form>
+        </DialogContent>
+      </Dialog>
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete the lead titled <span className="font-semibold text-foreground">"{selectedLead?.title}"</span>.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={onDeleteConfirm} className={cn(buttonVariants({variant: "destructive"}))}>Confirm Delete</AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </SidebarProvider>
   );
 }

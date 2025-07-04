@@ -39,7 +39,7 @@ async function main() {
         permissions: [
             'dashboard:read', 
             'assignments:read_own', 'assignments:update_own', 
-            'district_assignments:read', 'district_assignments:create_lead', 'district_assignments:assign_branch', 'district_assignments:approve',
+            'district_assignments:read', 'district_assignments:create_lead', 'district_assignments:assign_branch', 'district_assignments:approve', 'district_assignments:edit_lead', 'district_assignments:delete_lead',
             'branch_assignments:read', 'branch_assignments:assign_officer', 'branch_assignments:approve',
             'branch_plans:read', 'branch_plans:review', 'branch_plans:create_entry',
             'offsite_reports:read',
@@ -51,7 +51,7 @@ async function main() {
         name: 'DISTRICT_MANAGER', 
         description: 'Manages a district', 
         permissions: [
-            'dashboard:read', 'district_assignments:read', 'district_assignments:create_lead', 'district_assignments:assign_branch', 'district_assignments:approve',
+            'dashboard:read', 'district_assignments:read', 'district_assignments:create_lead', 'district_assignments:assign_branch', 'district_assignments:approve', 'district_assignments:edit_lead', 'district_assignments:delete_lead',
             'branch_plans:read', 'branch_plans:review', 'offsite_reports:read'
         ],
         creatableRoles: ['BRANCH_MANAGER', 'OFFICER']
@@ -232,4 +232,5 @@ main()
     });
 
     
+
 
