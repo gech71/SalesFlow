@@ -305,7 +305,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center gap-4">
                 <SidebarTrigger />
-                <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">Settings</h1>
+                <h1 className="flex-1 text-xl font-semibold tracking-tight">Settings</h1>
                 <div className="ml-auto">
                     <ThemeToggle />
                 </div>

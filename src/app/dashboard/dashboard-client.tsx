@@ -160,7 +160,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <SidebarTrigger />
-                <h1 className="flex-1 shrink-0 text-xl font-semibold tracking-tight sm:grow-0">Sales Dashboard</h1>
+                <h1 className="flex-1 text-xl font-semibold tracking-tight">Sales Dashboard</h1>
               </div>
                <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:items-center">
                     <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>

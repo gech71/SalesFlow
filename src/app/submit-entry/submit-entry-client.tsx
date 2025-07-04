@@ -128,7 +128,7 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <SidebarTrigger />
-                <h1 className="flex-1 shrink-0 text-xl font-semibold tracking-tight sm:grow-0">Submit Plan Entry</h1>
+                <h1 className="flex-1 text-xl font-semibold tracking-tight">Submit Plan Entry</h1>
               </div>
               <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
                   <Select value={selectedBranchId} onValueChange={setSelectedBranchId}>

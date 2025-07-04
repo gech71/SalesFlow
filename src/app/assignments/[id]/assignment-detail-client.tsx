@@ -236,7 +236,7 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
                     <Icons.arrowLeft className="h-4 w-4" />
                     <span className="sr-only">Back</span>
                 </Button>
-                <h1 className="flex-1 shrink-0 text-xl font-semibold tracking-tight sm:grow-0">
+                <h1 className="flex-1 text-xl font-semibold tracking-tight">
                     Lead Details
                 </h1>
                 <div className="ml-auto">

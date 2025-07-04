@@ -47,7 +47,7 @@ export default function OffsiteReportsClient({ user, permissions, reports }: { u
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center gap-4">
                 <SidebarTrigger />
-                <h1 className="flex-1 shrink-0 text-xl font-semibold tracking-tight sm:grow-0">Off-site Reports</h1>
+                <h1 className="flex-1 text-xl font-semibold tracking-tight">Off-site Reports</h1>
                 <div className="ml-auto">
                     <ThemeToggle />
                 </div>
