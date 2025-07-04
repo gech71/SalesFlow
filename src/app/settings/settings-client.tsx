@@ -6,7 +6,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -34,6 +34,7 @@ import type { User, Role, District, Branch } from '@prisma/client';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
 import { ThemeToggle } from '@/components/theme-toggle';
 import AppSidebar from '@/components/app-sidebar';
+import { cn } from '@/lib/utils';
 
 const settingsSchema = z.object({
   threshold: z.coerce.number().min(0, { message: "Distance must be a positive number." }),
@@ -82,6 +83,8 @@ const permissionGroups = [
             { id: 'district_assignments:create_lead', label: 'Create new leads' },
             { id: 'district_assignments:assign_branch', label: 'Assign leads to branches' },
             { id: 'district_assignments:approve', label: 'Approve/rework leads for final closure' },
+            { id: 'district_assignments:edit_lead', label: 'Edit new leads' },
+            { id: 'district_assignments:delete_lead', label: 'Delete new leads' },
         ],
     },
     {
@@ -684,7 +687,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
             </AlertDialogHeader>
             <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={onConfirmDelete}>Confirm Delete</AlertDialogAction>
+                <AlertDialogAction onClick={onConfirmDelete} className={cn(buttonVariants({ variant: "destructive" }))}>Confirm Delete</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
