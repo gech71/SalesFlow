@@ -178,8 +178,8 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <Card>
                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-xs font-bold sm:text-xs">SAVINGS TARGET</CardTitle>
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-info/20 text-info-text">
+                            <CardTitle className="text-xs font-bold sm:text-xs whitespace-normal">SAVINGS TARGET</CardTitle>
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-info/20 text-info-text">
                               <Icons.target className="h-6 w-6" />
                             </div>
                           </CardHeader>
@@ -190,8 +190,8 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                         </Card>
                         <Card>
                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-xs font-bold sm:text-xs">APPROVED COLLECTIONS</CardTitle>
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/20 text-success-text">
+                            <CardTitle className="text-xs font-bold sm:text-xs whitespace-normal">APPROVED COLLECTIONS</CardTitle>
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-success/20 text-success-text">
                               <Icons.arrowDownCircle className="h-6 w-6" />
                             </div>
                           </CardHeader>
@@ -202,8 +202,8 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                         </Card>
                         <Card>
                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-xs font-bold sm:text-xs">APPROVED WITHDRAWALS</CardTitle>
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-warning/20 text-warning-text">
+                            <CardTitle className="text-xs font-bold sm:text-xs whitespace-normal">APPROVED WITHDRAWALS</CardTitle>
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-warning/20 text-warning-text">
                               <Icons.arrowUpCircle className="h-6 w-6" />
                             </div>
                           </CardHeader>
@@ -214,8 +214,8 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                         </Card>
                         <Card>
                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-xs font-bold sm:text-xs">NET SAVINGS</CardTitle>
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary-text">
+                            <CardTitle className="text-xs font-bold sm:text-xs whitespace-normal">NET SAVINGS</CardTitle>
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary-text">
                               <Icons.dollarSign className="h-6 w-6" />
                             </div>
                           </CardHeader>
