@@ -235,7 +235,7 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
                         </CardContent>
                     </Card>
 
-                    <div className="grid gap-6 lg:grid-cols-5">
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
                         <div className="lg:col-span-3">
                             <Card>
                                 <CardHeader>
@@ -244,7 +244,7 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
                                 </CardHeader>
                                 <form onSubmit={handleSubmitEntry(onNewEntrySubmit)}>
                                     <CardContent className="space-y-6">
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                             <div>
                                                 <Label htmlFor="type">Entry Type</Label>
                                                 <Controller name="type" control={controlEntry} render={({ field }) => (
@@ -283,27 +283,50 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
                                     <CardDescription>Status of entries for the selected plan.</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Date</TableHead>
-                                                <TableHead>Type</TableHead>
-                                                <TableHead>Amount</TableHead>
-                                                <TableHead>Status</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {currentPlan && currentPlan.entries.map(entry => (
-                                                <TableRow key={entry.id}>
-                                                    <TableCell className="hidden md:table-cell">{format(new Date(entry.date), "PPP")}</TableCell>
-                                                    <TableCell className="md:hidden">{format(new Date(entry.date), "P")}</TableCell>
-                                                    <TableCell><PlanTypeBadge type={entry.type as any} /></TableCell>
-                                                    <TableCell className="font-medium">{formatCurrency(entry.amount)}</TableCell>
-                                                    <TableCell><PlanStatusBadge status={entry.status as any} /></TableCell>
+                                    {/* Desktop Table */}
+                                    <div className="hidden md:block">
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>Date</TableHead>
+                                                    <TableHead>Type</TableHead>
+                                                    <TableHead>Amount</TableHead>
+                                                    <TableHead>Status</TableHead>
                                                 </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {currentPlan && currentPlan.entries.map(entry => (
+                                                    <TableRow key={entry.id}>
+                                                        <TableCell>{format(new Date(entry.date), "PPP")}</TableCell>
+                                                        <TableCell><PlanTypeBadge type={entry.type as any} /></TableCell>
+                                                        <TableCell className="font-medium">{formatCurrency(entry.amount)}</TableCell>
+                                                        <TableCell><PlanStatusBadge status={entry.status as any} /></TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                    
+                                    {/* Mobile Cards */}
+                                    <div className="grid gap-4 md:hidden">
+                                        {currentPlan && currentPlan.entries.map(entry => (
+                                            <Card key={entry.id}>
+                                                <CardHeader className="p-4">
+                                                    <div className="flex justify-between items-start gap-4">
+                                                        <div className="font-medium">{formatCurrency(entry.amount)}</div>
+                                                        <PlanStatusBadge status={entry.status as any} />
+                                                    </div>
+                                                </CardHeader>
+                                                <CardContent className="p-4 pt-0">
+                                                    <div className="flex justify-between items-center text-sm text-muted-foreground">
+                                                    <PlanTypeBadge type={entry.type as any} />
+                                                    <span>{format(new Date(entry.date), "P")}</span>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
+                                    </div>
+
                                     {(!currentPlan || currentPlan.entries.length === 0) && <div className="text-center p-8 text-muted-foreground">No entries submitted yet.</div>}
                                 </CardContent>
                             </Card>
