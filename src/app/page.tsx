@@ -77,24 +77,29 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Input
-                id="phoneNumber"
-                type="tel"
-                placeholder="Phone Number"
-                {...register('phoneNumber')}
-                disabled={isSubmitting}
-              />
+              <div className="relative">
+                  <Icons.phone className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="phoneNumber"
+                    type="tel"
+                    placeholder="Phone Number"
+                    {...register('phoneNumber')}
+                    disabled={isSubmitting}
+                    className="pl-10"
+                  />
+              </div>
               {errors.phoneNumber && <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>}
             </div>
             <div className="space-y-2">
               <div className="relative">
+                <Icons.lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <Input 
                   id="password" 
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Password"
                   {...register('password')} 
                   disabled={isSubmitting}
-                  className="pr-10"
+                  className="pl-10 pr-10"
                 />
                 <button
                     type="button"
