@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -19,10 +20,12 @@ import { Label } from '@/components/ui/label';
 import { Icons } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { updateSetting, registerUser, updateUserRole, saveRole, deleteRole, updateUserAssignment, updateCreatableRoles } from '@/app/actions';
+import { updateSetting, registerUser, updateUserRole, saveRole, deleteRole, updateUserAssignment, updateCreatableRoles, updateUser, deleteUser as deleteUserAction } from '@/app/actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -43,6 +46,14 @@ const registerUserSchema = z.object({
   phoneNumber: z.string().regex(/^(\+251|0)?[79]\d{8}$/, 'Invalid Ethiopian phone number'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   roleId: z.string().min(1, 'A role must be selected'),
+});
+
+const updateUserSchema = z.object({
+  userId: z.string(),
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  email: z.string().email('Invalid email address'),
+  phoneNumber: z.string().regex(/^(\+251|0)?[79]\d{8}$/, 'Invalid Ethiopian phone number'),
 });
 
 const roleSchema = z.object({
@@ -113,6 +124,8 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
   const { toast } = useToast();
   
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<ClientUser | null>(null);
+  const [deletingUser, setDeletingUser] = useState<ClientUser | null>(null);
   const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
   const [creatableRolesMap, setCreatableRolesMap] = useState<Record<string, string[]>>({});
@@ -127,6 +140,10 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
 
   const { register: registerNewUser, handleSubmit: handleSubmitNewUser, reset: resetNewUser, control: controlNewUser, formState: { errors: newUserErrors, isSubmitting: isSubmittingNewUser } } = useForm<z.infer<typeof registerUserSchema>>({
     resolver: zodResolver(registerUserSchema),
+  });
+  
+  const editUserForm = useForm<z.infer<typeof updateUserSchema>>({
+    resolver: zodResolver(updateUserSchema),
   });
 
   const { register: registerRole, handleSubmit: handleSubmitRole, reset: resetRole, control: controlRole, formState: { errors: roleErrors, isSubmitting: isSubmittingRole } } = useForm<z.infer<typeof roleSchema>>({
@@ -172,6 +189,38 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
       toast({ title: "Registration Failed", description: result.error, variant: "destructive" });
     }
   }
+
+  const handleOpenEditDialog = (user: ClientUser) => {
+    setEditingUser(user);
+    editUserForm.reset({
+        userId: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+    });
+  };
+
+  const onEditUserSubmit = async (data: z.infer<typeof updateUserSchema>) => {
+    const result = await updateUser(data);
+    if (result.success) {
+        toast({ title: "User Updated", description: "User details have been saved successfully." });
+        setEditingUser(null);
+    } else {
+        toast({ title: "Update Failed", description: result.error, variant: "destructive" });
+    }
+  };
+  
+  const onConfirmDelete = async () => {
+    if (!deletingUser) return;
+    const result = await deleteUserAction(deletingUser.id);
+    if (result.success) {
+        toast({ title: "User Deleted", description: `${deletingUser.name} has been removed from the system.` });
+    } else {
+        toast({ title: "Deletion Failed", description: result.error, variant: "destructive" });
+    }
+    setDeletingUser(null);
+  };
 
   const handleRoleChange = async (userId: string, roleId: string) => {
     try {
@@ -411,7 +460,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                                 {/* Desktop Table */}
                                 <div className="hidden md:block">
                                   <Table>
-                                      <TableHeader><TableRow><TableHead>User</TableHead><TableHead className="w-[200px]">Role</TableHead><TableHead className="w-[40%]">Assignment</TableHead></TableRow></TableHeader>
+                                      <TableHeader><TableRow><TableHead>User</TableHead><TableHead className="w-[180px]">Role</TableHead><TableHead className="w-[40%]">Assignment</TableHead><TableHead className="w-[80px] text-right">Actions</TableHead></TableRow></TableHeader>
                                       <TableBody>
                                           {users.map(user => (
                                               <TableRow key={user.id}>
@@ -434,6 +483,28 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                                                   </TableCell>
                                                   <TableCell>
                                                       {renderAssignmentControls(user)}
+                                                  </TableCell>
+                                                  <TableCell className="text-right">
+                                                    {user.id !== loggedInUser?.id && (
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="ghost" size="icon">
+                                                                    <Icons.moreHorizontal className="h-4 w-4" />
+                                                                    <span className="sr-only">User Actions</span>
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end">
+                                                                <DropdownMenuItem onSelect={() => handleOpenEditDialog(user)}>
+                                                                    <Icons.edit className="mr-2 h-4 w-4" />
+                                                                    <span>Edit User</span>
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem onSelect={() => setDeletingUser(user)} className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                                                                    <Icons.trash className="mr-2 h-4 w-4" />
+                                                                    <span>Delete User</span>
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    )}
                                                   </TableCell>
                                               </TableRow>
                                           ))}
@@ -464,6 +535,16 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                                           {renderAssignmentControls(user)}
                                         </div>
                                       </CardContent>
+                                       {user.id !== loggedInUser?.id && (
+                                        <CardFooter className="flex gap-2">
+                                            <Button variant="outline" className="w-full" onClick={() => handleOpenEditDialog(user)}>
+                                                <Icons.edit className="mr-2 h-4 w-4"/> Edit
+                                            </Button>
+                                            <Button variant="destructive" className="w-full" onClick={() => setDeletingUser(user)}>
+                                                <Icons.trash className="mr-2 h-4 w-4"/> Delete
+                                            </Button>
+                                        </CardFooter>
+                                       )}
                                     </Card>
                                   ))}
                                 </div>
@@ -571,6 +652,43 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
           </main>
         </div>
       </SidebarInset>
+
+      <Dialog open={!!editingUser} onOpenChange={(open) => !open && setEditingUser(null)}>
+        <DialogContent className="sm:max-w-lg">
+            <form onSubmit={editUserForm.handleSubmit(onEditUserSubmit)}>
+                <DialogHeader><DialogTitle>Edit User Details</DialogTitle><DialogDescription>Update the personal information for {editingUser?.name}. Role and assignment are managed on the main settings page.</DialogDescription></DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <input type="hidden" {...editUserForm.register('userId')} />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div><Label htmlFor="edit-firstName">First Name</Label><Input id="edit-firstName" {...editUserForm.register("firstName")} />{editUserForm.formState.errors.firstName && <p className="text-destructive text-xs mt-1">{editUserForm.formState.errors.firstName.message}</p>}</div>
+                        <div><Label htmlFor="edit-lastName">Last Name</Label><Input id="edit-lastName" {...editUserForm.register("lastName")} />{editUserForm.formState.errors.lastName && <p className="text-destructive text-xs mt-1">{editUserForm.formState.errors.lastName.message}</p>}</div>
+                    </div>
+                    <div><Label htmlFor="edit-email">Email</Label><Input id="edit-email" type="email" {...editUserForm.register("email")} />{editUserForm.formState.errors.email && <p className="text-destructive text-xs mt-1">{editUserForm.formState.errors.email.message}</p>}</div>
+                    <div><Label htmlFor="edit-phoneNumber">Phone Number</Label><Input id="edit-phoneNumber" {...editUserForm.register("phoneNumber")} />{editUserForm.formState.errors.phoneNumber && <p className="text-destructive text-xs mt-1">{editUserForm.formState.errors.phoneNumber.message}</p>}</div>
+                </div>
+                <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setEditingUser(null)}>Cancel</Button>
+                    <Button type="submit" disabled={editUserForm.formState.isSubmitting}>{editUserForm.formState.isSubmitting && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}Save Changes</Button>
+                </DialogFooter>
+            </form>
+        </DialogContent>
+      </Dialog>
+      
+      <AlertDialog open={!!deletingUser} onOpenChange={(open) => !open && setDeletingUser(null)}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete the user account for <span className="font-semibold text-foreground">{deletingUser?.name}</span> and remove all associated data.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={onConfirmDelete}>Confirm Delete</AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Dialog open={isRoleDialogOpen} onOpenChange={setIsRoleDialogOpen}>
         <DialogContent className="sm:max-w-2xl">
             <form onSubmit={handleSubmitRole(onRoleSubmit)}>
