@@ -377,7 +377,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
             </Breadcrumb>
             
             <Tabs defaultValue="users" className="w-full">
-                <TabsList className="mx-auto grid w-full grid-cols-1 sm:grid-cols-4 sm:max-w-3xl">
+                <TabsList className="mx-auto grid w-full grid-cols-1 gap-1 sm:grid-cols-2 md:grid-cols-4 md:max-w-3xl">
                     {permissions.includes('settings:manage_users') && <TabsTrigger value="users">User Management</TabsTrigger>}
                     {permissions.includes('settings:manage_roles') && <TabsTrigger value="roles">Role Permissions</TabsTrigger>}
                     {permissions.includes('settings:manage_creation') && <TabsTrigger value="creation">Creation Permissions</TabsTrigger>}
@@ -385,7 +385,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                 </TabsList>
                 
                 {permissions.includes('settings:manage_reporting') && (
-                    <TabsContent value="reporting" className="mt-6">
+                    <TabsContent value="reporting" className="mt-8">
                         <div className="grid max-w-2xl gap-6">
                             <Card>
                                 <form onSubmit={handleSubmitSettings(onSettingsSubmit)}>
@@ -408,7 +408,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                 )}
 
                 {permissions.includes('settings:manage_users') && (
-                    <TabsContent value="users" className="mt-6">
+                    <TabsContent value="users" className="mt-8">
                         <Card>
                             <CardHeader className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
                                 <div><CardTitle>Users</CardTitle><CardDescription>Manage user accounts, their roles, and their branch/district assignments.</CardDescription></div>
@@ -557,7 +557,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                 )}
 
                 {permissions.includes('settings:manage_roles') && (
-                    <TabsContent value="roles" className="mt-6">
+                    <TabsContent value="roles" className="mt-8">
                         <Card>
                             <CardHeader className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
                                 <div><CardTitle>Role Permissions</CardTitle><CardDescription>Define roles and their functional permissions within the application.</CardDescription></div>
@@ -615,7 +615,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                 )}
                 
                 {permissions.includes('settings:manage_creation') && (
-                    <TabsContent value="creation" className="mt-6">
+                    <TabsContent value="creation" className="mt-8">
                         <Card>
                             <CardHeader>
                                 <CardTitle>Role Creation Permissions</CardTitle>
