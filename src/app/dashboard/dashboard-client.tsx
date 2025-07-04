@@ -284,7 +284,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{dashboardStats.totalLeads}</div>
+                        <div className="text-xl font-bold">{dashboardStats.totalLeads}</div>
                         <p className="text-xs text-muted-foreground">All active and closed leads</p>
                     </CardContent>
                 </Card>
@@ -296,7 +296,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{formatCurrency(dashboardStats.totalExpectedSavings)}</div>
+                        <div className="text-xl font-bold">{formatCurrency(dashboardStats.totalExpectedSavings)}</div>
                         <p className="text-xs text-muted-foreground">Planned savings from all leads</p>
                     </CardContent>
                 </Card>
@@ -308,7 +308,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{formatCurrency(dashboardStats.totalGeneratedSavings)}</div>
+                        <div className="text-xl font-bold">{formatCurrency(dashboardStats.totalGeneratedSavings)}</div>
                         <p className="text-xs text-muted-foreground">Actual savings collected so far</p>
                     </CardContent>
                 </Card>
@@ -320,7 +320,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{dashboardStats.overallAchievement.toFixed(1)}%</div>
+                        <div className="text-xl font-bold">{dashboardStats.overallAchievement.toFixed(1)}%</div>
                         <p className="text-xs text-muted-foreground">Generated vs. Expected savings</p>
                     </CardContent>
                 </Card>
