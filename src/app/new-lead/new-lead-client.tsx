@@ -24,7 +24,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Icons } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator, SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -32,11 +32,11 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useState, useEffect, useMemo } from 'react';
-import { createLead, logoutAction } from '@/app/actions';
-import { District, User } from '@prisma/client';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { createLead } from '@/app/actions';
+import { District, User, Role } from '@prisma/client';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
 import { ThemeToggle } from '@/components/theme-toggle';
+import AppSidebar from '@/components/app-sidebar';
 
 const leadSchema = z.object({
   title: z.string().min(3, { message: 'Title must be at least 3 characters long.' }),
@@ -48,7 +48,9 @@ const leadSchema = z.object({
   deadline: z.date({ required_error: 'A deadline date is required.' }),
 });
 
-export default function NewLeadClient({ user, permissions }: { user: User | null, permissions: string[] }) {
+type ClientUser = User & { role: Role | null };
+
+export default function NewLeadClient({ user, permissions }: { user: ClientUser | null, permissions: string[] }) {
   const { toast } = useToast();
   const router = useRouter();
 
@@ -58,8 +60,6 @@ export default function NewLeadClient({ user, permissions }: { user: User | null
   const [isSearching, setIsSearching] = useState(false);
   const [selectedLocationName, setSelectedLocationName] = useState('');
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-
-  const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
 
   useEffect(() => {
     // Fetch districts for the select dropdown
@@ -139,84 +139,7 @@ export default function NewLeadClient({ user, permissions }: { user: User | null
 
   return (
     <SidebarProvider>
-      <Sidebar collapsible="icon">
-        <SidebarHeader>
-            <Link href="/dashboard" className="flex items-center gap-2 group-data-[state=collapsed]:justify-center">
-                <img src="https://th.bing.com/th/id/R.f76dabe4fac17634185beac29762498b?rik=VcpX%2Bw6udP0tgA&riu=http%3a%2f%2fwww.ethioxchange.com%2fstorage%2fbanks%2flogo%2f01J73Y8N756BVZ9PPKF60ZYFM0.png&ehk=IB1kPIaDd2GDbC2Ur5HlQKTKS37a6%2bglIr8W58E5PzQ%3d&risl=&pid=ImgRaw&r=0" alt="NIB Sales Logo" className="h-10 w-auto transition-all group-data-[state=collapsed]:h-6" />
-                <h2 className="font-semibold text-lg text-primary group-data-[state=collapsed]:hidden">NIB Sales</h2>
-            </Link>
-        </SidebarHeader>
-        <SidebarContent>
-            <SidebarMenu>
-                {permissions.includes('dashboard:read') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Dashboard"><Link href="/dashboard"><Icons.dashboard /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Dashboard</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('assignments:read_own') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="My Assignments"><Link href="/assignments"><Icons.clipboardList /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">My Assignments</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('branch_plans:read') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Branch Plans"><Link href="/branch-plans"><Icons.landmark /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Branch Plans</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('branch_plans:create_entry') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Submit Entry"><Link href="/submit-entry"><Icons.plusCircle /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Submit Entry</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('district_assignments:read') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="District View" isActive><Link href="/district-assignments"><Icons.building /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">District View</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('branch_assignments:read') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Branch View"><Link href="/branch-assignments"><Icons.building2 /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Branch View</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('offsite_reports:read') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Off-site Reports"><Link href="/offsite-reports"><Icons.alertTriangle /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Off-site Reports</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {canViewSettings && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Settings"><Link href="/settings"><Icons.settings /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Settings</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-            </SidebarMenu>
-        </SidebarContent>
-        <SidebarFooter>
-            <SidebarSeparator />
-            <SidebarMenu className="rounded-md p-2">
-                <SidebarMenuItem>
-                    <div className="flex w-full items-center gap-3 group-data-[state=collapsed]/sidebar-wrapper:justify-center">
-                        <Avatar className="h-8 w-8">
-                            <AvatarFallback>
-                                {user?.name?.split(" ").map((n) => n[0]).join("")}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col overflow-hidden group-data-[state=collapsed]/sidebar-wrapper:hidden">
-                            <span className="truncate text-sm font-medium">{user?.name}</span>
-                            <span className="truncate text-xs text-sidebar-foreground/70">{user?.email}</span>
-                        </div>
-                    </div>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <form action={logoutAction} className="w-full">
-                        <SidebarMenuButton type="submit" className="w-full" tooltip="Logout">
-                            <Icons.logout />
-                            <span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Logout</span>
-                        </SidebarMenuButton>
-                    </form>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
+      <AppSidebar user={user} permissions={permissions} />
       <SidebarInset>
         <div className="flex min-h-screen w-full flex-col">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">

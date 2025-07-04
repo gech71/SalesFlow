@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -14,23 +13,25 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Icons } from '@/components/icons';
-import type { BranchPlan, PlanEntry, Branch, User } from '@prisma/client';
+import type { BranchPlan, PlanEntry, Branch, User, Role } from '@prisma/client';
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator, SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
-import { reviewPlanEntry, logoutAction } from '@/app/actions';
+import { reviewPlanEntry } from '@/app/actions';
 import { useRouter } from 'next/navigation';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
 import { ThemeToggle } from '@/components/theme-toggle';
+import AppSidebar from '@/components/app-sidebar';
 
 type ClientBranchPlan = BranchPlan & {
     entries: PlanEntry[];
     branch: Branch;
 }
+
+type ClientUser = User & { role: Role | null };
 
 const rejectionSchema = z.object({
   rejectionReason: z.string().min(10, "A reason for rejection is required (min 10 characters)."),
@@ -73,7 +74,7 @@ const PlanTypeBadge = ({ type }: { type: PlanEntry['type'] }) => {
     );
 };
 
-export default function BranchPlansClient({ user, permissions, plans, branches, quarters, defaultQuarter }: { user: User | null, permissions: string[], plans: ClientBranchPlan[], branches: Branch[], quarters: string[], defaultQuarter: string }) {
+export default function BranchPlansClient({ user, permissions, plans, branches, quarters, defaultQuarter }: { user: ClientUser | null, permissions: string[], plans: ClientBranchPlan[], branches: Branch[], quarters: string[], defaultQuarter: string }) {
   const router = useRouter();
   const { toast } = useToast();
   
@@ -85,8 +86,6 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
   const { register: registerReject, handleSubmit: handleSubmitReject, reset: resetReject, formState: { errors: rejectErrors } } = useForm<z.infer<typeof rejectionSchema>>({
     resolver: zodResolver(rejectionSchema),
   });
-
-  const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
 
   const currentPlan = useMemo(() => {
     return plans.find(p => p.branchId === selectedBranchId && p.quarter === selectedQuarter);
@@ -127,84 +126,7 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
 
   return (
     <SidebarProvider>
-      <Sidebar collapsible="icon" className="bg-sidebar/90">
-        <SidebarHeader>
-            <Link href="/dashboard" className="flex items-center gap-2 group-data-[state=collapsed]:justify-center">
-                <img src="https://fireworks.proxy.prod.deepmind.com/files/5462f6b8-6a3f-429f-adc3-4348cd916847" alt="NIB Sales Logo" className="h-10 w-auto transition-all group-data-[state=collapsed]:h-6" />
-                <h2 className="font-semibold text-lg text-primary group-data-[state=collapsed]:hidden">NIB Sales</h2>
-            </Link>
-        </SidebarHeader>
-        <SidebarContent>
-            <SidebarMenu>
-                {permissions.includes('dashboard:read') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Dashboard"><Link href="/dashboard"><Icons.dashboard /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Dashboard</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('assignments:read_own') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="My Assignments"><Link href="/assignments"><Icons.clipboardList /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">My Assignments</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('branch_plans:read') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Branch Plans" isActive><Link href="/branch-plans"><Icons.landmark /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Branch Plans</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('branch_plans:create_entry') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Submit Entry"><Link href="/submit-entry"><Icons.plusCircle /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Submit Entry</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('district_assignments:read') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="District View"><Link href="/district-assignments"><Icons.building /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">District View</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('branch_assignments:read') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Branch View"><Link href="/branch-assignments"><Icons.building2 /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Branch View</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('offsite_reports:read') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Off-site Reports"><Link href="/offsite-reports"><Icons.alertTriangle /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Off-site Reports</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {canViewSettings && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Settings"><Link href="/settings"><Icons.settings /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Settings</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-            </SidebarMenu>
-        </SidebarContent>
-        <SidebarFooter>
-            <SidebarSeparator />
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <div className="flex w-full items-center gap-3 group-data-[state=collapsed]/sidebar-wrapper:justify-center">
-                        <Avatar className="h-8 w-8">
-                            <AvatarFallback>
-                                {user?.name?.split(" ").map((n) => n[0]).join("")}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col overflow-hidden group-data-[state=collapsed]/sidebar-wrapper:hidden">
-                            <span className="truncate text-sm font-medium">{user?.name}</span>
-                            <span className="truncate text-xs text-sidebar-foreground/70">{user?.email}</span>
-                        </div>
-                    </div>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <form action={logoutAction} className="w-full">
-                        <SidebarMenuButton type="submit" className="w-full" tooltip="Logout">
-                            <Icons.logout />
-                            <span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Logout</span>
-                        </SidebarMenuButton>
-                    </form>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
+      <AppSidebar user={user} permissions={permissions} />
       <SidebarInset>
         <div className="flex min-h-screen w-full flex-col">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
@@ -252,52 +174,52 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                 <div className="grid gap-6">
                      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                         <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-xs font-bold sm:text-xs">SAVINGS TARGET</CardTitle>
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-info/20 text-info-text">
-                                    <Icons.target className="h-6 w-6" />
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-xl font-bold">{formatCurrency(currentPlan.savingsTarget)}</div>
-                                <p className="text-xs text-muted-foreground">Quarterly goal for {currentPlan.branch.name}</p>
-                            </CardContent>
+                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-xs font-bold sm:text-xs">SAVINGS TARGET</CardTitle>
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-info/20 text-info-text">
+                              <Icons.target className="h-6 w-6" />
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="text-xl font-bold">{formatCurrency(currentPlan.savingsTarget)}</div>
+                            <p className="text-xs text-muted-foreground">Quarterly goal for {currentPlan.branch.name}</p>
+                          </CardContent>
                         </Card>
                         <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-xs font-bold sm:text-xs">APPROVED COLLECTIONS</CardTitle>
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/20 text-success-text">
-                                    <Icons.arrowDownCircle className="h-6 w-6" />
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-xl font-bold">{formatCurrency(planStats.totalCollections)}</div>
-                                <p className="text-xs text-muted-foreground">Total funds collected</p>
-                            </CardContent>
+                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-xs font-bold sm:text-xs">APPROVED COLLECTIONS</CardTitle>
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/20 text-success-text">
+                              <Icons.arrowDownCircle className="h-6 w-6" />
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="text-xl font-bold">{formatCurrency(planStats.totalCollections)}</div>
+                            <p className="text-xs text-muted-foreground">Total funds collected</p>
+                          </CardContent>
                         </Card>
                         <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-xs font-bold sm:text-xs">APPROVED WITHDRAWALS</CardTitle>
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-warning/20 text-warning-text">
-                                    <Icons.arrowUpCircle className="h-6 w-6" />
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-xl font-bold">{formatCurrency(planStats.totalWithdrawals)}</div>
-                                <p className="text-xs text-muted-foreground">Total funds withdrawn</p>
-                            </CardContent>
+                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-xs font-bold sm:text-xs">APPROVED WITHDRAWALS</CardTitle>
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-warning/20 text-warning-text">
+                              <Icons.arrowUpCircle className="h-6 w-6" />
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="text-xl font-bold">{formatCurrency(planStats.totalWithdrawals)}</div>
+                            <p className="text-xs text-muted-foreground">Total funds withdrawn</p>
+                          </CardContent>
                         </Card>
-                         <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-xs font-bold sm:text-xs">NET SAVINGS</CardTitle>
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary-text">
-                                    <Icons.dollarSign className="h-6 w-6" />
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-xl font-bold">{formatCurrency(planStats.netSavings)}</div>
-                                <p className="text-xs text-muted-foreground">Net performance against target</p>
-                            </CardContent>
+                        <Card>
+                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-xs font-bold sm:text-xs">NET SAVINGS</CardTitle>
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary-text">
+                              <Icons.dollarSign className="h-6 w-6" />
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="text-xl font-bold">{formatCurrency(planStats.netSavings)}</div>
+                            <p className="text-xs text-muted-foreground">Net performance against target</p>
+                          </CardContent>
                         </Card>
                     </div>
 

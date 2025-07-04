@@ -18,8 +18,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Icons } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarSeparator, SidebarTrigger } from '@/components/ui/sidebar';
-import { updateSetting, logoutAction, registerUser, updateUserRole, saveRole, deleteRole, updateUserAssignment, updateCreatableRoles } from '@/app/actions';
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { updateSetting, registerUser, updateUserRole, saveRole, deleteRole, updateUserAssignment, updateCreatableRoles } from '@/app/actions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
@@ -28,9 +28,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import type { User, Role, District, Branch } from '@prisma/client';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
 import { ThemeToggle } from '@/components/theme-toggle';
+import AppSidebar from '@/components/app-sidebar';
 
 const settingsSchema = z.object({
   threshold: z.coerce.number().min(0, { message: "Distance must be a positive number." }),
@@ -133,8 +133,6 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
     resolver: zodResolver(roleSchema),
   });
   
-  const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
-
   const creatableRolesForCurrentUser = useMemo(() => {
     if (!loggedInUser || !loggedInUser.role || !loggedInUser.role.creatableRoles) {
         return [];
@@ -301,80 +299,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
 
   return (
     <SidebarProvider>
-      <Sidebar collapsible="icon">
-        <SidebarHeader>
-            <Link href="/dashboard" className="flex items-center gap-2 group-data-[state=collapsed]:justify-center">
-                <img src="https://th.bing.com/th/id/R.f76dabe4fac17634185beac29762498b?rik=VcpX%2Bw6udP0tgA&riu=http%3a%2f%2fwww.ethioxchange.com%2fstorage%2fbanks%2flogo%2f01J73Y8N756BVZ9PPKF60ZYFM0.png&ehk=IB1kPIaDd2GDbC2Ur5HlQKTKS37a6%2bglIr8W58E5PzQ%3d&risl=&pid=ImgRaw&r=0" alt="NIB Sales Logo" className="h-10 w-auto transition-all group-data-[state=collapsed]:h-6" />
-                <h2 className="font-semibold text-lg text-primary group-data-[state=collapsed]:hidden">NIB Sales</h2>
-            </Link>
-        </SidebarHeader>
-        <SidebarContent>
-            <SidebarMenu>
-                {permissions.includes('dashboard:read') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Dashboard"><Link href="/dashboard"><Icons.dashboard /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Dashboard</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('assignments:read_own') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="My Assignments"><Link href="/assignments"><Icons.clipboardList /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">My Assignments</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('branch_plans:read') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Branch Plans"><Link href="/branch-plans"><Icons.landmark /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Branch Plans</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('branch_plans:create_entry') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Submit Entry"><Link href="/submit-entry"><Icons.plusCircle /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Submit Entry</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('district_assignments:read') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="District View"><Link href="/district-assignments"><Icons.building /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">District View</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('branch_assignments:read') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Branch View"><Link href="/branch-assignments"><Icons.building2 /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Branch View</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {permissions.includes('offsite_reports:read') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Off-site Reports"><Link href="/offsite-reports"><Icons.alertTriangle /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Off-site Reports</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-                {canViewSettings && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Settings" isActive><Link href="/settings"><Icons.settings /><span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Settings</span></Link></SidebarMenuButton>
-                    </SidebarMenuItem>
-                )}
-            </SidebarMenu>
-        </SidebarContent>
-        <SidebarFooter>
-            <SidebarSeparator />
-            <SidebarMenu className="rounded-md p-2">
-                <SidebarMenuItem>
-                    <div className="flex w-full items-center gap-3 group-data-[state=collapsed]/sidebar-wrapper:justify-center">
-                        <Avatar className="h-8 w-8">
-                            <AvatarFallback>
-                                {loggedInUser?.name?.split(" ").map((n) => n[0]).join("")}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col overflow-hidden group-data-[state=collapsed]/sidebar-wrapper:hidden">
-                            <span className="truncate text-sm font-medium">{loggedInUser?.name}</span>
-                            <span className="truncate text-xs text-sidebar-foreground/70">{loggedInUser?.email}</span>
-                        </div>
-                    </div>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <form action={logoutAction} className="w-full"><SidebarMenuButton type="submit" className="w-full" tooltip="Logout"><Icons.logout />
-                    <span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Logout</span></SidebarMenuButton></form>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
+      <AppSidebar user={loggedInUser} permissions={permissions} />
       <SidebarInset>
         <div className="flex min-h-screen w-full flex-col">
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
