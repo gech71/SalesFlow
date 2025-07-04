@@ -39,6 +39,7 @@ type SidebarContext = {
   setOpenMobile: (open: boolean) => void
   isMobile: boolean
   toggleSidebar: () => void
+  isMounted: boolean
 }
 
 const SidebarContext = React.createContext<SidebarContext | null>(null)
@@ -74,6 +75,7 @@ const SidebarProvider = React.forwardRef<
   ) => {
     const isMobile = useIsMobile()
     const [openMobile, setOpenMobile] = React.useState(false)
+    const [isMounted, setIsMounted] = React.useState(false)
 
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
@@ -86,6 +88,7 @@ const SidebarProvider = React.forwardRef<
         if (cookieValue !== undefined) {
             _setOpen(cookieValue === 'true');
         }
+        setIsMounted(true);
     }, []);
 
     const setOpen = React.useCallback(
@@ -139,8 +142,9 @@ const SidebarProvider = React.forwardRef<
         openMobile,
         setOpenMobile,
         toggleSidebar,
+        isMounted,
       }),
-      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar, isMounted]
     )
 
     return (
@@ -189,7 +193,7 @@ const Sidebar = React.forwardRef<
     },
     ref
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+    const { isMobile, state, openMobile, setOpenMobile, isMounted } = useSidebar()
 
     if (collapsible === "none") {
       return (
@@ -239,7 +243,8 @@ const Sidebar = React.forwardRef<
         {/* This is what handles the sidebar gap on desktop */}
         <div
           className={cn(
-            "duration-200 relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-linear",
+            "relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-linear",
+            !isMounted ? "duration-0" : "duration-200",
             "group-data-[collapsible=offcanvas]:w-0",
             "group-data-[side=right]:rotate-180",
             variant === "floating" || variant === "inset"
@@ -249,7 +254,8 @@ const Sidebar = React.forwardRef<
         />
         <div
           className={cn(
-            "duration-200 fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex",
+            "fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex",
+            !isMounted ? "duration-0" : "duration-200",
             side === "left"
               ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
               : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
