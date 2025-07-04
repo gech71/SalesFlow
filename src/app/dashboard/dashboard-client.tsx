@@ -159,7 +159,7 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
       <Sidebar collapsible="icon">
         <SidebarHeader>
             <Link href="/dashboard" className="flex items-center gap-2 group-data-[state=collapsed]:justify-center">
-                <img src="https://th.bing.com/th/id/R.f76dabe4fac17634185beac29762498b?rik=VcpX%2Bw6udP0tgA&riu=http%3a%2f%2fwww.ethioxchange.com%2fstorage%2fbanks%2flogo%2f01J73Y8N756BVZ9PPKF60ZYFM0.png&ehk=IB1kPIaDd2GDbC2Ur5HlQKTKS37a6%2bglIr8W58E5PzQ%3d&risl=&pid=ImgRaw&r=0" alt="NIB Sales Logo" className="h-10 w-auto transition-all group-data-[state=collapsed]:h-6" />
+                <img src="https://fireworks.proxy.prod.deepmind.com/files/5462f6b8-6a3f-429f-adc3-4348cd916847" alt="NIB Sales Logo" className="h-10 w-auto transition-all group-data-[state=collapsed]:h-6" />
                 <h2 className="font-semibold text-lg text-primary group-data-[state=collapsed]:hidden">NIB Sales</h2>
             </Link>
         </SidebarHeader>
@@ -278,49 +278,49 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold">Total Leads</CardTitle>
+                        <CardTitle className="text-xs font-bold">Total Leads</CardTitle>
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary-text">
                             <Icons.clipboardList className="h-6 w-6" />
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-xl font-bold">{dashboardStats.totalLeads}</div>
+                        <div className="text-lg font-bold">{dashboardStats.totalLeads}</div>
                         <p className="text-xs text-muted-foreground">All active and closed leads</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold">Total Expected Savings</CardTitle>
+                        <CardTitle className="text-xs font-bold">Total Expected Savings</CardTitle>
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary-text">
                             <Icons.dollarSign className="h-6 w-6" />
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-xl font-bold">{formatCurrency(dashboardStats.totalExpectedSavings)}</div>
+                        <div className="text-lg font-bold">{formatCurrency(dashboardStats.totalExpectedSavings)}</div>
                         <p className="text-xs text-muted-foreground">Planned savings from all leads</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold">Total Generated Savings</CardTitle>
+                        <CardTitle className="text-xs font-bold">Total Generated Savings</CardTitle>
                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/20 text-success-text">
                             <Icons.checkCircle className="h-6 w-6" />
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-xl font-bold">{formatCurrency(dashboardStats.totalGeneratedSavings)}</div>
+                        <div className="text-lg font-bold">{formatCurrency(dashboardStats.totalGeneratedSavings)}</div>
                         <p className="text-xs text-muted-foreground">Actual savings collected so far</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-bold">Lead Achievement Rate</CardTitle>
+                        <CardTitle className="text-xs font-bold">Lead Achievement Rate</CardTitle>
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-info/20 text-info-text">
                             <Icons.target className="h-6 w-6" />
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-xl font-bold">{dashboardStats.overallAchievement.toFixed(1)}%</div>
+                        <div className="text-lg font-bold">{dashboardStats.overallAchievement.toFixed(1)}%</div>
                         <p className="text-xs text-muted-foreground">Generated vs. Expected savings</p>
                     </CardContent>
                 </Card>
