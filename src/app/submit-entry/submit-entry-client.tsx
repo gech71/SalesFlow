@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -177,7 +178,7 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-xl font-bold">{formatCurrency(currentPlan.savingsTarget)}</div>
+                            <div className="text-lg font-bold">{formatCurrency(currentPlan.savingsTarget)}</div>
                             <p className="text-xs text-muted-foreground">Quarterly goal for {currentPlan.branch.name}</p>
                           </CardContent>
                         </Card>
@@ -189,7 +190,7 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-xl font-bold">{formatCurrency(planStats.totalCollections)}</div>
+                            <div className="text-lg font-bold">{formatCurrency(planStats.totalCollections)}</div>
                             <p className="text-xs text-muted-foreground">Total funds collected</p>
                           </CardContent>
                         </Card>
@@ -201,7 +202,7 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-xl font-bold">{formatCurrency(planStats.totalWithdrawals)}</div>
+                            <div className="text-lg font-bold">{formatCurrency(planStats.totalWithdrawals)}</div>
                             <p className="text-xs text-muted-foreground">Total funds withdrawn</p>
                           </CardContent>
                         </Card>
@@ -213,7 +214,7 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-xl font-bold">{formatCurrency(planStats.netSavings)}</div>
+                            <div className="text-lg font-bold">{formatCurrency(planStats.netSavings)}</div>
                             <p className="text-xs text-muted-foreground">Net performance against target</p>
                           </CardContent>
                         </Card>
@@ -229,7 +230,7 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
                         <CardContent>
                             <div className="flex items-center gap-4">
                             <Progress value={planStats.achievement} className="h-3 flex-1" />
-                            <span className="text-xl font-bold">{planStats.achievement.toFixed(1)}%</span>
+                            <span className="text-lg font-bold">{planStats.achievement.toFixed(1)}%</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -294,7 +295,7 @@ export default function SubmitEntryClient({ user, permissions, plans, branches, 
                                         <TableBody>
                                             {currentPlan && currentPlan.entries.map(entry => (
                                                 <TableRow key={entry.id}>
-                                                    <TableCell className="hidden md:table-cell">{format(new Date(entry.date), "P")}</TableCell>
+                                                    <TableCell className="hidden md:table-cell">{format(new Date(entry.date), "PPP")}</TableCell>
                                                     <TableCell className="md:hidden">{format(new Date(entry.date), "P")}</TableCell>
                                                     <TableCell><PlanTypeBadge type={entry.type as any} /></TableCell>
                                                     <TableCell className="font-medium">{formatCurrency(entry.amount)}</TableCell>
