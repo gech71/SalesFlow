@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -174,7 +175,7 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                 </Card>
             ) : (
                 <div className="grid gap-6">
-                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <Card>
                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-xs font-bold sm:text-xs">SAVINGS TARGET</CardTitle>
@@ -183,8 +184,8 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-lg font-bold">{formatCurrency(currentPlan.savingsTarget)}</div>
-                            <p className="text-xs text-muted-foreground">Quarterly goal for {currentPlan.branch.name}</p>
+                            <div className="text-lg font-bold break-words">{formatCurrency(currentPlan.savingsTarget)}</div>
+                            <p className="text-xs text-muted-foreground break-words">Quarterly goal for {currentPlan.branch.name}</p>
                           </CardContent>
                         </Card>
                         <Card>
@@ -195,8 +196,8 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-lg font-bold">{formatCurrency(planStats.totalCollections)}</div>
-                            <p className="text-xs text-muted-foreground">Total funds collected</p>
+                            <div className="text-lg font-bold break-words">{formatCurrency(planStats.totalCollections)}</div>
+                            <p className="text-xs text-muted-foreground break-words">Total funds collected</p>
                           </CardContent>
                         </Card>
                         <Card>
@@ -207,8 +208,8 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-lg font-bold">{formatCurrency(planStats.totalWithdrawals)}</div>
-                            <p className="text-xs text-muted-foreground">Total funds withdrawn</p>
+                            <div className="text-lg font-bold break-words">{formatCurrency(planStats.totalWithdrawals)}</div>
+                            <p className="text-xs text-muted-foreground break-words">Total funds withdrawn</p>
                           </CardContent>
                         </Card>
                         <Card>
@@ -219,8 +220,8 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                             </div>
                           </CardHeader>
                           <CardContent>
-                            <div className="text-lg font-bold">{formatCurrency(planStats.netSavings)}</div>
-                            <p className="text-xs text-muted-foreground">Net performance against target</p>
+                            <div className="text-lg font-bold break-words">{formatCurrency(planStats.netSavings)}</div>
+                            <p className="text-xs text-muted-foreground break-words">Net performance against target</p>
                           </CardContent>
                         </Card>
                     </div>
