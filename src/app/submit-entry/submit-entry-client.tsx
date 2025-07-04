@@ -77,12 +77,12 @@ const PlanTypeBadge = ({ type }: { type: PlanEntry['type'] }) => {
 };
 
 
-export default function SubmitEntryClient({ user, permissions, plans, branches, quarters }: { user: ClientUser | null, permissions: string[], plans: ClientBranchPlan[], branches: Branch[], quarters: string[] }) {
+export default function SubmitEntryClient({ user, permissions, plans, branches, quarters, defaultQuarter }: { user: ClientUser | null, permissions: string[], plans: ClientBranchPlan[], branches: Branch[], quarters: string[], defaultQuarter: string }) {
   const router = useRouter();
   const { toast } = useToast();
   
   const [selectedBranchId, setSelectedBranchId] = useState(branches[0]?.id || '');
-  const [selectedQuarter, setSelectedQuarter] = useState(quarters[0] || '');
+  const [selectedQuarter, setSelectedQuarter] = useState(defaultQuarter || quarters[0] || '');
   
   const { register: registerEntry, handleSubmit: handleSubmitEntry, control: controlEntry, reset: resetEntry, formState: { errors: entryErrors } } = useForm<z.infer<typeof newPlanEntrySchema>>({
     resolver: zodResolver(newPlanEntrySchema),

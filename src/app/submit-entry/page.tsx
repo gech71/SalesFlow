@@ -2,7 +2,7 @@
 import { serialize } from '@/lib/utils';
 import prisma from '@/lib/prisma';
 import SubmitEntryClient from './submit-entry-client';
-import { quarters } from '../branch-plans/data';
+import { quarters, getCurrentQuarter } from '../branch-plans/data';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -34,6 +34,7 @@ export default async function SubmitPlanEntryPage() {
     });
 
     const branches = await prisma.branch.findMany();
+    const currentQuarter = getCurrentQuarter();
 
     return (
         <SubmitEntryClient
@@ -42,6 +43,7 @@ export default async function SubmitPlanEntryPage() {
             plans={serialize(plans)}
             branches={serialize(branches)}
             quarters={quarters}
+            defaultQuarter={currentQuarter}
         />
     );
 }
