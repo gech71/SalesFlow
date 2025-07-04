@@ -305,7 +305,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             <div className="flex items-center gap-4">
                 <SidebarTrigger />
-                <h1 className="flex-1 shrink-0 text-xl font-semibold tracking-tight sm:grow-0">Settings</h1>
+                <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">Settings</h1>
                 <div className="ml-auto">
                     <ThemeToggle />
                 </div>
@@ -358,7 +358,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                 {permissions.includes('settings:manage_users') && (
                     <TabsContent value="users" className="mt-6">
                         <Card>
-                            <CardHeader className="flex flex-row items-center justify-between">
+                            <CardHeader className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
                                 <div><CardTitle>Users</CardTitle><CardDescription>Manage user accounts, their roles, and their branch/district assignments.</CardDescription></div>
                                 <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
                                     <DialogTrigger asChild><Button><Icons.plusCircle className="mr-2 h-4 w-4" />Register User</Button></DialogTrigger>
@@ -408,35 +408,65 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                                 </Dialog>
                             </CardHeader>
                             <CardContent>
-                                <Table>
-                                    <TableHeader><TableRow><TableHead>User</TableHead><TableHead className="md:w-[180px]">Role</TableHead><TableHead className="md:w-[40%]">Assignment</TableHead></TableRow></TableHeader>
-                                    <TableBody>
-                                        {users.map(user => (
-                                            <TableRow key={user.id}>
-                                                <TableCell>
-                                                    <div className="font-medium truncate">{user.name}</div>
-                                                    <div className="text-xs text-muted-foreground truncate">{user.email}</div>
-                                                    <div className="text-xs text-muted-foreground truncate">{user.phoneNumber}</div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Select
-                                                        defaultValue={user.roleId}
-                                                        onValueChange={(roleId) => handleRoleChange(user.id, roleId)}
-                                                        disabled={user.id === loggedInUser?.id}
-                                                    >
-                                                        <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
-                                                        <SelectContent>
-                                                            {creatableRolesForCurrentUser.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </TableCell>
-                                                <TableCell>
-                                                    {renderAssignmentControls(user)}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                {/* Desktop Table */}
+                                <div className="hidden md:block">
+                                  <Table>
+                                      <TableHeader><TableRow><TableHead>User</TableHead><TableHead className="w-[200px]">Role</TableHead><TableHead className="w-[40%]">Assignment</TableHead></TableRow></TableHeader>
+                                      <TableBody>
+                                          {users.map(user => (
+                                              <TableRow key={user.id}>
+                                                  <TableCell>
+                                                      <div className="font-medium truncate">{user.name}</div>
+                                                      <div className="text-xs text-muted-foreground truncate">{user.email}</div>
+                                                      <div className="text-xs text-muted-foreground truncate">{user.phoneNumber}</div>
+                                                  </TableCell>
+                                                  <TableCell>
+                                                      <Select
+                                                          defaultValue={user.roleId}
+                                                          onValueChange={(roleId) => handleRoleChange(user.id, roleId)}
+                                                          disabled={user.id === loggedInUser?.id}
+                                                      >
+                                                          <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
+                                                          <SelectContent>
+                                                              {creatableRolesForCurrentUser.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
+                                                          </SelectContent>
+                                                      </Select>
+                                                  </TableCell>
+                                                  <TableCell>
+                                                      {renderAssignmentControls(user)}
+                                                  </TableCell>
+                                              </TableRow>
+                                          ))}
+                                      </TableBody>
+                                  </Table>
+                                </div>
+                                {/* Mobile Cards */}
+                                <div className="grid gap-4 md:hidden">
+                                  {users.map(user => (
+                                    <Card key={user.id}>
+                                      <CardHeader>
+                                        <CardTitle>{user.name}</CardTitle>
+                                        <CardDescription>{user.email}</CardDescription>
+                                        <CardDescription>{user.phoneNumber}</CardDescription>
+                                      </CardHeader>
+                                      <CardContent className="space-y-4">
+                                        <div className="space-y-2">
+                                          <Label>Role</Label>
+                                          <Select defaultValue={user.roleId} onValueChange={(roleId) => handleRoleChange(user.id, roleId)} disabled={user.id === loggedInUser?.id}>
+                                            <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
+                                            <SelectContent>
+                                                {creatableRolesForCurrentUser.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
+                                            </SelectContent>
+                                          </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                          <Label>Assignment</Label>
+                                          {renderAssignmentControls(user)}
+                                        </div>
+                                      </CardContent>
+                                    </Card>
+                                  ))}
+                                </div>
                             </CardContent>
                         </Card>
                     </TabsContent>
@@ -445,27 +475,56 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                 {permissions.includes('settings:manage_roles') && (
                     <TabsContent value="roles" className="mt-6">
                         <Card>
-                            <CardHeader className="flex flex-row items-center justify-between">
+                            <CardHeader className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
                                 <div><CardTitle>Role Permissions</CardTitle><CardDescription>Define roles and their functional permissions within the application.</CardDescription></div>
                                 <Button onClick={() => openRoleDialog(null)}><Icons.plusCircle className="mr-2 h-4 w-4" />Create Role</Button>
                             </CardHeader>
                             <CardContent>
-                                <Table>
-                                    <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Description</TableHead><TableHead>Permissions</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
-                                    <TableBody>
-                                        {roles.map(role => (
-                                            <TableRow key={role.id}>
-                                                <TableCell className="font-medium truncate">{role.name}</TableCell>
-                                                <TableCell className="text-muted-foreground truncate">{role.description}</TableCell>
-                                                <TableCell><div className="flex flex-wrap gap-1">{role.permissions.map(p => <Badge key={p} variant="secondary">{p}</Badge>)}</div></TableCell>
-                                                <TableCell className="text-right space-x-2">
-                                                    <Button variant="ghost" size="icon" onClick={() => openRoleDialog(role)}><Icons.edit className="h-4 w-4" /></Button>
-                                                    <Button variant="ghost" size="icon" onClick={() => onDeleteRole(role.id)}><Icons.trash className="h-4 w-4" /></Button>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                {/* Desktop Table */}
+                                <div className="hidden md:block">
+                                  <Table>
+                                      <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Description</TableHead><TableHead>Permissions</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                                      <TableBody>
+                                          {roles.map(role => (
+                                              <TableRow key={role.id}>
+                                                  <TableCell className="font-medium truncate">{role.name}</TableCell>
+                                                  <TableCell className="text-muted-foreground truncate">{role.description}</TableCell>
+                                                  <TableCell><div className="flex flex-wrap gap-1">{role.permissions.map(p => <Badge key={p} variant="secondary">{p}</Badge>)}</div></TableCell>
+                                                  <TableCell className="text-right space-x-2">
+                                                      <Button variant="ghost" size="icon" onClick={() => openRoleDialog(role)}><Icons.edit className="h-4 w-4" /></Button>
+                                                      <Button variant="ghost" size="icon" onClick={() => onDeleteRole(role.id)}><Icons.trash className="h-4 w-4" /></Button>
+                                                  </TableCell>
+                                              </TableRow>
+                                          ))}
+                                      </TableBody>
+                                  </Table>
+                                </div>
+                                {/* Mobile Cards */}
+                                <div className="grid gap-4 md:hidden">
+                                  {roles.map(role => (
+                                    <Card key={role.id}>
+                                      <CardHeader>
+                                        <div className="flex justify-between items-start gap-2">
+                                          <div className="flex-1">
+                                            <CardTitle>{role.name}</CardTitle>
+                                            <CardDescription>{role.description}</CardDescription>
+                                          </div>
+                                          <div className="flex">
+                                            <Button variant="ghost" size="icon" onClick={() => openRoleDialog(role)}><Icons.edit className="h-4 w-4" /></Button>
+                                            <Button variant="ghost" size="icon" onClick={() => onDeleteRole(role.id)}><Icons.trash className="h-4 w-4" /></Button>
+                                          </div>
+                                        </div>
+                                      </CardHeader>
+                                      <CardContent>
+                                        <Label>Permissions</Label>
+                                        <div className="flex flex-wrap gap-1 mt-2">
+                                          {role.permissions.map(p => <Badge key={p} variant="secondary">{p}</Badge>)}
+                                          {role.permissions.length === 0 && <p className="text-xs text-muted-foreground">No permissions assigned.</p>}
+                                        </div>
+                                      </CardContent>
+                                    </Card>
+                                  ))}
+                                </div>
                             </CardContent>
                         </Card>
                     </TabsContent>
@@ -483,7 +542,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                                     <div key={role.id}>
                                         <h4 className="font-semibold">{role.name}</h4>
                                         <p className="text-sm text-muted-foreground">Can create the following roles:</p>
-                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-2">
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-2">
                                             {roles.map(creatableRole => (
                                                 <div key={creatableRole.id} className="flex items-center space-x-2">
                                                     <Checkbox
