@@ -99,7 +99,7 @@ export default function AppSidebar({ user, permissions }: AppSidebarProps) {
           {installPrompt && (
             <SidebarMenuItem>
               <SidebarMenuButton onClick={handleInstall} className="w-full" tooltip="Install App">
-                <img src="/nib tera sales.png" alt="Install App" className="h-4 w-4" />
+                <Icons.monitorDown />
                 <span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Install App</span>
               </SidebarMenuButton>
             </SidebarMenuItem>

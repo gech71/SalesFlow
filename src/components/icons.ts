@@ -1,4 +1,4 @@
-import {ArrowLeft, ArrowRight, Check, ChevronsUpDown, Circle, Copy, Download, Edit, ExternalLink, File, HelpCircle, Home, LayoutDashboard, Loader2, Mail, MapPin, MessageSquare, Moon, MoreHorizontal, Plus, PlusCircle, Search, Server, Settings, Share2, Shield, Sun, Trash, User, WifiOff, X, Workflow, Calendar, ClipboardList, Building, Building2, DollarSign, CheckCircle, Target, LocateFixed, AlertTriangle, Landmark, LogOut, CheckCircle2, XCircle, Hourglass, FilePlus2, RefreshCw, ArrowRightCircle, ShieldCheck, ShieldAlert, ArrowDownCircle, ArrowUpCircle, Info, Eye, EyeOff, Phone, Lock} from 'lucide-react';
+import {ArrowLeft, ArrowRight, Check, ChevronsUpDown, Circle, Copy, Download, Edit, ExternalLink, File, HelpCircle, Home, LayoutDashboard, Loader2, Mail, MapPin, MessageSquare, Moon, MoreHorizontal, Plus, PlusCircle, Search, Server, Settings, Share2, Shield, Sun, Trash, User, WifiOff, X, Workflow, Calendar, ClipboardList, Building, Building2, DollarSign, CheckCircle, Target, LocateFixed, AlertTriangle, Landmark, LogOut, CheckCircle2, XCircle, Hourglass, FilePlus2, RefreshCw, ArrowRightCircle, ShieldCheck, ShieldAlert, ArrowDownCircle, ArrowUpCircle, Info, Eye, EyeOff, Phone, Lock, MonitorDown} from 'lucide-react';
 
 const Icons = {
   arrowLeft: ArrowLeft,
@@ -60,6 +60,7 @@ const Icons = {
   lock: Lock,
   moreHorizontal: MoreHorizontal,
   wifiOff: WifiOff,
+  monitorDown: MonitorDown,
 };
 
 export {Icons};
