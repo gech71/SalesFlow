@@ -1,0 +1,1 @@
+This placeholder file was created so you can add your images to the /public folder. You can safely delete this file.
