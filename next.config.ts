@@ -6,6 +6,10 @@ const withPWA = withPWAInit({
   dest: "public",
   register: true,
   skipWaiting: true,
+  disable: process.env.NODE_ENV === "development",
+  fallbacks: {
+    document: "/offline",
+  },
   manifest: {
     name: 'Sales Lead Management',
     short_name: 'NIB Sales',

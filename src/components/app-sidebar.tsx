@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -9,6 +10,7 @@ import { Icons } from '@/components/icons';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { logoutAction } from '@/app/actions';
 import { ThemeToggle } from './theme-toggle';
+import { useInstallPWA } from '@/hooks/use-install-pwa';
 
 type ClientUser = User & { role: Role | null };
 
@@ -20,6 +22,7 @@ interface AppSidebarProps {
 export default function AppSidebar({ user, permissions }: AppSidebarProps) {
   const pathname = usePathname();
   const canViewSettings = useMemo(() => permissions.some(p => p.startsWith('settings:')), [permissions]);
+  const { installPrompt, handleInstall } = useInstallPWA();
 
   return (
     <Sidebar collapsible="icon">
@@ -94,6 +97,14 @@ export default function AppSidebar({ user, permissions }: AppSidebarProps) {
               </div>
             </div>
           </SidebarMenuItem>
+          {installPrompt && (
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={handleInstall} className="w-full" tooltip="Install App">
+                <Icons.download />
+                <span className="group-data-[state=collapsed]/sidebar-wrapper:hidden">Install App</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
           <SidebarMenuItem>
             <form action={logoutAction} className="w-full">
               <SidebarMenuButton type="submit" className="w-full" tooltip="Logout">
