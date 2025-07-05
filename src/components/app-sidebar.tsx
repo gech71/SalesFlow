@@ -33,9 +33,9 @@ export default function AppSidebar({ user, permissions }: AppSidebarProps) {
                 <Image
                   src="/nib tera sales.png"
                   alt="NIB Sales Logo"
-                  width={80}
-                  height={80}
-                  className="h-20 w-auto transition-all group-data-[state=collapsed]:h-12" />
+                  width={96}
+                  height={96}
+                  className="h-24 w-auto transition-all group-data-[state=collapsed]:h-16" />
             </Link>
             <div className="group-data-[state=collapsed]:hidden">
                 <ThemeToggle />
