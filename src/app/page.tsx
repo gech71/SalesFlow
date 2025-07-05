@@ -67,10 +67,8 @@ export default function LoginPage() {
       </div>
       <Card className="w-full max-w-sm z-10 bg-background/80 backdrop-blur-md border-border/50 shadow-2xl">
         <CardHeader className="text-center">
-            <div className="flex flex-col items-center justify-center gap-2 mb-4">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/nib tera sales.png" alt="NIB International Bank Logo" className="h-16 w-auto" />
-                <CardTitle className="text-primary">Nib Sales</CardTitle>
+            <div className="flex flex-col items-center justify-center gap-4 mb-4">
+                <img src="/nib tera sales.png" alt="NIB International Bank Logo" className="h-20 w-auto" />
             </div>
           <CardDescription>Welcome back! Please log in to continue.</CardDescription>
         </CardHeader>

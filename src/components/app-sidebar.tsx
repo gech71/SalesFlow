@@ -28,9 +28,8 @@ export default function AppSidebar({ user, permissions }: AppSidebarProps) {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center justify-between">
-            <Link href="/dashboard" className="flex items-center gap-2 group-data-[state=collapsed]:justify-center">
-            <img src="/nib tera sales.png" alt="NIB Sales Logo" className="h-10 w-auto transition-all group-data-[state=collapsed]:h-6" />
-            <h2 className="font-semibold text-lg text-primary group-data-[state=collapsed]:hidden">NIB Sales</h2>
+            <Link href="/dashboard" className="flex items-center gap-2 group-data-[state=collapsed]:justify-center w-full">
+                <img src="/nib tera sales.png" alt="NIB Sales Logo" className="h-10 w-auto transition-all group-data-[state=collapsed]:h-8" />
             </Link>
             <div className="group-data-[state=collapsed]:hidden">
                 <ThemeToggle />
