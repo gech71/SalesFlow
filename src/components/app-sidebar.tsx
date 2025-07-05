@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { logoutAction } from '@/app/actions';
 import { ThemeToggle } from './theme-toggle';
 import { useInstallPWA } from '@/hooks/use-install-pwa';
+import Image from 'next/image';
 
 type ClientUser = User & { role: Role | null };
 
@@ -28,8 +29,13 @@ export default function AppSidebar({ user, permissions }: AppSidebarProps) {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center justify-between">
-            <Link href="/dashboard" className="flex items-center gap-2 group-data-[state=collapsed]:justify-center w-full">
-                <img src="/nib tera sales.png" alt="NIB Sales Logo" className="h-10 w-auto transition-all group-data-[state=collapsed]:h-8" />
+            <Link href="/dashboard" className="flex w-full items-center justify-center gap-2">
+                <Image
+                  src="/nib tera sales.png"
+                  alt="NIB Sales Logo"
+                  width={64}
+                  height={64}
+                  className="h-16 w-auto transition-all group-data-[state=collapsed]:h-10" />
             </Link>
             <div className="group-data-[state=collapsed]:hidden">
                 <ThemeToggle />
