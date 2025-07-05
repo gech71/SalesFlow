@@ -28,14 +28,14 @@ export default function AppSidebar({ user, permissions }: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between p-2">
             <Link href="/dashboard" className="flex w-full items-center justify-center gap-2">
                 <Image
                   src="/nib tera sales.png"
                   alt="NIB Sales Logo"
-                  width={64}
-                  height={64}
-                  className="h-16 w-auto transition-all group-data-[state=collapsed]:h-10" />
+                  width={80}
+                  height={80}
+                  className="h-20 w-auto transition-all group-data-[state=collapsed]:h-12" />
             </Link>
             <div className="group-data-[state=collapsed]:hidden">
                 <ThemeToggle />
