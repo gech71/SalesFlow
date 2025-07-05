@@ -22,11 +22,13 @@ const withPWA = withPWAInit({
         src: '/nib tera sales.png',
         sizes: '192x192',
         type: 'image/png',
+        purpose: 'any maskable',
       },
       {
         src: '/nib tera sales.png',
         sizes: '512x512',
         type: 'image/png',
+        purpose: 'any maskable',
       },
     ],
   },
