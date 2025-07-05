@@ -21,7 +21,7 @@ import { Progress } from '@/components/ui/progress';
 import { Icons } from '@/components/icons';
 import { type SalesLead, type BranchPlan, type District, type Branch, type LeadUpdate, type PlanEntry, type User, type Role } from '@prisma/client';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Cell } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbPage } from '@/components/ui/breadcrumb';
@@ -77,7 +77,22 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
         return acc;
     }, {} as Record<SalesLead['status'], number>);
     
-    const statusChartData = Object.entries(leadsByStatus).map(([status, count]) => ({ status, count }));
+    const statusColors: Record<string, string> = {
+        'InProgress': '#7d4a1b',
+        'Assigned': 'hsl(var(--chart-1))',
+        'New': 'hsl(var(--chart-2))',
+        'PendingClosure': 'hsl(var(--chart-3))',
+        'PendingDistrictApproval': 'hsl(var(--chart-4))',
+        'Closed': 'hsl(var(--chart-5))',
+        'Reopened': 'hsl(var(--warning))',
+        'default': 'hsl(var(--muted-foreground))'
+    };
+
+    const statusChartData = Object.entries(leadsByStatus).map(([status, count]) => ({
+        status,
+        count,
+        fill: statusColors[status as keyof typeof statusColors] || statusColors.default
+    }));
 
     const performanceByDistrict = districts
       .filter(d => selectedDistrict === 'all' || d.id === selectedDistrict)
@@ -252,13 +267,17 @@ export default function DashboardClient({ user, permissions, leads, plans, distr
                         <CardDescription>Distribution of leads across their current statuses.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <ChartContainer config={{count: {label: 'Count', color: 'hsl(var(--chart-1))'}}} className="h-[300px] w-full">
+                        <ChartContainer config={{count: {label: 'Count'}}} className="h-[300px] w-full">
                             <BarChart data={dashboardStats.statusChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <CartesianGrid vertical={false} />
                                 <XAxis dataKey="status" tickLine={false} axisLine={false} />
                                 <YAxis />
                                 <Tooltip content={<ChartTooltipContent />} />
-                                <Bar dataKey="count" fill="var(--color-count)" radius={4} />
+                                <Bar dataKey="count" radius={4}>
+                                  {dashboardStats.statusChartData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                                  ))}
+                                </Bar>
                             </BarChart>
                         </ChartContainer>
                     </CardContent>
