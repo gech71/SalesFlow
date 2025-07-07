@@ -22,13 +22,13 @@ const withPWA = withPWAInit({
     theme_color: '#f5b814',
     icons: [
       {
-        src: '/nib tera sales.png',
+        src: '/nib%20tera%20sales.png',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'any maskable',
       },
       {
-        src: '/nib tera sales.png',
+        src: '/nib%20tera%20sales.png',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any maskable',
