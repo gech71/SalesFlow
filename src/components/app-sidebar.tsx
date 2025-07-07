@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -35,7 +34,7 @@ export default function AppSidebar({ user, permissions }: AppSidebarProps) {
                   alt="NIB Sales Logo"
                   width={128}
                   height={128}
-                  className="h-32 w-auto transition-all group-data-[state=collapsed]:h-20" />
+                  className="h-24 w-auto transition-all group-data-[state=collapsed]:h-12" />
             </Link>
             <div className="group-data-[state=collapsed]:hidden">
                 <ThemeToggle />
