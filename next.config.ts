@@ -13,10 +13,11 @@ const withPWA = withPWAInit({
     name: 'LeadTrack Pro',
     short_name: 'LeadTrack Pro',
     description: 'A sales lead tracking and management application.',
+    scope: '/',
     start_url: '/',
     display: 'standalone',
-    background_color: '#2E9AFE',
-    theme_color: '#2E9AFE',
+    background_color: '#FFFCF5',
+    theme_color: '#f5b814',
     icons: [
       {
         src: '/nib tera sales.png',
