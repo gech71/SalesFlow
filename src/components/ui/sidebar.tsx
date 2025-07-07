@@ -77,29 +77,29 @@ const SidebarProvider = React.forwardRef<
     const isMobile = useIsMobile()
     const [openMobile, setOpenMobile] = React.useState(false)
     const [isMounted, setIsMounted] = React.useState(false)
-    
-    const getInitialOpen = () => {
-      if (typeof window !== "undefined") {
-        const cookieValue = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith(`${SIDEBAR_COOKIE_NAME}=`))
-          ?.split("=")[1]
-        if (cookieValue !== undefined) {
-          return cookieValue === "true"
-        }
-      }
-      return defaultOpen
-    }
 
-    // This is the internal state of the sidebar.
-    // We use openProp and setOpenProp for control from outside the component.
-    const [_open, _setOpen] = React.useState(getInitialOpen)
+    // On the server and for the initial client render, the sidebar is collapsed.
+    const [_open, _setOpen] = React.useState(false)
     const open = openProp ?? _open
-    
-    // On mount, check the cookie
+
     React.useEffect(() => {
-        setIsMounted(true);
-    }, []);
+      // On the client, after mounting, read the cookie to set the correct state.
+      const cookieValue = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith(`${SIDEBAR_COOKIE_NAME}=`))
+        ?.split("=")[1]
+
+      if (cookieValue !== undefined) {
+        _setOpen(cookieValue === "true")
+      } else {
+        // If no cookie is found, use the default prop.
+        _setOpen(defaultOpen)
+      }
+
+      // Enable transitions after the initial state is set.
+      setIsMounted(true)
+    }, [defaultOpen])
+
 
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
@@ -173,7 +173,6 @@ const SidebarProvider = React.forwardRef<
               className
             )}
             ref={ref}
-            suppressHydrationWarning
             {...props}
           >
             {children}
@@ -255,8 +254,8 @@ const Sidebar = React.forwardRef<
         {/* This is what handles the sidebar gap on desktop */}
         <div
           className={cn(
-            "relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-linear",
-            !isMounted ? "duration-0" : "duration-200",
+            "relative h-svh w-[--sidebar-width] bg-transparent",
+            !isMounted ? "transition-none" : "transition-[width] ease-linear duration-200",
             "group-data-[collapsible=offcanvas]:w-0",
             "group-data-[side=right]:rotate-180",
             variant === "floating" || variant === "inset"
@@ -266,8 +265,8 @@ const Sidebar = React.forwardRef<
         />
         <div
           className={cn(
-            "fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex",
-            !isMounted ? "duration-0" : "duration-200",
+            "fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] md:flex",
+            !isMounted ? "transition-none" : "transition-[left,right,width] ease-linear duration-200",
             side === "left"
               ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
               : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
