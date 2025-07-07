@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -31,7 +30,7 @@ export default function AppSidebar({ user, permissions }: AppSidebarProps) {
         <div className="flex items-center justify-between p-2">
             <Link href="/dashboard" className="flex w-full items-center justify-center gap-2">
                 <Image
-                  src="/nib tera sales.png"
+                  src="/nib%20tera%20sales.png"
                   alt="NIB Sales Logo"
                   width={128}
                   height={128}

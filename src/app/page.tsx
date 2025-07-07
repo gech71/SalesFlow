@@ -68,7 +68,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-sm z-10 bg-background/80 backdrop-blur-md border-border/50 shadow-2xl">
         <CardHeader className="text-center">
             <div className="flex flex-col items-center justify-center gap-4 mb-4">
-                <Image src="/nib tera sales.png" alt="NIB International Bank Logo" width={128} height={128} className="h-32 w-auto" />
+                <Image src="/nib%20tera%20sales.png" alt="NIB International Bank Logo" width={128} height={128} className="h-32 w-auto" />
             </div>
           <CardDescription>Welcome back! Please log in to continue.</CardDescription>
         </CardHeader>
