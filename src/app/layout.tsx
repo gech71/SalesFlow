@@ -19,10 +19,11 @@ export const metadata: Metadata = {
   icons: {
     icon: '/nib tera sales.png',
   },
+  manifest: '/manifest.webmanifest',
 };
 
 export const viewport: Viewport = {
-  themeColor: '#2E9AFE',
+  themeColor: '#f5b814',
 }
 
 export default function RootLayout({

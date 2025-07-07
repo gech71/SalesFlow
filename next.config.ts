@@ -6,6 +6,8 @@ const withPWA = withPWAInit({
   dest: "public",
   register: true,
   skipWaiting: true,
+  disable: false,
+  cacheOnFrontEndNav: true,
   fallbacks: {
     document: "/offline",
   },
