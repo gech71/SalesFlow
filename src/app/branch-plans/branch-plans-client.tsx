@@ -128,7 +128,7 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
       <AppSidebar user={user} permissions={permissions} />
       <SidebarInset>
         <div className="flex min-h-screen w-full flex-col">
-          <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+          <header className="sticky top-0 z-10 flex flex-col gap-4 border-b bg-background/95 p-4 backdrop-blur-sm md:px-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <SidebarTrigger />
@@ -162,7 +162,8 @@ export default function BranchPlansClient({ user, permissions, plans, branches, 
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            
+          </header>
+          <main className="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6">
             {!currentPlan ? (
                 <Card className="flex flex-col items-center justify-center p-12">
                     <CardHeader>

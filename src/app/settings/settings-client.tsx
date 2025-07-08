@@ -352,7 +352,7 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
       <AppSidebar user={loggedInUser} permissions={permissions} />
       <SidebarInset>
         <div className="flex min-h-screen w-full flex-col">
-          <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+          <header className="sticky top-0 z-10 flex flex-col gap-4 border-b bg-background/95 p-4 backdrop-blur-sm md:px-6">
             <div className="flex items-center gap-4">
                 <SidebarTrigger />
                 <h1 className="flex-1 text-xl font-semibold tracking-tight">Settings</h1>
@@ -370,7 +370,8 @@ export default function SettingsClient({ loggedInUser, permissions, threshold, u
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            
+          </header>
+          <main className="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6">
             <Tabs defaultValue="users" className="w-full">
                 <TabsList className="mx-auto grid w-full grid-cols-1 gap-1 sm:grid-cols-2 md:grid-cols-4 md:max-w-3xl">
                     {permissions.includes('settings:manage_users') && <TabsTrigger value="users">User Management</TabsTrigger>}

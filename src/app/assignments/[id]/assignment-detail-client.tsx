@@ -228,174 +228,174 @@ export default function AssignmentDetailClient({ user, permissions, lead, distan
       <AppSidebar user={user} permissions={permissions} />
       <SidebarInset>
         <div className="flex min-h-screen w-full flex-col">
-            <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-            <div className="flex items-center gap-4">
-                <SidebarTrigger />
-                <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => router.back()}>
-                    <Icons.arrowLeft className="h-4 w-4" />
-                    <span className="sr-only">Back</span>
-                </Button>
-                <h1 className="flex-1 text-xl font-semibold tracking-tight">
-                    Lead Details
-                </h1>
-            </div>
-             <Breadcrumb className="hidden md:flex">
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link href="/dashboard">Dashboard</Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link href="/assignments">My Assignments</Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Lead Details</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
-            
-            <Card>
-                <CardHeader>
-                    <CardTitle>{lead.title}</CardTitle>
-                    <CardDescription>{lead.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <Separator />
-                     <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
-                        <div className="space-y-1">
-                            <p className="text-sm font-medium text-muted-foreground">Assignee</p>
-                            <p className="text-base">{lead.assignee?.name || 'Unassigned'}</p>
-                        </div>
-                        <div className="space-y-1">
-                            <p className="text-sm font-medium text-muted-foreground">Deadline</p>
-                            <p className="text-base">{lead.deadline ? format(new Date(lead.deadline), "PPP") : 'N/A'}</p>
-                        </div>
-                        <div className="space-y-1">
-                            <p className="text-sm font-medium text-muted-foreground">Status</p>
-                            <StatusBadge status={lead.status as any} />
-                        </div>
-                        <div className="space-y-1 sm:col-span-2">
-                            <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1 text-sm mb-1">
-                                <span className="font-medium text-muted-foreground">Savings Progress</span>
-                                <span className="font-semibold">{formatCurrency(totalGeneratedSavings)} / {formatCurrency(lead.expectedSavings)}</span>
+            <header className="sticky top-0 z-10 flex flex-col gap-4 border-b bg-background/95 p-4 backdrop-blur-sm md:px-6">
+                <div className="flex items-center gap-4">
+                    <SidebarTrigger />
+                    <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => router.back()}>
+                        <Icons.arrowLeft className="h-4 w-4" />
+                        <span className="sr-only">Back</span>
+                    </Button>
+                    <h1 className="flex-1 text-xl font-semibold tracking-tight">
+                        Lead Details
+                    </h1>
+                </div>
+                 <Breadcrumb className="hidden md:flex">
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink asChild>
+                                <Link href="/dashboard">Dashboard</Link>
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbLink asChild>
+                                <Link href="/assignments">My Assignments</Link>
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>Lead Details</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+            </header>
+            <main className="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>{lead.title}</CardTitle>
+                        <CardDescription>{lead.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <Separator />
+                         <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-muted-foreground">Assignee</p>
+                                <p className="text-base">{lead.assignee?.name || 'Unassigned'}</p>
                             </div>
-                            <Progress value={achievementPercentage} className="h-2" />
-                            <div className="text-xs text-muted-foreground mt-1 text-right">{achievementPercentage.toFixed(0)}% of target</div>
-                        </div>
-                    </div>
-                    <Separator />
-
-                    <div className="space-y-2">
-                        <h4 className="text-sm font-semibold">Update History</h4>
-                        <ScrollArea className="h-48 w-full rounded-md border p-4">
-                        {lead.updates.length > 0 ? (
-                                <div className="space-y-4">
-                                    {lead.updates.map((update, index) => (
-                                        <div key={index} className="text-sm">
-                                            <p className="font-medium">{update.author} <span className="text-muted-foreground text-xs">on {format(new Date(update.timestamp), "PPp")}</span></p>
-                                            <p className="text-muted-foreground break-words">{update.text}</p>
-                                            {update.generatedSavings && (
-                                                <p className="text-sm text-primary font-medium mt-1">
-                                                    + {formatCurrency(update.generatedSavings)}
-                                                </p>
-                                            )}
-                                            {update.attachmentUrl && (
-                                                <a 
-                                                    href={update.attachmentUrl} 
-                                                    download
-                                                    className="flex items-center gap-2 mt-2 text-sm text-primary hover:underline"
-                                                >
-                                                    <Icons.file className="h-4 w-4" />
-                                                    <span>View Attachment</span>
-                                                </a>
-                                            )}
-                                            {update.reportingLat && update.reportingLng && lead.lat && lead.lng && (() => {
-                                                const distance = getDistanceInKm(Number(lead.lat), Number(lead.lng), update.reportingLat!, update.reportingLng!);
-                                                const isOnSite = distance < distanceThreshold;
-                                                return (
-                                                    <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                                                        <Icons.locateFixed className="h-4 w-4" />
-                                                        <a 
-                                                            href={`https://www.google.com/maps/search/?api=1&query=${update.reportingLat},${update.reportingLng}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="hover:underline"
-                                                        >
-                                                            Reported from location
-                                                        </a>
-                                                        <OnSiteBadge isOnSite={isOnSite} distance={distance} />
-                                                    </div>
-                                                )
-                                            })()}
-                                        </div>
-                                    ))}
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-muted-foreground">Deadline</p>
+                                <p className="text-base">{lead.deadline ? format(new Date(lead.deadline), "PPP") : 'N/A'}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-muted-foreground">Status</p>
+                                <StatusBadge status={lead.status as any} />
+                            </div>
+                            <div className="space-y-1 sm:col-span-2">
+                                <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1 text-sm mb-1">
+                                    <span className="font-medium text-muted-foreground">Savings Progress</span>
+                                    <span className="font-semibold">{formatCurrency(totalGeneratedSavings)} / {formatCurrency(lead.expectedSavings)}</span>
                                 </div>
-                        ) : (
-                            <p className="text-sm text-muted-foreground">No updates yet.</p>
-                        )}
-                        </ScrollArea>
-                    </div>
-
-                    <Separator />
-                     <form onSubmit={handleSubmitUpdate(onUpdateSubmit)} className="space-y-4">
-                        <h4 className="text-sm font-semibold">Add New Update</h4>
-                         <div>
-                            <Label htmlFor="updateText">Update Details</Label>
-                            <Textarea id="updateText" {...registerUpdate("updateText")} disabled={isPendingApproval} />
-                            {updateErrors.updateText && <p className="text-red-500 text-xs mt-1">{updateErrors.updateText.message}</p>}
-                         </div>
-                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor="status">New Status</Label>
-                                 <Controller
-                                    control={controlUpdate}
-                                    name="status"
-                                    render={({ field }) => (
-                                        <Select onValueChange={field.onChange} value={field.value as string} disabled={isPendingApproval}>
-                                            <SelectTrigger><SelectValue placeholder="Select a status" /></SelectTrigger>
-                                            <SelectContent>
-                                                {isPendingApproval ? (
-                                                    <SelectItem value={lead.status}>{lead.status}</SelectItem>
-                                                ) : (
-                                                    officerAllowedStatuses.map(status => (<SelectItem key={status} value={status}>{status}</SelectItem>))
-                                                )}
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                                {updateErrors.status && <p className="text-red-500 text-xs mt-1">{updateErrors.status.message}</p>}
+                                <Progress value={achievementPercentage} className="h-2" />
+                                <div className="text-xs text-muted-foreground mt-1 text-right">{achievementPercentage.toFixed(0)}% of target</div>
                             </div>
-                             <div>
-                                <Label htmlFor="generatedSavings">Generated Savings (Optional)</Label>
-                                <Input id="generatedSavings" type="number" {...registerUpdate("generatedSavings")} disabled={isPendingApproval} />
-                                {updateErrors.generatedSavings && <p className="text-red-500 text-xs mt-1">{updateErrors.generatedSavings.message}</p>}
-                             </div>
-                         </div>
-                         <div>
-                            <Label htmlFor="attachment">Attachment (Optional)</Label>
-                            <Input 
-                                id="attachment" 
-                                type="file" 
-                                onChange={(e) => setAttachmentFile(e.target.files ? e.target.files[0] : null)}
-                                disabled={isPendingApproval}
-                            />
                         </div>
-                        <CardFooter className="px-0 pt-4">
-                            <Button type="button" variant="outline" onClick={() => router.push('/assignments')}>Cancel</Button>
-                            <Button type="submit" className="ml-auto" disabled={isSubmitting || isPendingApproval}>
-                                {isSubmitting && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
-                                {isSubmitting ? 'Submitting...' : (isPendingApproval ? 'Pending Approval' : 'Submit Update')}
-                            </Button>
-                        </CardFooter>
-                     </form>
-                </CardContent>
+                        <Separator />
+
+                        <div className="space-y-2">
+                            <h4 className="text-sm font-semibold">Update History</h4>
+                            <ScrollArea className="h-48 w-full rounded-md border p-4">
+                            {lead.updates.length > 0 ? (
+                                    <div className="space-y-4">
+                                        {lead.updates.map((update, index) => (
+                                            <div key={index} className="text-sm">
+                                                <p className="font-medium">{update.author} <span className="text-muted-foreground text-xs">on {format(new Date(update.timestamp), "PPp")}</span></p>
+                                                <p className="text-muted-foreground break-words">{update.text}</p>
+                                                {update.generatedSavings && (
+                                                    <p className="text-sm text-primary font-medium mt-1">
+                                                        + {formatCurrency(update.generatedSavings)}
+                                                    </p>
+                                                )}
+                                                {update.attachmentUrl && (
+                                                    <a 
+                                                        href={update.attachmentUrl} 
+                                                        download
+                                                        className="flex items-center gap-2 mt-2 text-sm text-primary hover:underline"
+                                                    >
+                                                        <Icons.file className="h-4 w-4" />
+                                                        <span>View Attachment</span>
+                                                    </a>
+                                                )}
+                                                {update.reportingLat && update.reportingLng && lead.lat && lead.lng && (() => {
+                                                    const distance = getDistanceInKm(Number(lead.lat), Number(lead.lng), update.reportingLat!, update.reportingLng!);
+                                                    const isOnSite = distance < distanceThreshold;
+                                                    return (
+                                                        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                                                            <Icons.locateFixed className="h-4 w-4" />
+                                                            <a 
+                                                                href={`https://www.google.com/maps/search/?api=1&query=${update.reportingLat},${update.reportingLng}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="hover:underline"
+                                                            >
+                                                                Reported from location
+                                                            </a>
+                                                            <OnSiteBadge isOnSite={isOnSite} distance={distance} />
+                                                        </div>
+                                                    )
+                                                })()}
+                                            </div>
+                                        ))}
+                                    </div>
+                            ) : (
+                                <p className="text-sm text-muted-foreground">No updates yet.</p>
+                            )}
+                            </ScrollArea>
+                        </div>
+
+                        <Separator />
+                         <form onSubmit={handleSubmitUpdate(onUpdateSubmit)} className="space-y-4">
+                            <h4 className="text-sm font-semibold">Add New Update</h4>
+                             <div>
+                                <Label htmlFor="updateText">Update Details</Label>
+                                <Textarea id="updateText" {...registerUpdate("updateText")} disabled={isPendingApproval} />
+                                {updateErrors.updateText && <p className="text-red-500 text-xs mt-1">{updateErrors.updateText.message}</p>}
+                             </div>
+                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <Label htmlFor="status">New Status</Label>
+                                     <Controller
+                                        control={controlUpdate}
+                                        name="status"
+                                        render={({ field }) => (
+                                            <Select onValueChange={field.onChange} value={field.value as string} disabled={isPendingApproval}>
+                                                <SelectTrigger><SelectValue placeholder="Select a status" /></SelectTrigger>
+                                                <SelectContent>
+                                                    {isPendingApproval ? (
+                                                        <SelectItem value={lead.status}>{lead.status}</SelectItem>
+                                                    ) : (
+                                                        officerAllowedStatuses.map(status => (<SelectItem key={status} value={status}>{status}</SelectItem>))
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                        )}
+                                    />
+                                    {updateErrors.status && <p className="text-red-500 text-xs mt-1">{updateErrors.status.message}</p>}
+                                </div>
+                                 <div>
+                                    <Label htmlFor="generatedSavings">Generated Savings (Optional)</Label>
+                                    <Input id="generatedSavings" type="number" {...registerUpdate("generatedSavings")} disabled={isPendingApproval} />
+                                    {updateErrors.generatedSavings && <p className="text-red-500 text-xs mt-1">{updateErrors.generatedSavings.message}</p>}
+                                 </div>
+                             </div>
+                             <div>
+                                <Label htmlFor="attachment">Attachment (Optional)</Label>
+                                <Input 
+                                    id="attachment" 
+                                    type="file" 
+                                    onChange={(e) => setAttachmentFile(e.target.files ? e.target.files[0] : null)}
+                                    disabled={isPendingApproval}
+                                />
+                            </div>
+                            <CardFooter className="px-0 pt-4">
+                                <Button type="button" variant="outline" onClick={() => router.push('/assignments')}>Cancel</Button>
+                                <Button type="submit" className="ml-auto" disabled={isSubmitting || isPendingApproval}>
+                                    {isSubmitting && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+                                    {isSubmitting ? 'Submitting...' : (isPendingApproval ? 'Pending Approval' : 'Submit Update')}
+                                </Button>
+                            </CardFooter>
+                         </form>
+                    </CardContent>
                 </Card>
-            
             </main>
         </div>
       </SidebarInset>
