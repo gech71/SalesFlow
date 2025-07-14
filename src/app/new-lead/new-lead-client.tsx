@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm, Controller, FormProvider } from 'react-hook-form';
@@ -96,19 +97,24 @@ export default function NewLeadClient({ user, permissions }: { user: ClientUser 
       methods.setValue('lng', undefined as any);
 
       try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&countrycodes=et&q=${encodeURIComponent(searchQuery)}`);
+        const response = await fetch(`/api/location-search?q=${encodeURIComponent(searchQuery)}`);
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         setSearchResults(data);
       } catch (error) {
         console.error("Failed to fetch location data:", error);
+        toast({
+          title: "Location Search Failed",
+          description: "Could not retrieve location data. Please check your connection and try again.",
+          variant: "destructive",
+        })
       } finally {
         setIsSearching(false);
       }
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, selectedLocationName, methods]);
+  }, [searchQuery, selectedLocationName, methods, toast]);
 
   const handleSelectLocation = (location: any) => {
     methods.setValue('lat', parseFloat(location.lat), { shouldValidate: true });
